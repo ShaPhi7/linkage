@@ -1,0 +1,152 @@
+/**
+ *------
+ * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * Linkage implementation : © Shaun Phillips <smphillips@alumni.york.ac.uk>
+ *
+ * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
+ * See http://en.boardgamearena.com/#!doc/Studio for more information.
+ * -----
+ *
+ * linkage.css
+ *
+ * Linkage stylesheet
+ *
+ */
+
+/*
+    This is the CSS stylesheet of your game User Interface.
+    
+    Styles defined on this file will be applied to the HTML elements you define in your
+    HTML template (linkage_linkage.tpl), and to HTML elements you create dynamically
+    (in linkage.js).
+    
+    Usually, you are using CSS to:
+    
+    1°) define the overall layout of your game
+        (ex: place the board on the top left, place player's hand beside, place the deck on the right, ...).
+
+    2°) create your CSS-sprites:
+        All images of your games should be gathered into a small number of image files. Then, using
+        background-image and background-position CSS properties, you create HTML blocks that can 
+        display these images correctly (see example below).
+    
+    3°) ... anything else:
+        It is really easy to add and remove CSS classes dynamically from your Javascript with
+        dojo.addClass and dojo.removeClass. It is also easy to check if an element has a class
+        (dojo.hasClass) or to get all elements with a specific class (dojo.query). This is why,
+        very often, using CSS classes for the logic of your user interface allow you to do complex
+        thing easily.
+        
+        
+     Note: on the production platform, this file will be compressed and comments will be removed.
+           Consequently, don't hesitate to put as many comments as necessary.
+*/
+
+
+/* Note: you must not use any @import directive */
+
+
+/********* You can start writing your CSS below this line: **********/
+
+#table {
+	margin: auto;
+	max-width: 990px;
+	display: inline-block;
+	position: relative;
+	/*background-color: rgba(0,0,0,0.2);*/
+}
+
+#board {
+    width: 576px;
+    height: 407px;
+    background-image: url('img/board.png');
+    position: relative;
+    margin: auto;
+    display: inline-block;
+}
+
+#stock {
+	width: 407px;
+	height: 407px;
+	background-color: rgba(255,255,255,0.4);
+	position: relative;
+	display: inline-block;
+}
+
+.space {
+    /*background-color: red;*/
+    width: 40.5px;
+    height: 40.5px;
+    position: absolute;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 50px;
+}
+
+.piece {
+	width: 40.5px;
+	height: 81px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+    /*border-color: black;
+	border-style: solid;
+	border-width: thin;*/
+}
+
+.unplayedPiece {
+	width: 40.5px;
+	height: 81px;
+	position: relative;
+	top: 25%;
+	left: 25%;
+	margin: auto;
+}
+
+.piece_00359f {
+	background-color: #00359f;
+}
+
+.piece_ffffff {
+	background-color: #ffffff;
+}
+
+.piece_860000 {
+	background-color: #860000;
+}
+
+.piece_e48a01 {
+	background-color: #e48a01;
+}
+
+#stockHolder_00359f {
+	/*background-color: #00359f;*/
+	width: 24%;
+	height: 100%;
+	display: inline-block;
+	position: relative;
+}
+
+#stockHolder_ffffff {
+	/*background-color: #ffffff;*/
+	width: 24%;
+	height: 100%;
+	display: inline-block;
+	position: relative;
+}
+
+#stockHolder_860000 {
+	/*background-color: #860000;*/
+	width: 24%;
+	height: 100%;
+	display: inline-block;
+	position: relative;
+}
+
+#stockHolder_e48a01 {
+	/*background-color: #e48a01;*/
+	width: 24%;
+	height: 100%;
+	display: inline-block;
+	position: relative;
+}
