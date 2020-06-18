@@ -77,6 +77,8 @@ class Linkage extends Table
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
         
+        //TODO fill board here
+
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
