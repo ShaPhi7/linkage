@@ -31,17 +31,18 @@ function (dojo, declare) {
 
         },
         
-        addTokenOnBoard: function()
+        addTokenOnBoard: function(headX, headY, color)
         {
         	dojo.place(this.format_block('jstpl_piece', {
-                x_y: '2_2',
-                color: '00359f',
+                x_y: headX + '_' + headY,
+                color: color,
             }) , 'pieces');
-            
-           this.placeOnObject('piece_2_2', 'board');
-           dojo.place('piece_2_2', 'space_2_2');
-           dojo.style('piece_2_2', "left", "0px");
-           dojo.style('piece_2_2', "top", "0px");
+        
+            pieceName = 'piece_' + headX + '_' + headY;
+            this.placeOnObject(pieceName, 'board');
+            dojo.place(pieceName, 'space_' + headX + '_' + headY);
+            dojo.style(pieceName, "left", "0px");
+            dojo.style(pieceName, "top", "0px");
         },
         
         /*slideToObjectRelative : function(token, finalPlace, duration, delay, onEnd)
@@ -177,7 +178,7 @@ function (dojo, declare) {
             "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
         */
         
-        setup: function( gamedatas )
+        setup: function(gamedatas)
         {
             console.log("Starting game setup");
             
@@ -190,8 +191,15 @@ function (dojo, declare) {
             }
             
             // TODO: Set up your game interface here, according to "gamedatas"
-            this.addTokenOnBoard();
             
+            for (var i in gamedatas.board)
+            {
+                piece = gamedatas.board[i];
+                if (piece.head == "1") //the head of a piece is the space that is top/left.
+                {
+                    this.addTokenOnBoard(piece.x, piece.y, piece.color);
+                }
+            }
             //this will become a method that checks how many of these there should be and dishes them out.
         	this.setupStock();
         	
@@ -202,10 +210,10 @@ function (dojo, declare) {
         },
         
         setupStock: function() {
-        	this.setupStockColour("00359f", 6);
-        	this.setupStockColour("ffffff", 6);
-        	this.setupStockColour("860000", 6);
-        	this.setupStockColour("e48a01", 6);
+        	this.setupStockColour("00359f", this.getNumberOfPiecesInStockForColor("00359f"));
+        	this.setupStockColour("ffffff", this.getNumberOfPiecesInStockForColor("ffffff"));
+        	this.setupStockColour("860000", this.getNumberOfPiecesInStockForColor("860000"));
+        	this.setupStockColour("e48a01", this.getNumberOfPiecesInStockForColor("e48a01"));
     	},
         
         setupStockColour: function(color, unplayedPieces) {
@@ -219,7 +227,29 @@ function (dojo, declare) {
     	        dojo.style('unplayed_piece_' + i + '_' + color, "top", "100px");
     	        dojo.style('unplayed_piece_' + i + '_' + color, "position", "absolute");
             }
-    	},
+        },
+        
+        getNumberOfPiecesInStockForColor: function(color)
+        {
+            return 6 - this.getNumberOfPiecesOnBoardForColor(color);
+        },
+
+        getNumberOfPiecesOnBoardForColor: function(color)
+        {
+            var numberOfPiecesForColor = 0;
+            for (var i in this.gamedatas.board)
+            {
+                piece = this.gamedatas.board[i];
+                
+                if (piece.head == "1"
+                  && piece.color == color)
+                {
+                    numberOfPiecesForColor++;
+                }
+            }
+
+            return numberOfPiecesForColor;
+        },
     	
         ///////////////////////////////////////////////////
         //// Game & client states

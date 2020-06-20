@@ -77,7 +77,29 @@ class Linkage extends Table
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
         
-        //TODO fill board here
+        //init board table on database (nice and easy as no pieces played at start of game)
+        $sql = "INSERT INTO board (board_x,board_y) VALUES ";
+        $sql_values = array();
+        for( $x=0; $x<7; $x++ )
+        {
+            for( $y=0; $y<7; $y++ )
+            {
+                $sql_values[] = "('$x','$y')";
+            }
+        }
+        $sql .= implode($sql_values, ',');
+        self::DbQuery($sql);
+
+        //for testing purposes...
+        $sql = "UPDATE
+                    `board`
+                SET
+                    `color` = 'ffffff',
+                    `head` = 1
+                WHERE
+                    board_x = 4 
+                AND board_y = 3";
+        self::DbQuery( $sql );
 
         /************ Start the game initialization *****/
 
@@ -118,7 +140,10 @@ class Linkage extends Table
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
   
-        // TODO: Gather all information about current game situation (visible by player $current_player_id).
+        // get every space on the board that is not empty.
+        $result['board'] = self::getObjectListFromDB("SELECT board_x x, board_y y, color color, head head
+        FROM board
+        WHERE color IS NOT NULL");
   
         return $result;
     }
@@ -148,7 +173,6 @@ class Linkage extends Table
     /*
         In this space, you can put any utility methods useful for your game logic
     */
-
 
 
 //////////////////////////////////////////////////////////////////////////////

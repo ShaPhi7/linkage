@@ -23,7 +23,7 @@
 CREATE TABLE IF NOT EXISTS `board` (
   `board_x` smallint(5) unsigned NOT NULL,
   `board_y` smallint(5) unsigned NOT NULL,
-  `piece_color` char(10) DEFAULT NULL,
+  `color` char(10) DEFAULT NULL,
   `head` smallint(5) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`board_x`,`board_y`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
