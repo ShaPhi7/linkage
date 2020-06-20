@@ -31,27 +31,39 @@ function (dojo, declare) {
 
         },
         
-        addTokenOnBoard: function(headX, headY, color, horizontal)
+        addTokenOnBoard: function(piece)
         {
-            if (horizontal)
+            if (this.isHorizontal(piece))
             {
-                
             }
             else
             {
                 dojo.place(this.format_block('jstpl_piece', {
-                    x_y: headX + '_' + headY,
-                    color: color,
+                    x_y: piece.x + '_' + piece.y,
+                    color: piece.color,
                 }) , 'pieces');
             
-                pieceName = 'piece_' + headX + '_' + headY;
+                pieceName = 'piece_' + piece.x + '_' + piece.y;
                 this.placeOnObject(pieceName, 'board');
-                dojo.place(pieceName, 'space_' + headX + '_' + headY);
+                dojo.place(pieceName, 'space_' + piece.x + '_' + piece.y);
                 dojo.style(pieceName, "left", "0px");
                 dojo.style(pieceName, "top", "0px");
             }
+            if (piece.lastPlayed == "1")
+            {
+                this.addLastPlayedTokenOnPiece(piece);
+            }
         },
         
+        addLastPlayedTokenOnPiece: function(piece)
+        {
+            pieceName = 'piece_' + piece.x + '_' + piece.y;
+            
+            dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'board');
+            this.placeOnObject('lastPlayedMarker_0', pieceName);
+            //dojo.place('last_played_marker', pieceName);
+        },
+
         /*slideToObjectRelative : function(token, finalPlace, duration, delay, onEnd)
         {
             if (typeof token == 'string')
@@ -202,9 +214,9 @@ function (dojo, declare) {
             for (var i in gamedatas.board)
             {
                 piece = gamedatas.board[i];
-                if (this.isPieceTopOrLeft(piece)) //the head of a piece is the space that is top/left.
+                if (this.isTopOrLeft(piece)) //the head of a piece is the space that is top/left.
                 {
-                    this.addTokenOnBoard(piece.x, piece.y, piece.color, this.isPieceHorizontal(piece));
+                    this.addTokenOnBoard(piece);
                 }
             }
             //this will become a method that checks how many of these there should be and dishes them out.
@@ -234,42 +246,6 @@ function (dojo, declare) {
     	        dojo.style('unplayed_piece_' + i + '_' + color, "top", "100px");
     	        dojo.style('unplayed_piece_' + i + '_' + color, "position", "absolute");
             }
-        },
-        
-        getNumberOfPiecesInStockForColor: function(color)
-        {
-            return 6 - this.getNumberOfPiecesOnBoardForColor(color);
-        },
-
-        getNumberOfPiecesOnBoardForColor: function(color)
-        {
-            var numberOfPiecesForColor = 0;
-            for (var i in this.gamedatas.board)
-            {
-                piece = this.gamedatas.board[i];
-                
-                if (this.isPieceTopOrLeft(piece)
-                  && piece.color == color)
-                {
-                    numberOfPiecesForColor++;
-                }
-            }
-
-            return numberOfPiecesForColor;
-        },
-        
-        isPieceTopOrLeft: function(piece)
-        {
-            half = piece.half;
-            return half == "top"
-              || half == "left"; 
-        },
-
-        isPieceHorizontal: function(piece)
-        {
-            half = piece.half;
-            return half == "right"
-              || half == "left"; 
         },
 
         ///////////////////////////////////////////////////
@@ -363,7 +339,41 @@ function (dojo, declare) {
             script.
         
         */
+       getNumberOfPiecesInStockForColor: function(color)
+       {
+           return 6 - this.getNumberOfPiecesOnBoardForColor(color);
+       },
 
+       getNumberOfPiecesOnBoardForColor: function(color)
+       {
+           var numberOfPiecesForColor = 0;
+           for (var i in this.gamedatas.board)
+           {
+               piece = this.gamedatas.board[i];
+               
+               if (this.isTopOrLeft(piece)
+                 && piece.color == color)
+               {
+                   numberOfPiecesForColor++;
+               }
+           }
+
+           return numberOfPiecesForColor;
+       },
+       
+       isTopOrLeft: function(piece)
+       {
+           half = piece.half;
+           return half == "top"
+             || half == "left"; 
+       },
+
+       isHorizontal: function(piece)
+       {
+           half = piece.half;
+           return half == "right"
+             || half == "left"; 
+       },
 
         ///////////////////////////////////////////////////
         //// Player's action

@@ -17,6 +17,8 @@
 
 <div id="table"> 
 	<div id="board">
+			<div id="lastPlayedMarker">
+	    	</div>
 	    <!-- BEGIN space -->
 		    <div id = "space_{X}_{Y}" class = "space" style = "left: {LEFT}px; top: {TOP}px;">
 		    </div>
@@ -43,6 +45,8 @@
 var jstpl_piece = '<div class="piece piece_${color}" id="piece_${x_y}" style="left: 0px; top: 0px;"></div>';
 
 var jstpl_unplayed_piece = '<div class="unplayedPiece piece_${color}" id="unplayed_piece_${n}_${color}"></div>';
+
+var jstpl_last_played_marker = '<div class="lastPlayedMarker" id="lastPlayedMarker_${n}"></div>';
 
 </script>  
 

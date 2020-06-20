@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `board` (
   `board_y` smallint(5) unsigned NOT NULL,
   `color` char(10) DEFAULT NULL,
   `piece_half` char(10) DEFAULT NULL,
+  `last_played` smallint(5) unsigned NOT NULL,
   PRIMARY KEY (`board_x`,`board_y`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 

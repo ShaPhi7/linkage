@@ -115,7 +115,8 @@ class Linkage extends Table
                     `board`
                 SET
                     `color` = '860000',
-                    `piece_half` = 'top'
+                    `piece_half` = 'top',
+                    `last_played` = 1
                 WHERE
                     board_x = 2 
                 AND board_y = 2";
@@ -125,7 +126,8 @@ class Linkage extends Table
                     `board`
                 SET
                     `color` = '860000',
-                    `piece_half` = 'bottom'
+                    `piece_half` = 'bottom',
+                    `last_played` = 1
                 WHERE
                     board_x = 2 
                 AND board_y = 3";
@@ -171,7 +173,11 @@ class Linkage extends Table
         $result['players'] = self::getCollectionFromDb( $sql );
   
         // get every space on the board that is not empty.
-        $result['board'] = self::getObjectListFromDB("SELECT board_x x, board_y y, color color, piece_half half
+        $result['board'] = self::getObjectListFromDB("SELECT board_x x, 
+                                                             board_y y,
+                                                             color color,
+                                                             piece_half half,
+                                                             last_played lastPlayed
         FROM board
         WHERE color IS NOT NULL");
   
