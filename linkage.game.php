@@ -94,10 +94,40 @@ class Linkage extends Table
         $sql = "UPDATE
                     `board`
                 SET
-                    `color` = 'ffffff',
-                    `head` = 1
+                    `color` = '00359f',
+                    `piece_half` = 'left'
                 WHERE
                     board_x = 4 
+                AND board_y = 3";
+        self::DbQuery( $sql );
+
+        $sql = "UPDATE
+                    `board`
+                SET
+                    `color` = '00359f',
+                    `piece_half` = 'right'
+                WHERE
+                    board_x = 5 
+                AND board_y = 3";
+        self::DbQuery( $sql );
+
+        $sql = "UPDATE
+                    `board`
+                SET
+                    `color` = '860000',
+                    `piece_half` = 'top'
+                WHERE
+                    board_x = 2 
+                AND board_y = 2";
+        self::DbQuery( $sql );
+
+        $sql = "UPDATE
+                    `board`
+                SET
+                    `color` = '860000',
+                    `piece_half` = 'bottom'
+                WHERE
+                    board_x = 2 
                 AND board_y = 3";
         self::DbQuery( $sql );
 
@@ -141,7 +171,7 @@ class Linkage extends Table
         $result['players'] = self::getCollectionFromDb( $sql );
   
         // get every space on the board that is not empty.
-        $result['board'] = self::getObjectListFromDB("SELECT board_x x, board_y y, color color, head head
+        $result['board'] = self::getObjectListFromDB("SELECT board_x x, board_y y, color color, piece_half half
         FROM board
         WHERE color IS NOT NULL");
   
