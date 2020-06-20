@@ -90,6 +90,18 @@ class Linkage extends Table
         $sql .= implode($sql_values, ',');
         self::DbQuery($sql);
 
+        //mark the ommitted space token, either player choice or center space.
+        $sql = "UPDATE
+                    `board`
+                SET
+                    `color` = '000000'
+                WHERE
+                    `board_x` = 3 
+                AND `board_y` = 3";
+                self::DbQuery($sql);
+
+        //net up is the possible moves step!
+
         //for testing purposes...
         $sql = "UPDATE
                     `board`

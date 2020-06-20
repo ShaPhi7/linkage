@@ -51,17 +51,21 @@ function (dojo, declare) {
             }
             if (piece.lastPlayed == "1")
             {
-                this.addLastPlayedTokenOnPiece(piece);
+                this.addLastPlayedMarkerOnPiece(piece);
             }
         },
         
-        addLastPlayedTokenOnPiece: function(piece)
-        {
-            pieceName = 'piece_' + piece.x + '_' + piece.y;
-            
+        addLastPlayedMarkerOnPiece: function(piece)
+        {   
             dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'board');
-            this.placeOnObject('lastPlayedMarker_0', pieceName);
+            this.placeOnObject('lastPlayedMarker_0', 'piece_' + piece.x + '_' + piece.y);
             //dojo.place('last_played_marker', pieceName);
+        },
+
+        addOmmittedSpaceMarkerOnBoard: function(piece)
+        {
+            dojo.place(this.format_block('jstpl_ommitted_space_marker', {n: 0}), 'board');
+            this.placeOnObject('ommittedSpaceMarker_0', 'space_' + piece.x + '_' + piece.y);
         },
 
         /*slideToObjectRelative : function(token, finalPlace, duration, delay, onEnd)
@@ -217,6 +221,10 @@ function (dojo, declare) {
                 if (this.isTopOrLeft(piece)) //the head of a piece is the space that is top/left.
                 {
                     this.addTokenOnBoard(piece);
+                }
+                else if (this.isOmmittedSpaceMarker(piece))
+                {
+                    this.addOmmittedSpaceMarkerOnBoard(piece);
                 }
             }
             //this will become a method that checks how many of these there should be and dishes them out.
@@ -375,6 +383,10 @@ function (dojo, declare) {
              || half == "left"; 
        },
 
+       isOmmittedSpaceMarker: function(piece)
+       {
+           return piece.color == "000000";
+       },
         ///////////////////////////////////////////////////
         //// Player's action
         

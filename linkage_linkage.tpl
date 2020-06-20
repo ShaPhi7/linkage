@@ -48,6 +48,8 @@ var jstpl_unplayed_piece = '<div class="unplayedPiece piece_${color}" id="unplay
 
 var jstpl_last_played_marker = '<div class="lastPlayedMarker" id="lastPlayedMarker_${n}"></div>';
 
+var jstpl_ommitted_space_marker = '<div class="ommittedSpaceMarker" id="ommittedSpaceMarker_${n}"></div>';
+
 </script>  
 
 {OVERALL_GAME_FOOTER}
