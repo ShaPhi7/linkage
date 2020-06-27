@@ -169,15 +169,57 @@ class Linkage extends Table
 
     function getPlayedPieces()
     {
-        $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`, `last_played` FROM `playedpiece`";
+        $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`, `last_played`
+                FROM `playedpiece`";
         return self::getCollectionFromDB($sql);
     }
 
+    function getLastPlayedPiece()
+    {
+        $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`, `last_played` 
+                FROM `playedpiece` 
+                WHERE `last_played` = 1";
+        return self::getObjectFromDB($sql);
+    }
+
+    function getArrayOfSpaces()
+    {
+        $possibleMoves = array();
+        for($x=0; $x<6; $x++)
+        {
+            $possibleMoves[$x] = array();
+            for($y=0; $y<6; $y++)
+            {
+                $possibleMoves[$x][$y] = true;
+            }
+        }
+        return $possibleMoves;
+    }
+
+//only rules here are must place on an empty space and must not place adjacent to the last played piece.
 function getPossibleMoves()
 {
-    $possibleMoves = array();
+    $possibleMoves = self::getArrayOfSpaces();
 
     $playedPieces = self::getPlayedPieces();
+
+    for ($i=0;$i<$playedPieces->count();$i++)
+    {
+        $playedPiece = $playedPieces[$i];
+        $possibleMoves[$playedPiece[0]][$playedPiece[1]] = false; //x1 and y1
+        $possibleMoves[$playedPiece[2]][$playedPiece[3]] = false; //x2 and y2
+    }
+
+    //might have double (or triple!) set some of these but I don't care they'll all end up false.
+    $lastPlayedPiece = self::getLastPlayedPiece();
+    $possibleMoves[$lastPlayedPiece[0]+1][$lastPlayedPiece[1]] = false;
+    $possibleMoves[$lastPlayedPiece[0]-1][$lastPlayedPiece[1]] = false;
+    $possibleMoves[$lastPlayedPiece[0]][$lastPlayedPiece[1]+1] = false;
+    $possibleMoves[$lastPlayedPiece[0]][$lastPlayedPiece[1]-1] = false;
+    $possibleMoves[$lastPlayedPiece[2]+1][$lastPlayedPiece[3]] = false;
+    $possibleMoves[$lastPlayedPiece[2]-1][$lastPlayedPiece[3]] = false;
+    $possibleMoves[$lastPlayedPiece[2]][$lastPlayedPiece[3]+1] = false;
+    $possibleMoves[$lastPlayedPiece[2]][$lastPlayedPiece[3]-1] = false;
 
     return $possibleMoves;
 }
