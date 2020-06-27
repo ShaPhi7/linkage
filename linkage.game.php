@@ -76,74 +76,13 @@ class Linkage extends Table
         self::DbQuery( $sql );
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
-        
-        //init board table on database (nice and easy as no pieces played at start of game)
-        $sql = "INSERT INTO board (board_x,board_y) VALUES ";
-        $sql_values = array();
-        for( $x=0; $x<7; $x++ )
-        {
-            for( $y=0; $y<7; $y++ )
-            {
-                $sql_values[] = "('$x','$y')";
-            }
-        }
-        $sql .= implode($sql_values, ',');
-        self::DbQuery($sql);
 
         //mark the ommitted space token, either player choice or center space.
-        $sql = "UPDATE
-                    `board`
-                SET
-                    `color` = '000000'
-                WHERE
-                    `board_x` = 3 
-                AND `board_y` = 3";
-                self::DbQuery($sql);
-
-        //net up is the possible moves step!
+        self::insertPlayedPiece(3,3,3,3,"'000000'",0);
 
         //for testing purposes...
-        $sql = "UPDATE
-                    `board`
-                SET
-                    `color` = '00359f',
-                    `piece_half` = 'left'
-                WHERE
-                    board_x = 4 
-                AND board_y = 3";
-        self::DbQuery( $sql );
-
-        $sql = "UPDATE
-                    `board`
-                SET
-                    `color` = '00359f',
-                    `piece_half` = 'right'
-                WHERE
-                    board_x = 5 
-                AND board_y = 3";
-        self::DbQuery( $sql );
-
-        $sql = "UPDATE
-                    `board`
-                SET
-                    `color` = '860000',
-                    `piece_half` = 'top',
-                    `last_played` = 1
-                WHERE
-                    board_x = 2 
-                AND board_y = 2";
-        self::DbQuery( $sql );
-
-        $sql = "UPDATE
-                    `board`
-                SET
-                    `color` = '860000',
-                    `piece_half` = 'bottom',
-                    `last_played` = 1
-                WHERE
-                    board_x = 2 
-                AND board_y = 3";
-        self::DbQuery( $sql );
+        self::insertPlayedPiece(4,3,5,3,"'00359f'",0);
+        self::insertPlayedPiece(2,2,2,3,"'860000'",1);
 
         /************ Start the game initialization *****/
 
@@ -184,14 +123,14 @@ class Linkage extends Table
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
   
-        // get every space on the board that is not empty.
-        $result['board'] = self::getObjectListFromDB("SELECT board_x x, 
-                                                             board_y y,
+        //get details of every piece played. Spaces that are empty are not included here. Only one piece is last played.
+        $result['playedpiece'] = self::getObjectListFromDB("SELECT x1 x1, 
+                                                             y1 y1,
+                                                             x2 x2,
+                                                             y2 y2,
                                                              color color,
-                                                             piece_half half,
                                                              last_played lastPlayed
-        FROM board
-        WHERE color IS NOT NULL");
+        FROM playedpiece");
   
         return $result;
     }
@@ -222,6 +161,26 @@ class Linkage extends Table
         In this space, you can put any utility methods useful for your game logic
     */
 
+    function insertPlayedPiece($x1, $x2, $y1, $y2, $color, $last_played)
+    {
+        $sql = "INSERT INTO `playedpiece`(`x1`, `y1`, `x2`, `y2`, `color`, `last_played`) VALUES ($x1, $x2, $y1, $y2, $color, $last_played)";
+        return self::DbQuery($sql);
+    }
+
+    function getPlayedPieces()
+    {
+        $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`, `last_played` FROM `playedpiece`";
+        return self::getCollectionFromDB($sql);
+    }
+
+function getPossibleMoves()
+{
+    $possibleMoves = array();
+
+    $playedPieces = self::getPlayedPieces();
+
+    return $possibleMoves;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions

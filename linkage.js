@@ -33,22 +33,30 @@ function (dojo, declare) {
         
         addTokenOnBoard: function(piece)
         {
-            if (this.isHorizontal(piece))
+            //TODO: do you need the safety of checking that x1 and y1 is the start of the piece?
+            if (this.isOmmittedSpaceMarker(piece))
             {
+                this.addOmmittedSpaceMarkerOnBoard(piece);
+            }
+            else if (this.isHorizontal(piece))
+            {
+                //TODO
             }
             else
             {
+                $x_y = piece.x1 + '_' + piece.y1,
                 dojo.place(this.format_block('jstpl_piece', {
-                    x_y: piece.x + '_' + piece.y,
+                    x_y: $x_y,
                     color: piece.color,
                 }) , 'pieces');
             
-                pieceName = 'piece_' + piece.x + '_' + piece.y;
+                pieceName = 'piece_' + $x_y;
                 this.placeOnObject(pieceName, 'board');
-                dojo.place(pieceName, 'space_' + piece.x + '_' + piece.y);
+                dojo.place(pieceName, 'space_' + $x_y);
                 dojo.style(pieceName, "left", "0px");
                 dojo.style(pieceName, "top", "0px");
             }
+
             if (piece.lastPlayed == "1")
             {
                 this.addLastPlayedMarkerOnPiece(piece);
@@ -58,14 +66,14 @@ function (dojo, declare) {
         addLastPlayedMarkerOnPiece: function(piece)
         {   
             dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'board');
-            this.placeOnObject('lastPlayedMarker_0', 'piece_' + piece.x + '_' + piece.y);
+            this.placeOnObject('lastPlayedMarker_0', 'piece_' + piece.x1 + '_' + piece.y1);
             //dojo.place('last_played_marker', pieceName);
         },
 
         addOmmittedSpaceMarkerOnBoard: function(piece)
         {
             dojo.place(this.format_block('jstpl_ommitted_space_marker', {n: 0}), 'board');
-            this.placeOnObject('ommittedSpaceMarker_0', 'space_' + piece.x + '_' + piece.y);
+            this.placeOnObject('ommittedSpaceMarker_0', 'space_' + piece.x1 + '_' + piece.y1);
         },
 
         /*slideToObjectRelative : function(token, finalPlace, duration, delay, onEnd)
@@ -215,17 +223,10 @@ function (dojo, declare) {
             
             // TODO: Set up your game interface here, according to "gamedatas"
             
-            for (var i in gamedatas.board)
+            for (var i in gamedatas.playedpiece)
             {
-                piece = gamedatas.board[i];
-                if (this.isTopOrLeft(piece)) //the head of a piece is the space that is top/left.
-                {
-                    this.addTokenOnBoard(piece);
-                }
-                else if (this.isOmmittedSpaceMarker(piece))
-                {
-                    this.addOmmittedSpaceMarkerOnBoard(piece);
-                }
+                piece = gamedatas.playedpiece[i];
+                this.addTokenOnBoard(piece);
             }
             //this will become a method that checks how many of these there should be and dishes them out.
         	this.setupStock();
@@ -355,12 +356,11 @@ function (dojo, declare) {
        getNumberOfPiecesOnBoardForColor: function(color)
        {
            var numberOfPiecesForColor = 0;
-           for (var i in this.gamedatas.board)
+           for (var i in this.gamedatas.playedpiece)
            {
-               piece = this.gamedatas.board[i];
+               piece = this.gamedatas.playedpiece[i];
                
-               if (this.isTopOrLeft(piece)
-                 && piece.color == color)
+               if (piece.color == color)
                {
                    numberOfPiecesForColor++;
                }
@@ -368,24 +368,17 @@ function (dojo, declare) {
 
            return numberOfPiecesForColor;
        },
-       
-       isTopOrLeft: function(piece)
-       {
-           half = piece.half;
-           return half == "top"
-             || half == "left"; 
-       },
 
        isHorizontal: function(piece)
        {
-           half = piece.half;
-           return half == "right"
-             || half == "left"; 
+            return piece.x1 < piece.x2
+              && piece.y1 == piece.y2;
        },
 
        isOmmittedSpaceMarker: function(piece)
        {
-           return piece.color == "000000";
+           return piece.x1 == piece.x2
+               && piece.y1 == piece.y2;
        },
         ///////////////////////////////////////////////////
         //// Player's action
