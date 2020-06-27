@@ -377,12 +377,16 @@ function (dojo, declare) {
            // Remove current possible moves
            dojo.query('.possibleMove').removeClass('possibleMove');
 
-           for(var x in possibleMoves)
+           for (var x in possibleMoves)
            {
-               for(var y in possibleMoves[x])
+               for (var y in possibleMoves[x])
                {
                    // x,y is a possible move
-                   dojo.addClass( 'square_'+x+'_'+y, 'possibleMove' );
+                   if (possibleMoves[x][y])
+                   {
+                        //console.log("possible move for " + x + " " + y);
+                        dojo.addClass('space_'+x+'_'+y, 'possibleMove');
+                   }
                }            
            }
              

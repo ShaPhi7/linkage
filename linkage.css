@@ -84,9 +84,9 @@
 }
 
 .possibleMove {
-    background-color: white;
+    background-color: green;
     opacity: 0.2;
-    filter:alpha(opacity=20); /* For IE8 and earlier */  
+    filter: alpha(opacity=20); /* For IE8 and earlier */  
     cursor: pointer;  
 }
 
