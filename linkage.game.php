@@ -269,7 +269,12 @@ function getPossibleMoves()
         These methods function is to return some additional information that is specific to the current
         game state.
     */
-
+    function argPlayerTurn()
+    {
+        return array(
+            'possibleMoves' => self::getPossibleMoves()
+        );
+    }
     /*
     
     Example for game state "MyGameState":

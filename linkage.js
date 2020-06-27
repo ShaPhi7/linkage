@@ -263,26 +263,17 @@ function (dojo, declare) {
         // onEnteringState: this method is called each time we are entering into a new game state.
         //                  You can use this method to perform some user interface changes at this moment.
         //
-        onEnteringState: function( stateName, args )
+        onEnteringState: function(stateName, args)
         {
-            console.log( 'Entering state: '+stateName );
+            console.log('Entering state: '+ stateName);
             
-            switch( stateName )
+            switch(stateName)
             {
-            
-            /* Example:
-            
-            case 'myGameState':
-            
-                // Show some HTML block at this game state
-                dojo.style( 'my_html_block_id', 'display', 'block' );
-                
-                break;
-           */
-           
-           
-            case 'dummmy':
-                break;
+                case 'playerTurn':
+                    this.updatePossibleMoves(args.args.possibleMoves);
+                    break;
+                case 'dummmy':
+                    break;
             }
         },
 
@@ -379,6 +370,24 @@ function (dojo, declare) {
        {
            return piece.x1 == piece.x2
                && piece.y1 == piece.y2;
+       },
+
+       updatePossibleMoves: function(possibleMoves)
+       {
+           // Remove current possible moves
+           dojo.query('.possibleMove').removeClass('possibleMove');
+
+           for(var x in possibleMoves)
+           {
+               for(var y in possibleMoves[x])
+               {
+                   // x,y is a possible move
+                   dojo.addClass( 'square_'+x+'_'+y, 'possibleMove' );
+               }            
+           }
+             
+           //TODO what should this say?
+           //this.addTooltipToClass( 'possibleMove', '', _('Place a mo here') );
        },
         ///////////////////////////////////////////////////
         //// Player's action
