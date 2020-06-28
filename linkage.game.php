@@ -200,6 +200,7 @@ class Linkage extends Table
     }
 
 //only rules here are must place on an empty space and must not place adjacent to the last played piece.
+//must also be adjacent to another playable square (i.e. single spaces are not playable).
 function getPossibleMoves()
 {
     $possibleMoves = self::getArrayOfSpaces();
@@ -222,6 +223,25 @@ function getPossibleMoves()
     $possibleMoves[$lastPlayedPiece["x2"]-1][$lastPlayedPiece["y2"]] = false;
     $possibleMoves[$lastPlayedPiece["x2"]][$lastPlayedPiece["y2"]+1] = false;
     $possibleMoves[$lastPlayedPiece["x2"]][$lastPlayedPiece["y2"]-1] = false;
+
+    //TODO test this
+    //Finally, for each one, make sure they're not a standalone space.
+    for($x=0; $x<count($possibleMoves); $x++)
+    {
+        $possibleMovesColumn = $possibleMoves[$x];
+        for($y=0; $y<count($possibleMovesColumn); $y++)
+        {
+            if ($possibleMovesColumn[$y])
+            {
+                if (!$possibleMoves[$x-1][$y]
+                  && !$possibleMoves[$x+1][$y]
+                  && !$possibleMoves[$x][$y-1]
+                  && !$possibleMoves[$x][$y+1])
+                  {
+                      $possibleMoves[$x][$y] = false;
+                  }
+            }
+        }
 
     return $possibleMoves;
 }

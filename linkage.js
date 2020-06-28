@@ -376,16 +376,21 @@ function (dojo, declare) {
        {
            // Remove current possible moves
            dojo.query('.possibleMove').removeClass('possibleMove');
+           dojo.query('.unavailableMove').removeClass('unavailableMove');
 
            for (var x in possibleMoves)
            {
                for (var y in possibleMoves[x])
                {
                    // x,y is a possible move
-                   if (possibleMoves[x][y])
+                   if (possibleMoves[x][y]) //gets set true/false in getPossibleMoves in game
                    {
                         //console.log("possible move for " + x + " " + y);
-                        dojo.addClass('space_'+x+'_'+y, 'possibleMove');
+                        dojo.addClass('space_'+x+'_'+y, 'possibleMove'); //shade these green
+                   }
+                   else
+                   {
+                        dojo.addClass('space_'+x+'_'+y, 'unavailableMove'); //shade these red
                    }
                }            
            }

@@ -90,6 +90,13 @@
     cursor: pointer;  
 }
 
+.unavailableMove {
+    background-color: red;
+    opacity: 0.2;
+    filter: alpha(opacity=20); /* For IE8 and earlier */  
+    cursor: pointer;  
+}
+
 .piece {
 	width: 40.5px;
 	height: 81px;
