@@ -390,6 +390,7 @@ function (dojo, declare) {
                    }
                    else
                    {
+                       //TODO - these will not include anywhere that has a token on it. Do we care?
                         dojo.addClass('space_'+x+'_'+y, 'unavailableMove'); //shade these red
                    }
                }            
