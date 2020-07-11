@@ -81,7 +81,7 @@ class Linkage extends Table
         self::insertPlayedPiece(3,3,3,3,"'000000'",0);
 
         //TODO for testing purposes...
-        self::insertPlayedPiece(4,3,5,3,"'00359f'",0);
+        //self::insertPlayedPiece(4,3,5,3,"'00359f'",0);
         self::insertPlayedPiece(2,2,2,3,"'860000'",1);
 
         //TODO fun logging hack

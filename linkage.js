@@ -25,10 +25,7 @@ function (dojo, declare) {
         constructor: function(){
             console.log('linkage constructor');
               
-            // Here, you can init the global variables of your user interface
-            // Example:
-            // this.myGlobalValue = 0;
-
+            this.colourToPlay = "";
         },
         
         addTokenOnBoard: function(piece)
@@ -48,13 +45,14 @@ function (dojo, declare) {
                 dojo.place(this.format_block('jstpl_piece', {
                     x_y: $x_y,
                     color: piece.color,
-                }) , 'pieces');
+                }) , 'space_' + $x_y);
             
-                pieceName = 'piece_' + $x_y;
-                this.placeOnObject(pieceName, 'board');
-                dojo.place(pieceName, 'space_' + $x_y);
-                dojo.style(pieceName, "left", "0px");
-                dojo.style(pieceName, "top", "0px");
+                //TODO not needed?
+                //pieceName = 'piece_' + $x_y;
+                //this.placeOnObject(pieceName, 'board');
+                //dojo.place(pieceName, 'space_' + $x_y);
+                //dojo.style(pieceName, "left", "0px");
+                //dojo.style(pieceName, "top", "0px");
             }
 
             if (piece.lastPlayed == "1")
@@ -230,7 +228,10 @@ function (dojo, declare) {
             }
             //this will become a method that checks how many of these there should be and dishes them out.
         	this.setupStock();
-        	
+            
+            dojo.query('.unplayedPiece').connect('onclick', this, 'onUnplayedPiece');
+            dojo.query('.possibleMove').connect('onmousemove', this, 'OnMouseMoveOverPossibleMove');
+
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -385,17 +386,19 @@ function (dojo, declare) {
                    // x,y is a possible move
                    if (possibleMoves[x][y]) //gets set true/false in getPossibleMoves in game
                    {
-                        //console.log("possible move for " + x + " " + y);
-                        dojo.addClass('space_'+x+'_'+y, 'possibleMove'); //shade these green
+                        console.log("possible move for " + x + " " + y);
+                        x_y = x + '_' + y;
+                        dojo.place(this.format_block('jstpl_possible_move', {x_y: x_y}), 'space_' + x_y); //show these
                    }
                    else
                    {
-                       //TODO - these will not include anywhere that has a token on it. Do we care?
-                        dojo.addClass('space_'+x+'_'+y, 'unavailableMove'); //shade these red
+                        //dojo.removeClass('space_'+x+'_'+y, 'unavailableMove');
+                        dojo.addClass('space_'+x+'_'+y, 'unavailableMove'); //TODO - might interfere with pieces on board.
                    }
                }            
            }
              
+           dojo.query('.possibleMove').connect('onmousemove', this, 'OnMouseMoveOverPossibleMove');
            //TODO what should this say?
            //this.addTooltipToClass( 'possibleMove', '', _('Place a mo here') );
        },
@@ -413,6 +416,99 @@ function (dojo, declare) {
         
         */
         
+/**
+ * //TODO - needs tidy
+ * needs to not be able to go on forbidden spaces
+ * when changing colour, needs to reset board
+ * white squares don't work
+ * then allow the piece to be placed.
+ * check is current player active when hovering or clicking unplayed piece
+ */
+
+        OnMouseMoveOverPossibleMove : function(event) 
+        {
+            //console.log('entered OnMouseMoveOverPossibleMove');
+            debugger;
+            if (!this.isCurrentPlayerActive())
+            {
+                return;
+            }
+
+            if (this.colourToPlay == "")
+            {
+                console.log('colour to play is empty!');
+                return;
+            }
+
+            console.log('colour to play: ' + this.colourToPlay);
+
+            //if piece in same place, do nothing.
+            parts = event.currentTarget.id.split('_');
+
+            //the space we're hovering over.
+            x = parts[2];
+            y = parts[3];
+            
+            console.log(x);
+            console.log(y);
+
+            headX = x;
+            headY = y;
+            if (y == 6)
+            {
+                headY = y-1;
+            }
+
+            //should only ever be 1 potential piece.
+            
+
+            //TODO - can be refactored?
+            x_y = headX + '_' + headY;
+            
+            potential_piece = dojo.query('.potentialPiece')[0]; //if piece is on board
+            if (potential_piece)
+            {
+                currentX = potential_piece.id.split('_')[2];
+                currentY = potential_piece.id.split('_')[3];
+
+                if (headX == currentX
+                &&  headY == currentY)
+                {
+                    //same piece, do nothing
+                    return;
+                }
+                
+                //clear down the old potential piece
+                dojo.destroy("potential_piece_" + currentX + '_' + currentY);
+            }
+
+            dojo.place(this.format_block('jstpl_potential_piece', {
+                x_y: x_y,
+                color: this.colourToPlay,
+            }) , 'space_' + x_y);
+        },
+
+        /**
+         * this just sets the colour that the player has chosen to play.
+         */
+        onUnplayedPiece: function(event)
+        {
+            //TODO - remove potential pieces
+            dojo.query('.potentialPiece').removeClass('.potentialPiece');
+
+            //console.log('entered onUnplayedPiece');
+            dojo.stopEvent(event);
+
+            var id = event.currentTarget.id;
+
+            console.log('id: ' + id);
+
+            this.colourToPlay = id.split('_')[3];
+
+            console.log('colourToPlay: ' + this.colourToPlay);
+
+        },
+
         /* Example:
         
         onMyMethodToCall1: function( evt )

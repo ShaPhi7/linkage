@@ -84,17 +84,22 @@
 }
 
 .possibleMove {
-    background-color: green;
-    opacity: 0.2;
+	background-color: green;
+	width: 40.5px;
+    height: 40.5px;
+    opacity: 0.4;
     filter: alpha(opacity=20); /* For IE8 and earlier */  
-    cursor: pointer;  
+	cursor: pointer; 
+	z-index: 0; 
+	position: absolute;
 }
 
 .unavailableMove {
-    background-color: red;
-    opacity: 0.2;
-    filter: alpha(opacity=20); /* For IE8 and earlier */  
-    cursor: pointer;  
+    /*background-color: red;
+    opacity: 0.2;*/
+    filter: alpha(opacity=20); /* For IE8 and earlier */   
+	z-index: 0;
+	position: absolute;
 }
 
 .piece {
@@ -108,6 +113,10 @@
 	border-width: thin;*/
 }
 
+.potentialPiece {
+	opacity: 1;
+}
+
 .unplayedPiece {
 	width: 40.5px;
 	height: 81px;
@@ -115,6 +124,7 @@
 	top: 25%;
 	left: 25%;
 	margin: auto;
+	cursor: pointer;  
 }
 
 .lastPlayedMarker {
