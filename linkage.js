@@ -418,7 +418,6 @@ function (dojo, declare) {
         
 /**
  * //TODO - needs tidy
- * needs to not be able to go on forbidden spaces
  * when changing colour, needs to reset board
  * white squares don't work
  * then allow the piece to be placed.
@@ -442,7 +441,6 @@ function (dojo, declare) {
 
             console.log('colour to play: ' + this.colourToPlay);
 
-            //if piece in same place, do nothing.
             parts = event.currentTarget.id.split('_');
 
             //the space we're hovering over.
@@ -459,6 +457,12 @@ function (dojo, declare) {
                 headY = y-1;
             }
 
+            yPlusOne = headY;
+            yPlusOne++;
+            if (!$('possible_move_' + x + '_' + yPlusOne))
+            {
+                return;
+            }
             //should only ever be 1 potential piece.
             
 
