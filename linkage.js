@@ -436,7 +436,6 @@ function (dojo, declare) {
 /**
  * //TODO - needs tidy
  * then allow the piece to be placed.
- * check is current player active when hovering or clicking unplayed piece
  */
 
         onMouseMoveOverPossibleMove : function(event) 
@@ -531,9 +530,12 @@ function (dojo, declare) {
          */
         onUnplayedPiece: function(event)
         {
-            debugger;
-
             dojo.stopEvent(event);
+
+            if (!this.isCurrentPlayerActive())
+            {
+                return;
+            }
 
             var id = event.currentTarget.id;
 
