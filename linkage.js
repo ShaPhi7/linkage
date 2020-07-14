@@ -230,7 +230,7 @@ function (dojo, declare) {
         	this.setupStock();
             
             dojo.query('.unplayedPiece').connect('onclick', this, 'onUnplayedPiece');
-            dojo.query('.possibleMove').connect('onmousemove', this, 'OnMouseMoveOverPossibleMove');
+            dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
 
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -361,6 +361,23 @@ function (dojo, declare) {
            return numberOfPiecesForColor;
        },
 
+       getX_YFromTwoWordId : function(id)
+       {
+            xy = this.getXYFromTwoWordId(id);
+            return xy[0] + '_' + xy[1];
+       },
+
+       getXYFromTwoWordId: function(id)
+       {
+            parts = id.split('_');
+
+            var xy = [];
+            xy[0] = parts[2];
+            xy[1] = parts[3];
+            
+            return xy;
+       },
+
        isHorizontal: function(piece)
        {
             return piece.x1 < piece.x2
@@ -398,7 +415,7 @@ function (dojo, declare) {
                }            
            }
              
-           dojo.query('.possibleMove').connect('onmousemove', this, 'OnMouseMoveOverPossibleMove');
+           dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
            //TODO what should this say?
            //this.addTooltipToClass( 'possibleMove', '', _('Place a mo here') );
        },
@@ -418,73 +435,89 @@ function (dojo, declare) {
         
 /**
  * //TODO - needs tidy
- * when changing colour, needs to reset board
- * white squares don't work
  * then allow the piece to be placed.
  * check is current player active when hovering or clicking unplayed piece
  */
 
-        OnMouseMoveOverPossibleMove : function(event) 
+        onMouseMoveOverPossibleMove : function(event) 
         {
-            //console.log('entered OnMouseMoveOverPossibleMove');
-            debugger;
+            dojo.stopEvent(event);
+
+            xy = this.getXYFromTwoWordId(event.currentTarget.id);
+            x = xy[0];
+            y = xy[1];
+
+            if (this.shouldUpdatePossibleMove(x, y))
+            {
+                this.destroyPotentialPieceIfPresent();
+                this.placePotentialPiece(x, y);
+            }
+        },
+
+        shouldUpdatePossibleMove : function(x, y)
+        {
             if (!this.isCurrentPlayerActive())
             {
-                return;
+                return false;
             }
 
             if (this.colourToPlay == "")
             {
-                console.log('colour to play is empty!');
-                return;
+                return false;
             }
 
-            console.log('colour to play: ' + this.colourToPlay);
-
-            parts = event.currentTarget.id.split('_');
-
-            //the space we're hovering over.
-            x = parts[2];
-            y = parts[3];
-            
-            console.log(x);
-            console.log(y);
-
-            headX = x;
-            headY = y;
-            if (y == 6)
+            if (!this.isValidMove(x, y))
             {
-                headY = y-1;
+                return false;
             }
 
-            yPlusOne = headY;
-            yPlusOne++;
-            if (!$('possible_move_' + x + '_' + yPlusOne))
+            if (this.possibleMoveIsAlreadyShown(x, y))
             {
-                return;
+                return false;
             }
-            //should only ever be 1 potential piece.
-            
 
-            //TODO - can be refactored?
-            x_y = headX + '_' + headY;
-            
+            return true;
+        },
+
+        possibleMoveIsAlreadyShown : function(x, y)
+        {
             potential_piece = dojo.query('.potentialPiece')[0]; //if piece is on board
             if (potential_piece)
             {
-                currentX = potential_piece.id.split('_')[2];
-                currentY = potential_piece.id.split('_')[3];
+                currentX = this.getXYFromTwoWordId(potential_piece.id)[0];
+                currentY = this.getXYFromTwoWordId(potential_piece.id)[1];
 
-                if (headX == currentX
-                &&  headY == currentY)
+                if (x == currentX
+                &&  y == currentY)
                 {
                     //same piece, do nothing
-                    return;
+                    return true;
                 }
-                
-                //clear down the old potential piece
-                dojo.destroy("potential_piece_" + currentX + '_' + currentY);
             }
+            return false;
+        },
+
+        isValidMove : function(x, y)
+        {
+            yPlusOne = y;
+            yPlusOne++;
+
+            return $('possible_move_' + x + '_' + yPlusOne);
+        },
+
+        destroyPotentialPieceIfPresent : function()
+        {
+            potential_piece = dojo.query('.potentialPiece')[0]; //if piece is on board
+            if (potential_piece)
+            {
+                x_y = this.getX_YFromTwoWordId(potential_piece.id);
+                dojo.destroy("potential_piece_" + x_y);
+            }
+        },
+
+        placePotentialPiece : function(x, y)
+        {
+            x_y = x + '_' + y;
 
             dojo.place(this.format_block('jstpl_potential_piece', {
                 x_y: x_y,
@@ -492,15 +525,14 @@ function (dojo, declare) {
             }) , 'space_' + x_y);
         },
 
+
         /**
          * this just sets the colour that the player has chosen to play.
          */
         onUnplayedPiece: function(event)
         {
-            //TODO - remove potential pieces
-            dojo.query('.potentialPiece').removeClass('.potentialPiece');
+            debugger;
 
-            //console.log('entered onUnplayedPiece');
             dojo.stopEvent(event);
 
             var id = event.currentTarget.id;
@@ -511,6 +543,22 @@ function (dojo, declare) {
 
             console.log('colourToPlay: ' + this.colourToPlay);
 
+            this.destroyPotentialPieceIfPresent();
+
+            /*potentialPiece = dojo.query('.potentialPiece')[0];
+            if (potentialPiece)
+            {
+                
+
+                potentialPieceId = potentialPiece.id; //only ever 0 or 1 potential piece
+                xy = this.getXYFromTwoWordId(potentialPieceId);
+                x_y = xy[0] + '_' + xy[1];
+                dojo.place(this.format_block('jstpl_potential_piece', {
+                    x_y: x_y,
+                    color: this.colourToPlay,
+                }) , 'space_' + x_y, 'only');
+            }*/
+            
         },
 
         /* Example:
