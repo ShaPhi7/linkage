@@ -38,31 +38,18 @@
             self::trace( "Complete reinitialization of board game" );
       }
   	} 
-  	
-  	// TODO: defines your action entry points there
-
-
-    /*
     
-    Example:
-  	
-    public function myAction()
+    public function placePiece()
     {
-        self::setAjaxMode();     
+        self::setAjaxMode();   
 
-        // Retrieve arguments
-        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $arg1 = self::getArg( "myArgument1", AT_posint, true );
-        $arg2 = self::getArg( "myArgument2", AT_posint, true );
+        $x = self::getArg("x", AT_posint, true);
+        $y = self::getArg("y", AT_posint, true);
+        $color = self::getArg("color", AT_alphanum, true);
 
-        // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->myAction( $arg1, $arg2 );
-
+        $result = $this->game->placePiece($x, $y, $color);
         self::ajaxResponse( );
     }
-    
-    */
-
   }
   
 

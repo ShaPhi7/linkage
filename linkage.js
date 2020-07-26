@@ -28,7 +28,22 @@ function (dojo, declare) {
             this.colourToPlay = "";
         },
         
-        addTokenOnBoard: function(piece)
+
+        addTokenOnBoardForXY: function(x, y)
+        {
+            this.addTokenOnBoard(x, y, this.colourToPlay);
+        },
+
+        addTokenOnBoard: function(x, y, colour)
+        {
+            x_y = x + '_' + y;
+            dojo.place(this.format_block('jstpl_piece', {
+                x_y: x_y,
+                color: colour,
+            }) , 'space_' + x_y);
+        },
+
+        addTokenOnBoardForPiece: function(piece)
         {
             //TODO: do you need the safety of checking that x1 and y1 is the start of the piece?
             if (this.isOmmittedSpaceMarker(piece))
@@ -41,11 +56,10 @@ function (dojo, declare) {
             }
             else
             {
-                $x_y = piece.x1 + '_' + piece.y1,
-                dojo.place(this.format_block('jstpl_piece', {
-                    x_y: $x_y,
-                    color: piece.color,
-                }) , 'space_' + $x_y);
+                x = piece.x1;
+                y = piece.y1;
+                colour = piece.color;
+                this.addTokenOnBoard(x, y, colour);
             
                 //TODO not needed?
                 //pieceName = 'piece_' + $x_y;
@@ -73,126 +87,6 @@ function (dojo, declare) {
             dojo.place(this.format_block('jstpl_ommitted_space_marker', {n: 0}), 'board');
             this.placeOnObject('ommittedSpaceMarker_0', 'space_' + piece.x1 + '_' + piece.y1);
         },
-
-        /*slideToObjectRelative : function(token, finalPlace, duration, delay, onEnd)
-        {
-            if (typeof token == 'string')
-            {
-                token = $(token);
-            }
-
-            //var self = this;
-            //this.delayedExec(function() {
-                //self.stripTransition(token);
-                //this.stripPosition(token);
-                //var box = this.attachToNewParentNoDestroy(token, finalPlace);
-
-                //self.setTransition(token, "all " + duration + "ms ease-in-out");
-                //this.placeOnObjectDirect(token, finalPlace, box.l, box.t);
-                //this.placeOnObjectDirect(token, finalPlace, 0, 0);
-
-            //}, function() {
-                //self.stripTransition(token);
-            //    self.stripPosition(token);
-            //    if (onEnd) onEnd(token);
-            //}, duration, delay);
-        },*/
-
-        /*placeOnObjectDirect : function(mobileObj, targetObj, x, y)
-        {
-        	//these were gets but were not used.
-        	//var left = dojo.style(mobileObj, "left"); 
-            //var top = dojo.style(mobileObj, "top");
-        	
-        	dojo.style(mobileObj, "left", x + "px");
-            dojo.style(mobileObj, "top", y + "px");
-        },*/
-        
-        /*delayedExec : function(onStart, onEnd, duration, delay) {
-            if (typeof duration == "undefined") {
-                duration = 500;
-            }
-            if (typeof delay == "undefined") {
-                delay = 0;
-            }
-            if (this.instantaneousMode) {
-                delay = Math.min(1, delay);
-                duration = Math.min(1, duration);
-            }
-            if (delay) {
-                setTimeout(function() {
-                    onStart();
-                    if (onEnd) {
-                        setTimeout(onEnd, duration);
-                    }
-                }, delay);
-            } else {
-                onStart();
-                if (onEnd) {
-                    setTimeout(onEnd, duration);
-                }
-            }
-
-        },*/
-        
-        /*stripPosition : function(token) {
-            // console.log(token + " STRIPPING");
-            // remove any added positioning style
-            dojo.style(token, "display", "");
-            dojo.style(token, "top", "");
-            dojo.style(token, "left", "");
-            dojo.style(token, "position", "");
-            // dojo.style(token, "transform", null);
-        },*/
-        /*stripTransition : function(token) {
-            this.setTransition(token, "");
-
-        },*/
-        /*setTransition : function(token, value) {
-            dojo.style(token, "transition", value);
-            dojo.style(token, "-webkit-transition", value);
-            dojo.style(token, "-moz-transition", value);
-            dojo.style(token, "-o-transition", value);
-
-        },*/
-        
-        /**
-         * This method will attach mobile to a new_parent without destroying, unlike original attachToNewParent which
-         * destroys mobile and all its connectors (onClick, etc)
-         */
-        /*attachToNewParentNoDestroy : function(mobile, new_parent) {
-            if (mobile === null) {
-                console.error("attachToNewParent: mobile obj is null");
-                return;
-            }
-            if (new_parent === null) {
-                console.error("attachToNewParent: new_parent is null");
-                return;
-            }
-            if (typeof mobile == "string") {
-                mobile = $(mobile);
-            }
-            if (typeof new_parent == "string") {
-                new_parent = $(new_parent);
-            }
-
-            var src = dojo.position(mobile);
-            //dojo.style(mobile, "position", "absolute");
-            dojo.place(mobile, new_parent);
-            //dojo.place(mobile, new_parent, "last");
-            var tgt = dojo.position(mobile);
-            var box = dojo.marginBox(mobile);
-            var cbox = dojo.contentBox(mobile);
-
-            var left = box.l + src.x - tgt.x;
-            var top = box.t + src.y - tgt.y;
-            dojo.style(mobile, "top", top + "px");
-            dojo.style(mobile, "left", left + "px");
-            box.l += box.w - cbox.w;
-            box.t += box.h - cbox.h;
-            return box;
-        },*/
-
         
         /*
             setup:
@@ -224,7 +118,7 @@ function (dojo, declare) {
             for (var i in gamedatas.playedpiece)
             {
                 piece = gamedatas.playedpiece[i];
-                this.addTokenOnBoard(piece);
+                this.addTokenOnBoardForPiece(piece);
             }
             //this will become a method that checks how many of these there should be and dishes them out.
         	this.setupStock();
@@ -242,7 +136,8 @@ function (dojo, declare) {
         	this.setupStockColour("00359f", this.getNumberOfPiecesInStockForColor("00359f"));
         	this.setupStockColour("ffffff", this.getNumberOfPiecesInStockForColor("ffffff"));
         	this.setupStockColour("860000", this.getNumberOfPiecesInStockForColor("860000"));
-        	this.setupStockColour("e48a01", this.getNumberOfPiecesInStockForColor("e48a01"));
+            this.setupStockColour("e48a01", this.getNumberOfPiecesInStockForColor("e48a01"));
+            //TODO - add notifications for when these pieces deplete, and validation against adding extra.
     	},
         
         setupStockColour: function(color, unplayedPieces) {
@@ -409,6 +304,7 @@ function (dojo, declare) {
                    }
                    else
                    {
+                       //TODO - you need to fix this bit next
                         //dojo.removeClass('space_'+x+'_'+y, 'unavailableMove');
                         dojo.addClass('space_'+x+'_'+y, 'unavailableMove'); //TODO - might interfere with pieces on board.
                    }
@@ -432,11 +328,6 @@ function (dojo, declare) {
             _ make a call to the game server
         
         */
-        
-/**
- * //TODO - needs tidy
- * then allow the piece to be placed.
- */
 
         onMouseMoveOverPossibleMove : function(event) 
         {
@@ -496,6 +387,7 @@ function (dojo, declare) {
             return false;
         },
 
+        //TODO - this check should be smarter and allow placement where I'm hovering over the lower part of where a vertical piece would go.
         isValidMove : function(x, y)
         {
             yPlusOne = y;
@@ -522,6 +414,8 @@ function (dojo, declare) {
                 x_y: x_y,
                 color: this.colourToPlay,
             }) , 'space_' + x_y);
+
+            dojo.query('.potentialPiece').connect('onclick', this, 'onPotentialPiece');
         },
 
 
@@ -561,6 +455,34 @@ function (dojo, declare) {
                 }) , 'space_' + x_y, 'only');
             }*/
             
+        },
+
+        onPotentialPiece: function(event)
+        {
+            dojo.stopEvent(event);
+
+            xy = this.getXYFromTwoWordId(event.currentTarget.id);
+            x = xy[0];
+            y = xy[1];
+
+            //TODO - get this check to work, it's because it is a child not as a class perhaps? Maybe get the elements manually?
+            /*if (!dojo.hasClass('space_' + x + '_' + y, 'possibleMove'))
+            {
+                //not a possible move so do nothing.
+                return;
+            }*/
+
+            if(this.checkAction('placePiece'))    // Check that this action is possible at this moment
+            {        
+                debugger;    
+                this.ajaxcall( "/linkage/linkage/placePiece.html", {
+                    x:x,
+                    y:y,
+                    color:this.colourToPlay
+                }, this, function(result){});
+            }
+
+            this.addTokenOnBoardForXY(x,y);
         },
 
         /* Example:

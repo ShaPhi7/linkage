@@ -78,14 +78,14 @@ class Linkage extends Table
         self::reloadPlayersBasicInfos();
 
         //mark the ommitted space token, either player choice or center space.
-        self::insertPlayedPiece(3,3,3,3,"'000000'",0);
+        self::insertPlayedPiece(3,3,3,3,"000000",0);
 
         //TODO for testing purposes...
-        //self::insertPlayedPiece(4,3,5,3,"'00359f'",0);
-        self::insertPlayedPiece(2,2,2,3,"'860000'",1);
+        //self::insertPlayedPiece(4,3,5,3,"00359f",0);
+        self::insertPlayedPiece(2,2,2,3,"860000",1);
 
         //TODO fun logging hack
-        //self::insertPlayedPiece(0,0,0,0,"'860000'",count(self::getPossibleMoves()));
+        //self::insertPlayedPiece(0,0,0,0,"860000",count(self::getPossibleMoves()));
 
         /************ Start the game initialization *****/
 
@@ -128,12 +128,12 @@ class Linkage extends Table
   
         //get details of every piece played. Spaces that are empty are not included here. Only one piece is last played.
         $result['playedpiece'] = self::getObjectListFromDB("SELECT x1 x1, 
-                                                             y1 y1,
-                                                             x2 x2,
-                                                             y2 y2,
-                                                             color color,
-                                                             last_played lastPlayed
-        FROM playedpiece");
+                                                                   y1 y1,
+                                                                   x2 x2,
+                                                                   y2 y2,
+                                                                   color color,
+                                                                   last_played lastPlayed
+                                                            FROM playedpiece");
   
         return $result;
     }
@@ -166,6 +166,7 @@ class Linkage extends Table
 
     function insertPlayedPiece($x1, $x2, $y1, $y2, $color, $last_played)
     {
+        $color = '"'.$color.'"'; //extra formatting to deal with this being non-numeric (a . is an append symbol)
         $sql = "INSERT INTO `playedpiece`(`x1`, `y1`, `x2`, `y2`, `color`, `last_played`) VALUES ($x1, $x2, $y1, $y2, $color, $last_played)";
         return self::DbQuery($sql);
     }
@@ -226,10 +227,10 @@ class Linkage extends Table
 
         //TODO test this
         //Finally, for each one, make sure they're not a standalone space.
-        for($x=0; $x<count($possibleMoves); $x++)
+        for($x=0; $x<count($possibleMoves)-1; $x++)
         {
             $possibleMovesColumn = $possibleMoves[$x];
-            for($y=0; $y<count($possibleMovesColumn); $y++)
+            for($y=0; $y<count($possibleMovesColumn)-1; $y++)
             {
                 if ($possibleMovesColumn[$y])
                 {
@@ -306,32 +307,31 @@ class Linkage extends Table
         Each time a player is doing some game action, one of the methods below is called.
         (note: each method below must match an input method in linkage.action.php)
     */
-
-    /*
     
-    Example:
+    function placePiece($x, $y, $color)
+    {      
+        //check action possible, check action sensible etc.
+        self::checkAction('placePiece'); 
 
-    function playCard( $card_id )
-    {
-        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'playCard' ); 
+        $possibleMoves = self::getPossibleMoves();
+
+        if (!$possibleMoves[$x][$y]
+        || !self::isThereAPlayableSpaceBelow($possibleMoves, $x, $y))
+        {
+            throw new feException( "Impossible move" );
+            return;
+        }
+
+        //TODO: are there enough of that colour left?
         
-        $player_id = self::getActivePlayerId();
-        
-        // Add your game logic to play a card there 
-        ...
-        
-        // Notify all players about the card played
-        self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
-            'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
-            'card_name' => $card_name,
-            'card_id' => $card_id
-        ) );
-          
+        //we've decided we are playing a piece, so remove any existing last played pieces.
+        $sql = "UPDATE playedpiece SET last_played = 0";
+        self::DbQuery($sql);
+
+        self::insertPlayedPiece($x,$y,$x,$y+1,$color,1);
+        //sql update
+        //notifications
     }
-    
-    */
 
     
 //////////////////////////////////////////////////////////////////////////////

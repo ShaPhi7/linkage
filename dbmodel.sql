@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `playedpiece` (
   `y1` smallint(5) unsigned NOT NULL,
   `x2` smallint(5) unsigned NOT NULL,
   `y2` smallint(5) unsigned NOT NULL,
-  `color` char(10) DEFAULT NULL,
+  `color` char(6) DEFAULT NULL,
   `last_played` smallint(5) unsigned NOT NULL,
   PRIMARY KEY (`x1`,`y1`, `x2`,`y2`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
