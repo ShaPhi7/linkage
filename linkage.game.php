@@ -204,6 +204,8 @@ class Linkage extends Table
     //must also be adjacent to another playable square (i.e. single spaces are not playable).
     function getPossibleMoves()
     {
+        //TODO NEXT - make the last played piece check not add spaces that go off the end of the board
+        //TODO - make this so that it doesn't add move spaces to anywhere that has a piece on it.
         $possibleMoves = self::getArrayOfSpaces();
         $playedPieces = self::getPlayedPieces();
 

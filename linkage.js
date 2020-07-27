@@ -287,33 +287,39 @@ function (dojo, declare) {
 
        updatePossibleMoves: function(possibleMoves)
        {
-           // Remove current possible moves
-           dojo.query('.possibleMove').removeClass('possibleMove');
-           dojo.query('.unavailableMove').removeClass('unavailableMove');
+           // Remove any current moves that are showing
+           this.removeAnyShowingMoves();
 
            for (var x in possibleMoves)
            {
+            debugger;
                for (var y in possibleMoves[x])
                {
-                   // x,y is a possible move
-                   if (possibleMoves[x][y]) //gets set true/false in getPossibleMoves in game
-                   {
-                        console.log("possible move for " + x + " " + y);
-                        x_y = x + '_' + y;
-                        dojo.place(this.format_block('jstpl_possible_move', {x_y: x_y}), 'space_' + x_y); //show these
-                   }
-                   else
-                   {
-                       //TODO - you need to fix this bit next
-                        //dojo.removeClass('space_'+x+'_'+y, 'unavailableMove');
-                        dojo.addClass('space_'+x+'_'+y, 'unavailableMove'); //TODO - might interfere with pieces on board.
-                   }
+                    moveToShow = this.getMoveToShow(possibleMoves, x, y);
+                    x_y = x + '_' + y;
+
+                    dojo.place(this.format_block('jstpl_' + moveToShow + '_move', {x_y: x_y}), 'space_' + x_y);
                }            
            }
              
            dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
            //TODO what should this say?
            //this.addTooltipToClass( 'possibleMove', '', _('Place a mo here') );
+       },
+
+       removeAnyShowingMoves: function()
+       {
+            dojo.query('.possibleMove').removeClass('possibleMove');
+            dojo.query('.unavailableMove').removeClass('unavailableMove');
+       },
+
+       getMoveToShow: function(possibleMoves, x, y)
+       {
+            if (possibleMoves[x][y]) //gets set true/false in getPossibleMoves in game
+            {
+                return 'possible';
+            }
+            return 'unavailable';
        },
         ///////////////////////////////////////////////////
         //// Player's action
@@ -567,3 +573,4 @@ function (dojo, declare) {
         */
    });             
 });
+

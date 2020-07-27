@@ -50,6 +50,8 @@ var jstpl_unplayed_piece = '<div class="unplayedPiece piece_${color}" id="unplay
 
 var jstpl_possible_move = '<div class="possibleMove" id="possible_move_${x_y}"></div>'
 
+var jstpl_unavailable_move = '<div class="unavailableMove" id="unavailable_move_${x_y}"></div>'
+
 var jstpl_last_played_marker = '<div class="lastPlayedMarker" id="lastPlayedMarker_${n}"></div>';
 
 var jstpl_ommitted_space_marker = '<div class="ommittedSpaceMarker" id="ommittedSpaceMarker_${n}"></div>';
