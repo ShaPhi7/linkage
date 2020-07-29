@@ -204,8 +204,10 @@ class Linkage extends Table
     //must also be adjacent to another playable square (i.e. single spaces are not playable).
     function getPossibleMoves()
     {
-        //TODO NEXT - make the last played piece check not add spaces that go off the end of the board
-        //TODO - make this so that it doesn't add move spaces to anywhere that has a piece on it.
+        //TODO NEXT - make this so that it doesn't add move spaces to anywhere that has a piece on it.
+        //TODO - refector
+        //second point is not a simple, as later I just add unavailable to anywhere that's false. Hmmm.
+        //you can use your gamedatas to check?
         $possibleMoves = self::getArrayOfSpaces();
         $playedPieces = self::getPlayedPieces();
 
@@ -218,21 +220,21 @@ class Linkage extends Table
 
         //might have double (or triple!) set some of these but I don't care they'll all end up false.
         $lastPlayedPiece = self::getLastPlayedPiece();
-        $possibleMoves[$lastPlayedPiece["x1"]+1][$lastPlayedPiece["y1"]] = false;
-        $possibleMoves[$lastPlayedPiece["x1"]-1][$lastPlayedPiece["y1"]] = false;
-        $possibleMoves[$lastPlayedPiece["x1"]][$lastPlayedPiece["y1"]+1] = false;
-        $possibleMoves[$lastPlayedPiece["x1"]][$lastPlayedPiece["y1"]-1] = false;
-        $possibleMoves[$lastPlayedPiece["x2"]+1][$lastPlayedPiece["y2"]] = false;
-        $possibleMoves[$lastPlayedPiece["x2"]-1][$lastPlayedPiece["y2"]] = false;
-        $possibleMoves[$lastPlayedPiece["x2"]][$lastPlayedPiece["y2"]+1] = false;
-        $possibleMoves[$lastPlayedPiece["x2"]][$lastPlayedPiece["y2"]-1] = false;
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]+1, $lastPlayedPiece["y1"]);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]-1, $lastPlayedPiece["y1"]);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]+1);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]-1);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]+1, $lastPlayedPiece["y2"]);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]-1, $lastPlayedPiece["y2"]);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]+1);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]-1);
 
         //TODO test this
         //Finally, for each one, make sure they're not a standalone space.
-        for($x=0; $x<count($possibleMoves)-1; $x++)
+        for($x=0; $x<count($possibleMoves); $x++)
         {
             $possibleMovesColumn = $possibleMoves[$x];
-            for($y=0; $y<count($possibleMovesColumn)-1; $y++)
+            for($y=0; $y<count($possibleMovesColumn); $y++)
             {
                 if ($possibleMovesColumn[$y])
                 {
@@ -247,6 +249,23 @@ class Linkage extends Table
             }
         }
         return $possibleMoves;
+    }
+
+    function markAsNotPossibleMoveIfSpace($possibleMoves, $x, $y)
+    {
+        if (self::isSpace($x, $y))
+        {
+            $possibleMoves[$x][$y] = false;
+        }
+        return $possibleMoves;
+    }
+
+    function isSpace($x, $y)
+    {
+        return $x >= 0
+            && $y >= 0
+            && $x < 7
+            && $y < 7;
     }
 
     function isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
