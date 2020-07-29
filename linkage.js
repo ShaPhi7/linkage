@@ -26,6 +26,7 @@ function (dojo, declare) {
             console.log('linkage constructor');
               
             this.colourToPlay = "";
+            this.possibleMoves;
         },
         
 
@@ -166,7 +167,8 @@ function (dojo, declare) {
             switch(stateName)
             {
                 case 'playerTurn':
-                    this.updatePossibleMoves(args.args.possibleMoves);
+                    this.possibleMoves = args.args.possibleMoves;
+                    this.updatePossibleMoves();
                     break;
                 case 'dummmy':
                     break;
@@ -285,20 +287,22 @@ function (dojo, declare) {
                && piece.y1 == piece.y2;
        },
 
-       updatePossibleMoves: function(possibleMoves)
+       updatePossibleMoves: function()
        {
            // Remove any current moves that are showing
            this.removeAnyShowingMoves();
 
-           for (var x in possibleMoves)
+           for (var x in this.possibleMoves)
            {
-            debugger;
-               for (var y in possibleMoves[x])
+               for (var y in this.possibleMoves[x])
                {
-                    moveToShow = this.getMoveToShow(possibleMoves, x, y);
-                    x_y = x + '_' + y;
+                    if (!this.isPlayedPieceOnSpace(x, y))
+                    {
+                        moveToShow = this.getMoveToShow(x, y);
+                        x_y = x + '_' + y;
 
-                    dojo.place(this.format_block('jstpl_' + moveToShow + '_move', {x_y: x_y}), 'space_' + x_y);
+                        dojo.place(this.format_block('jstpl_' + moveToShow + '_move', {x_y: x_y}), 'space_' + x_y);
+                    }
                }            
            }
              
@@ -313,9 +317,30 @@ function (dojo, declare) {
             dojo.query('.unavailableMove').removeClass('unavailableMove');
        },
 
-       getMoveToShow: function(possibleMoves, x, y)
+       isPlayedPieceOnSpace: function(x, y)
        {
-            if (possibleMoves[x][y]) //gets set true/false in getPossibleMoves in game
+            for (var pp in this.gamedatas.playedpiece)
+            {
+                playedPiece = this.gamedatas.playedpiece[pp];
+                if (x == playedPiece.x1
+                 && y == playedPiece.y1)
+                {
+                    return true;
+                }
+                
+                if (x == playedPiece.x2
+                 && y == playedPiece.y2)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+       },
+
+       getMoveToShow: function(x, y)
+       {
+            if (this.possibleMoves[x][y]) //gets set true/false in getPossibleMoves in game
             {
                 return 'possible';
             }
@@ -396,10 +421,13 @@ function (dojo, declare) {
         //TODO - this check should be smarter and allow placement where I'm hovering over the lower part of where a vertical piece would go.
         isValidMove : function(x, y)
         {
+            debugger;
+
             yPlusOne = y;
             yPlusOne++;
 
-            return $('possible_move_' + x + '_' + yPlusOne);
+            return this.possibleMoves[x][y]
+              && this.possibleMoves[x][yPlusOne];
         },
 
         destroyPotentialPieceIfPresent : function()
@@ -445,22 +473,7 @@ function (dojo, declare) {
 
             console.log('colourToPlay: ' + this.colourToPlay);
 
-            this.destroyPotentialPieceIfPresent();
-
-            /*potentialPiece = dojo.query('.potentialPiece')[0];
-            if (potentialPiece)
-            {
-                
-
-                potentialPieceId = potentialPiece.id; //only ever 0 or 1 potential piece
-                xy = this.getXYFromTwoWordId(potentialPieceId);
-                x_y = xy[0] + '_' + xy[1];
-                dojo.place(this.format_block('jstpl_potential_piece', {
-                    x_y: x_y,
-                    color: this.colourToPlay,
-                }) , 'space_' + x_y, 'only');
-            }*/
-            
+            this.destroyPotentialPieceIfPresent();      
         },
 
         onPotentialPiece: function(event)
@@ -478,15 +491,26 @@ function (dojo, declare) {
                 return;
             }*/
 
-            if(this.checkAction('placePiece'))    // Check that this action is possible at this moment
-            {        
-                debugger;    
-                this.ajaxcall( "/linkage/linkage/placePiece.html", {
-                    x:x,
-                    y:y,
-                    color:this.colourToPlay
-                }, this, function(result){});
+            if(!this.checkAction('placePiece'))    // Check that this action is possible at this moment
+            {
+                //TODO - error
+                return;      
+            }  
+
+            debugger;
+            if (!this.isValidMove(x, y))
+            {
+                //TODO - error
+                return;
             }
+
+            //TODO -add check to make sure they can only play one tile per turn - global variable check or something?
+
+            this.ajaxcall( "/linkage/linkage/placePiece.html", {
+                x:x,
+                y:y,
+                color:this.colourToPlay
+            }, this, function(result){});
 
             this.addTokenOnBoardForXY(x,y);
         },

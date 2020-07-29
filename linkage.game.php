@@ -204,10 +204,7 @@ class Linkage extends Table
     //must also be adjacent to another playable square (i.e. single spaces are not playable).
     function getPossibleMoves()
     {
-        //TODO NEXT - make this so that it doesn't add move spaces to anywhere that has a piece on it.
         //TODO - refector
-        //second point is not a simple, as later I just add unavailable to anywhere that's false. Hmmm.
-        //you can use your gamedatas to check?
         $possibleMoves = self::getArrayOfSpaces();
         $playedPieces = self::getPlayedPieces();
 

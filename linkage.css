@@ -84,7 +84,7 @@
 }
 
 .possibleMove {
-	background-color: green;
+	/*background-color: green;*/
 	width: 40.5px;
     height: 40.5px;
     opacity: 0.4;
