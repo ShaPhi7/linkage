@@ -25,8 +25,9 @@ function (dojo, declare) {
         constructor: function(){
             console.log('linkage constructor');
               
-            this.colourToPlay = "";
-            this.possibleMoves;
+            this.colourToPlay  = "";
+            this.possibleMoves = [];
+            this.playedPieces  = [];
         },
         
 
@@ -42,7 +43,11 @@ function (dojo, declare) {
                 x_y: x_y,
                 color: colour,
             }) , 'space_' + x_y);
-            debugger;
+
+            y2 = y;
+            y2++;
+            this.playedPieces.push({x1:x, y1:y, x2: x, y2: y2, color: colour});
+            //TODO - y2 is int, rest are strings. LastPlayed is missing. Horizontal?
         },
 
         addTokenOnBoardForPiece: function(piece)
@@ -116,17 +121,15 @@ function (dojo, declare) {
             for(var player_id in gamedatas.players)
             {
                 var player = gamedatas.players[player_id];
-                         
-                // TODO: Setting up players boards if needed
             }
-            
-            // TODO: Set up your game interface here, according to "gamedatas"
-            
+
             for (var i in gamedatas.playedpiece)
             {
                 piece = gamedatas.playedpiece[i];
                 this.addTokenOnBoardForPiece(piece);
-            }
+            }debugger;
+            this.playedPieces = gamedatas.playedpiece;
+
             //this will become a method that checks how many of these there should be and dishes them out.
         	this.setupStock();
             
@@ -319,8 +322,20 @@ function (dojo, declare) {
 
        removeAnyShowingMoves: function()
        {
-            dojo.query('.possibleMove').removeClass('possibleMove');
-            dojo.query('.unavailableMove').removeClass('unavailableMove');
+           debugger;
+           
+           this.removeDivs('.possibleMove');
+           this.removeDivs('.unavailableMove');
+       },
+
+       removeDivs: function(classToRemove)
+       {
+            divsToRemove = dojo.query(classToRemove);
+            while (divsToRemove.length > 0)
+            {
+                divsToRemove[0].parentNode.removeChild(divsToRemove[0]);
+                divsToRemove.shift();
+            }
        },
 
        isPlayedPieceOnSpace: function(x, y)
