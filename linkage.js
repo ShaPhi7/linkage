@@ -42,6 +42,7 @@ function (dojo, declare) {
                 x_y: x_y,
                 color: colour,
             }) , 'space_' + x_y);
+            debugger;
         },
 
         addTokenOnBoardForPiece: function(piece)
@@ -81,6 +82,11 @@ function (dojo, declare) {
             dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'board');
             this.placeOnObject('lastPlayedMarker_0', 'piece_' + piece.x1 + '_' + piece.y1);
             //dojo.place('last_played_marker', pieceName);
+        },
+
+        moveLastPlayedMarker: function(x, y)
+        {
+            this.slideToObject('lastPlayedMarker_0', 'piece_' + x + '_' + y).play();
         },
 
         addOmmittedSpaceMarkerOnBoard: function(piece)
@@ -452,7 +458,6 @@ function (dojo, declare) {
             dojo.query('.potentialPiece').connect('onclick', this, 'onPotentialPiece');
         },
 
-
         /**
          * this just sets the colour that the player has chosen to play.
          */
@@ -511,7 +516,8 @@ function (dojo, declare) {
                 color:this.colourToPlay
             }, this, function(result){});
 
-            this.addTokenOnBoardForXY(x,y);
+            //pretty sure this all happens via notifications from ajax call now.
+            //this.addTokenOnBoardForXY(x,y);
         },
 
         /* Example:
@@ -576,9 +582,9 @@ function (dojo, declare) {
             // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             // 
+            dojo.subscribe( 'addToken', this, "notif_addToken" );
+            this.notifqueue.setSynchronous( 'addToken', 500 );
         },  
-        
-        // TODO: from this point and below, you can write your game notifications handling methods
         
         /*
         Example:
@@ -589,11 +595,17 @@ function (dojo, declare) {
             console.log( notif );
             
             // Note: notif.args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
-            
-            // TODO: play the card in the user interface.
         },    
         
         */
+       notif_addToken: function(notif)
+       {
+           console.log('notif_addToken');
+           console.log('notif');
+
+           this.addTokenOnBoard(notif.args.x, notif.args.y, notif.args.colour);
+           this.moveLastPlayedMarker(notif.args.x, notif.args.y);
+       }
    });             
 });
 

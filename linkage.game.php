@@ -347,8 +347,16 @@ class Linkage extends Table
         self::DbQuery($sql);
 
         self::insertPlayedPiece($x,$y,$x,$y+1,$color,1);
-        //sql update
-        //notifications
+
+        self::notifyAllPlayers("addToken",
+            clienttranslate('${player_name} places a token'),
+            array(
+                    'player_name' => self::getActivePlayerName(),
+                    'x' => $x,
+                    'y' => $y,
+                    'colour' => $color
+                 ) 
+            );
     }
 
     
