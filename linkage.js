@@ -127,7 +127,7 @@ function (dojo, declare) {
             {
                 piece = gamedatas.playedpiece[i];
                 this.addTokenOnBoardForPiece(piece);
-            }debugger;
+            }
             this.playedPieces = gamedatas.playedpiece;
 
             //this will become a method that checks how many of these there should be and dishes them out.
@@ -135,7 +135,7 @@ function (dojo, declare) {
             
             dojo.query('.unplayedPiece').connect('onclick', this, 'onUnplayedPiece');
             dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
-
+            //TODO - do I need to care about removing these connectors?
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -322,8 +322,6 @@ function (dojo, declare) {
 
        removeAnyShowingMoves: function()
        {
-           debugger;
-           
            this.removeDivs('.possibleMove');
            this.removeDivs('.unavailableMove');
        },
@@ -442,8 +440,6 @@ function (dojo, declare) {
         //TODO - this check should be smarter and allow placement where I'm hovering over the lower part of where a vertical piece would go.
         isValidMove : function(x, y)
         {
-            debugger;
-
             yPlusOne = y;
             yPlusOne++;
 
@@ -523,7 +519,7 @@ function (dojo, declare) {
                 return;
             }
 
-            //TODO -add check to make sure they can only play one tile per turn - global variable check or something?
+            //TODO - add check to make sure they can only play one tile per turn - global variable check or something?
 
             this.ajaxcall( "/linkage/linkage/placePiece.html", {
                 x:x,
@@ -531,8 +527,8 @@ function (dojo, declare) {
                 color:this.colourToPlay
             }, this, function(result){});
 
-            //pretty sure this all happens via notifications from ajax call now.
-            //this.addTokenOnBoardForXY(x,y);
+            this.destroyPotentialPieceIfPresent();
+            this.colourToPlay = "";
         },
 
         /* Example:

@@ -401,9 +401,10 @@ class Linkage extends Table
         The action method of state X is called everytime the current game state is set to X.
     */
     
-    function stPlayerTurn()
+    function stNextTurnOrEnd()
     {
         $this->activeNextPlayer();
+        $this->gamestate->nextState('nextPlayer');
     }
 
     /*
