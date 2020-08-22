@@ -44,7 +44,13 @@
 
 var jstpl_piece = '<div class="piece piece_${color}" id="piece_${x_y}" style="left: 0px; top: 0px;"></div>';
 
+var jstpl_potential_piece = '<div class="piece piece_${color} potentialPiece" id="potential_piece_${x_y}" style="left: 0px; top: 0px;"></div>';
+
 var jstpl_unplayed_piece = '<div class="unplayedPiece piece_${color}" id="unplayed_piece_${n}_${color}"></div>';
+
+var jstpl_possible_move = '<div class="possibleMove" id="possible_move_${x_y}"></div>'
+
+var jstpl_unavailable_move = '<div class="unavailableMove" id="unavailable_move_${x_y}"></div>'
 
 var jstpl_last_played_marker = '<div class="lastPlayedMarker" id="lastPlayedMarker_${n}"></div>';
 

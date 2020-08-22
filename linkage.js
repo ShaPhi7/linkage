@@ -25,30 +25,57 @@ function (dojo, declare) {
         constructor: function(){
             console.log('linkage constructor');
               
-            // Here, you can init the global variables of your user interface
-            // Example:
-            // this.myGlobalValue = 0;
-
+            this.colourToPlay  = "";
+            this.possibleMoves = [];
+            this.playedPieces  = [];
         },
         
-        addTokenOnBoard: function(piece)
+
+        addTokenOnBoardForXY: function(x, y)
         {
-            if (this.isHorizontal(piece))
+            this.addTokenOnBoard(x, y, this.colourToPlay);
+        },
+
+        addTokenOnBoard: function(x, y, colour)
+        {
+            x_y = x + '_' + y;
+            dojo.place(this.format_block('jstpl_piece', {
+                x_y: x_y,
+                color: colour,
+            }) , 'space_' + x_y);
+
+            y2 = y;
+            y2++;
+            this.playedPieces.push({x1:x, y1:y, x2: x, y2: y2, color: colour});
+            //TODO - y2 is int, rest are strings. LastPlayed is missing. Horizontal?
+        },
+
+        addTokenOnBoardForPiece: function(piece)
+        {
+            //TODO: do you need the safety of checking that x1 and y1 is the start of the piece?
+            if (this.isOmmittedSpaceMarker(piece))
             {
+                this.addOmmittedSpaceMarkerOnBoard(piece);
+            }
+            else if (this.isHorizontal(piece))
+            {
+                //TODO
             }
             else
             {
-                dojo.place(this.format_block('jstpl_piece', {
-                    x_y: piece.x + '_' + piece.y,
-                    color: piece.color,
-                }) , 'pieces');
+                x = piece.x1;
+                y = piece.y1;
+                colour = piece.color;
+                this.addTokenOnBoard(x, y, colour);
             
-                pieceName = 'piece_' + piece.x + '_' + piece.y;
-                this.placeOnObject(pieceName, 'board');
-                dojo.place(pieceName, 'space_' + piece.x + '_' + piece.y);
-                dojo.style(pieceName, "left", "0px");
-                dojo.style(pieceName, "top", "0px");
+                //TODO not needed?
+                //pieceName = 'piece_' + $x_y;
+                //this.placeOnObject(pieceName, 'board');
+                //dojo.place(pieceName, 'space_' + $x_y);
+                //dojo.style(pieceName, "left", "0px");
+                //dojo.style(pieceName, "top", "0px");
             }
+
             if (piece.lastPlayed == "1")
             {
                 this.addLastPlayedMarkerOnPiece(piece);
@@ -58,135 +85,20 @@ function (dojo, declare) {
         addLastPlayedMarkerOnPiece: function(piece)
         {   
             dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'board');
-            this.placeOnObject('lastPlayedMarker_0', 'piece_' + piece.x + '_' + piece.y);
+            this.placeOnObject('lastPlayedMarker_0', 'piece_' + piece.x1 + '_' + piece.y1);
             //dojo.place('last_played_marker', pieceName);
+        },
+
+        moveLastPlayedMarker: function(x, y)
+        {
+            this.slideToObject('lastPlayedMarker_0', 'piece_' + x + '_' + y).play();
         },
 
         addOmmittedSpaceMarkerOnBoard: function(piece)
         {
             dojo.place(this.format_block('jstpl_ommitted_space_marker', {n: 0}), 'board');
-            this.placeOnObject('ommittedSpaceMarker_0', 'space_' + piece.x + '_' + piece.y);
+            this.placeOnObject('ommittedSpaceMarker_0', 'space_' + piece.x1 + '_' + piece.y1);
         },
-
-        /*slideToObjectRelative : function(token, finalPlace, duration, delay, onEnd)
-        {
-            if (typeof token == 'string')
-            {
-                token = $(token);
-            }
-
-            //var self = this;
-            //this.delayedExec(function() {
-                //self.stripTransition(token);
-                //this.stripPosition(token);
-                //var box = this.attachToNewParentNoDestroy(token, finalPlace);
-
-                //self.setTransition(token, "all " + duration + "ms ease-in-out");
-                //this.placeOnObjectDirect(token, finalPlace, box.l, box.t);
-                //this.placeOnObjectDirect(token, finalPlace, 0, 0);
-
-            //}, function() {
-                //self.stripTransition(token);
-            //    self.stripPosition(token);
-            //    if (onEnd) onEnd(token);
-            //}, duration, delay);
-        },*/
-
-        /*placeOnObjectDirect : function(mobileObj, targetObj, x, y)
-        {
-        	//these were gets but were not used.
-        	//var left = dojo.style(mobileObj, "left"); 
-            //var top = dojo.style(mobileObj, "top");
-        	
-        	dojo.style(mobileObj, "left", x + "px");
-            dojo.style(mobileObj, "top", y + "px");
-        },*/
-        
-        /*delayedExec : function(onStart, onEnd, duration, delay) {
-            if (typeof duration == "undefined") {
-                duration = 500;
-            }
-            if (typeof delay == "undefined") {
-                delay = 0;
-            }
-            if (this.instantaneousMode) {
-                delay = Math.min(1, delay);
-                duration = Math.min(1, duration);
-            }
-            if (delay) {
-                setTimeout(function() {
-                    onStart();
-                    if (onEnd) {
-                        setTimeout(onEnd, duration);
-                    }
-                }, delay);
-            } else {
-                onStart();
-                if (onEnd) {
-                    setTimeout(onEnd, duration);
-                }
-            }
-
-        },*/
-        
-        /*stripPosition : function(token) {
-            // console.log(token + " STRIPPING");
-            // remove any added positioning style
-            dojo.style(token, "display", "");
-            dojo.style(token, "top", "");
-            dojo.style(token, "left", "");
-            dojo.style(token, "position", "");
-            // dojo.style(token, "transform", null);
-        },*/
-        /*stripTransition : function(token) {
-            this.setTransition(token, "");
-
-        },*/
-        /*setTransition : function(token, value) {
-            dojo.style(token, "transition", value);
-            dojo.style(token, "-webkit-transition", value);
-            dojo.style(token, "-moz-transition", value);
-            dojo.style(token, "-o-transition", value);
-
-        },*/
-        
-        /**
-         * This method will attach mobile to a new_parent without destroying, unlike original attachToNewParent which
-         * destroys mobile and all its connectors (onClick, etc)
-         */
-        /*attachToNewParentNoDestroy : function(mobile, new_parent) {
-            if (mobile === null) {
-                console.error("attachToNewParent: mobile obj is null");
-                return;
-            }
-            if (new_parent === null) {
-                console.error("attachToNewParent: new_parent is null");
-                return;
-            }
-            if (typeof mobile == "string") {
-                mobile = $(mobile);
-            }
-            if (typeof new_parent == "string") {
-                new_parent = $(new_parent);
-            }
-
-            var src = dojo.position(mobile);
-            //dojo.style(mobile, "position", "absolute");
-            dojo.place(mobile, new_parent);
-            //dojo.place(mobile, new_parent, "last");
-            var tgt = dojo.position(mobile);
-            var box = dojo.marginBox(mobile);
-            var cbox = dojo.contentBox(mobile);
-
-            var left = box.l + src.x - tgt.x;
-            var top = box.t + src.y - tgt.y;
-            dojo.style(mobile, "top", top + "px");
-            dojo.style(mobile, "left", left + "px");
-            box.l += box.w - cbox.w;
-            box.t += box.h - cbox.h;
-            return box;
-        },*/
-
         
         /*
             setup:
@@ -209,27 +121,21 @@ function (dojo, declare) {
             for(var player_id in gamedatas.players)
             {
                 var player = gamedatas.players[player_id];
-                         
-                // TODO: Setting up players boards if needed
             }
-            
-            // TODO: Set up your game interface here, according to "gamedatas"
-            
-            for (var i in gamedatas.board)
+
+            for (var i in gamedatas.playedpiece)
             {
-                piece = gamedatas.board[i];
-                if (this.isTopOrLeft(piece)) //the head of a piece is the space that is top/left.
-                {
-                    this.addTokenOnBoard(piece);
-                }
-                else if (this.isOmmittedSpaceMarker(piece))
-                {
-                    this.addOmmittedSpaceMarkerOnBoard(piece);
-                }
+                piece = gamedatas.playedpiece[i];
+                this.addTokenOnBoardForPiece(piece);
             }
+            this.playedPieces = gamedatas.playedpiece;
+
             //this will become a method that checks how many of these there should be and dishes them out.
         	this.setupStock();
-        	
+            
+            dojo.query('.unplayedPiece').connect('onclick', this, 'onUnplayedPiece');
+            dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
+            //TODO - do I need to care about removing these connectors?
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -240,7 +146,8 @@ function (dojo, declare) {
         	this.setupStockColour("00359f", this.getNumberOfPiecesInStockForColor("00359f"));
         	this.setupStockColour("ffffff", this.getNumberOfPiecesInStockForColor("ffffff"));
         	this.setupStockColour("860000", this.getNumberOfPiecesInStockForColor("860000"));
-        	this.setupStockColour("e48a01", this.getNumberOfPiecesInStockForColor("e48a01"));
+            this.setupStockColour("e48a01", this.getNumberOfPiecesInStockForColor("e48a01"));
+            //TODO - add notifications for when these pieces deplete, and validation against adding extra.
     	},
         
         setupStockColour: function(color, unplayedPieces) {
@@ -262,26 +169,18 @@ function (dojo, declare) {
         // onEnteringState: this method is called each time we are entering into a new game state.
         //                  You can use this method to perform some user interface changes at this moment.
         //
-        onEnteringState: function( stateName, args )
+        onEnteringState: function(stateName, args)
         {
-            console.log( 'Entering state: '+stateName );
+            console.log('Entering state: '+ stateName);
             
-            switch( stateName )
+            switch(stateName)
             {
-            
-            /* Example:
-            
-            case 'myGameState':
-            
-                // Show some HTML block at this game state
-                dojo.style( 'my_html_block_id', 'display', 'block' );
-                
-                break;
-           */
-           
-           
-            case 'dummmy':
-                break;
+                case 'playerTurn':
+                    this.possibleMoves = args.args.possibleMoves;
+                    this.updatePossibleMoves();
+                    break;
+                case 'dummmy':
+                    break;
             }
         },
 
@@ -355,12 +254,11 @@ function (dojo, declare) {
        getNumberOfPiecesOnBoardForColor: function(color)
        {
            var numberOfPiecesForColor = 0;
-           for (var i in this.gamedatas.board)
+           for (var i in this.gamedatas.playedpiece)
            {
-               piece = this.gamedatas.board[i];
+               piece = this.gamedatas.playedpiece[i];
                
-               if (this.isTopOrLeft(piece)
-                 && piece.color == color)
+               if (piece.color == color)
                {
                    numberOfPiecesForColor++;
                }
@@ -368,24 +266,104 @@ function (dojo, declare) {
 
            return numberOfPiecesForColor;
        },
-       
-       isTopOrLeft: function(piece)
+
+       getX_YFromTwoWordId : function(id)
        {
-           half = piece.half;
-           return half == "top"
-             || half == "left"; 
+            xy = this.getXYFromTwoWordId(id);
+            return xy[0] + '_' + xy[1];
+       },
+
+       getXYFromTwoWordId: function(id)
+       {
+            parts = id.split('_');
+
+            var xy = [];
+            xy[0] = parts[2];
+            xy[1] = parts[3];
+            
+            return xy;
        },
 
        isHorizontal: function(piece)
        {
-           half = piece.half;
-           return half == "right"
-             || half == "left"; 
+            return piece.x1 < piece.x2
+              && piece.y1 == piece.y2;
        },
 
        isOmmittedSpaceMarker: function(piece)
        {
-           return piece.color == "000000";
+           return piece.x1 == piece.x2
+               && piece.y1 == piece.y2;
+       },
+
+       updatePossibleMoves: function()
+       {
+           // Remove any current moves that are showing
+           this.removeAnyShowingMoves();
+
+           for (var x in this.possibleMoves)
+           {
+               for (var y in this.possibleMoves[x])
+               {
+                    if (!this.isPlayedPieceOnSpace(x, y))
+                    {
+                        moveToShow = this.getMoveToShow(x, y);
+                        x_y = x + '_' + y;
+
+                        dojo.place(this.format_block('jstpl_' + moveToShow + '_move', {x_y: x_y}), 'space_' + x_y);
+                    }
+               }            
+           }
+             
+           dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
+           //TODO what should this say?
+           //this.addTooltipToClass( 'possibleMove', '', _('Place a mo here') );
+       },
+
+       removeAnyShowingMoves: function()
+       {
+           this.removeDivs('.possibleMove');
+           this.removeDivs('.unavailableMove');
+       },
+
+       removeDivs: function(classToRemove)
+       {
+            divsToRemove = dojo.query(classToRemove);
+            while (divsToRemove.length > 0)
+            {
+                divsToRemove[0].parentNode.removeChild(divsToRemove[0]);
+                divsToRemove.shift();
+            }
+       },
+
+       isPlayedPieceOnSpace: function(x, y)
+       {
+            for (var pp in this.gamedatas.playedpiece)
+            {
+                playedPiece = this.gamedatas.playedpiece[pp];
+                if (x == playedPiece.x1
+                 && y == playedPiece.y1)
+                {
+                    return true;
+                }
+                
+                if (x == playedPiece.x2
+                 && y == playedPiece.y2)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+       },
+
+       getMoveToShow: function(x, y)
+       {
+            if (this.possibleMoves[x][y]) //gets set true/false in getPossibleMoves in game
+            {
+                return 'possible';
+            }
+            return 'unavailable';
        },
         ///////////////////////////////////////////////////
         //// Player's action
@@ -400,7 +378,159 @@ function (dojo, declare) {
             _ make a call to the game server
         
         */
-        
+
+        onMouseMoveOverPossibleMove : function(event) 
+        {
+            dojo.stopEvent(event);
+
+            xy = this.getXYFromTwoWordId(event.currentTarget.id);
+            x = xy[0];
+            y = xy[1];
+
+            if (this.shouldUpdatePossibleMove(x, y))
+            {
+                this.destroyPotentialPieceIfPresent();
+                this.placePotentialPiece(x, y);
+            }
+        },
+
+        shouldUpdatePossibleMove : function(x, y)
+        {
+            if (!this.isCurrentPlayerActive())
+            {
+                return false;
+            }
+
+            if (this.colourToPlay == "")
+            {
+                return false;
+            }
+
+            if (!this.isValidMove(x, y))
+            {
+                return false;
+            }
+
+            if (this.possibleMoveIsAlreadyShown(x, y))
+            {
+                return false;
+            }
+
+            return true;
+        },
+
+        possibleMoveIsAlreadyShown : function(x, y)
+        {
+            potential_piece = dojo.query('.potentialPiece')[0]; //if piece is on board
+            if (potential_piece)
+            {
+                currentX = this.getXYFromTwoWordId(potential_piece.id)[0];
+                currentY = this.getXYFromTwoWordId(potential_piece.id)[1];
+
+                if (x == currentX
+                &&  y == currentY)
+                {
+                    //same piece, do nothing
+                    return true;
+                }
+            }
+            return false;
+        },
+
+        //TODO - this check should be smarter and allow placement where I'm hovering over the lower part of where a vertical piece would go.
+        isValidMove : function(x, y)
+        {
+            yPlusOne = y;
+            yPlusOne++;
+
+            return this.possibleMoves[x][y]
+              && this.possibleMoves[x][yPlusOne];
+        },
+
+        destroyPotentialPieceIfPresent : function()
+        {
+            potential_piece = dojo.query('.potentialPiece')[0]; //if piece is on board
+            if (potential_piece)
+            {
+                x_y = this.getX_YFromTwoWordId(potential_piece.id);
+                dojo.destroy("potential_piece_" + x_y);
+            }
+        },
+
+        placePotentialPiece : function(x, y)
+        {
+            x_y = x + '_' + y;
+
+            dojo.place(this.format_block('jstpl_potential_piece', {
+                x_y: x_y,
+                color: this.colourToPlay,
+            }) , 'space_' + x_y);
+
+            dojo.query('.potentialPiece').connect('onclick', this, 'onPotentialPiece');
+        },
+
+        /**
+         * this just sets the colour that the player has chosen to play.
+         */
+        onUnplayedPiece: function(event)
+        {
+            dojo.stopEvent(event);
+
+            if (!this.isCurrentPlayerActive())
+            {
+                return;
+            }
+
+            var id = event.currentTarget.id;
+
+            console.log('id: ' + id);
+
+            this.colourToPlay = id.split('_')[3];
+
+            console.log('colourToPlay: ' + this.colourToPlay);
+
+            this.destroyPotentialPieceIfPresent();      
+        },
+
+        onPotentialPiece: function(event)
+        {//now you can add in notifications
+            dojo.stopEvent(event);
+
+            xy = this.getXYFromTwoWordId(event.currentTarget.id);
+            x = xy[0];
+            y = xy[1];
+
+            //TODO - get this check to work, it's because it is a child not as a class perhaps? Maybe get the elements manually?
+            /*if (!dojo.hasClass('space_' + x + '_' + y, 'possibleMove'))
+            {
+                //not a possible move so do nothing.
+                return;
+            }*/
+
+            if(!this.checkAction('placePiece'))    // Check that this action is possible at this moment
+            {
+                //TODO - error
+                return;      
+            }  
+
+            if (!this.isValidMove(x, y))
+            {
+                //TODO - error
+                return;
+            }
+
+            //TODO - add check to make sure they can only play one tile per turn - global variable check or something?
+
+            this.ajaxcall( "/linkage/linkage/placePiece.html", {
+                x:x,
+                y:y,
+                color:this.colourToPlay
+            }, this, function(result){});
+
+            this.destroyPotentialPieceIfPresent();
+            this.colourToPlay = "";
+        },
+
         /* Example:
         
         onMyMethodToCall1: function( evt )
@@ -463,9 +593,9 @@ function (dojo, declare) {
             // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             // 
+            dojo.subscribe( 'addToken', this, "notif_addToken" );
+            this.notifqueue.setSynchronous( 'addToken', 500 );
         },  
-        
-        // TODO: from this point and below, you can write your game notifications handling methods
         
         /*
         Example:
@@ -476,10 +606,17 @@ function (dojo, declare) {
             console.log( notif );
             
             // Note: notif.args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
-            
-            // TODO: play the card in the user interface.
         },    
         
         */
+       notif_addToken: function(notif)
+       {
+           console.log('notif_addToken');
+           console.log('notif');
+
+           this.addTokenOnBoard(notif.args.x, notif.args.y, notif.args.colour);
+           this.moveLastPlayedMarker(notif.args.x, notif.args.y);
+       }
    });             
 });
+

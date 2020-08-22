@@ -20,13 +20,14 @@
 
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 
-CREATE TABLE IF NOT EXISTS `board` (
-  `board_x` smallint(5) unsigned NOT NULL,
-  `board_y` smallint(5) unsigned NOT NULL,
-  `color` char(10) DEFAULT NULL,
-  `piece_half` char(10) DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `playedpiece` (
+  `x1` smallint(5) unsigned NOT NULL,
+  `y1` smallint(5) unsigned NOT NULL,
+  `x2` smallint(5) unsigned NOT NULL,
+  `y2` smallint(5) unsigned NOT NULL,
+  `color` char(6) DEFAULT NULL,
   `last_played` smallint(5) unsigned NOT NULL,
-  PRIMARY KEY (`board_x`,`board_y`)
+  PRIMARY KEY (`x1`,`y1`, `x2`,`y2`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 

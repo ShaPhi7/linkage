@@ -58,19 +58,28 @@ $machinestates = array(
         "description" => "",
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array( "" => 2 )
+        "transitions" => array( "" => 2)
     ),
     
     // Note: ID=2 => your first state
 
     2 => array(
-    		"name" => "playerTurn",
-    		"description" => clienttranslate('${actplayer} must play a card or pass'),
-    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "playCard", "pass" ),
-    		"transitions" => array( "playCard" => 2, "pass" => 2 )
+            "name" => "playerTurn",
+            "description" => clienttranslate('${actplayer} must make a move'),
+    		"descriptionmyturn" => clienttranslate('${you} must make a move'),
+            "type" => "activeplayer",
+            "args" => "argPlayerTurn",
+    		"possibleactions" => array( "placePiece"),
+    		"transitions" => array( "placePiece" => 3) //TODO - add zombie? does player have to play?
     ),
+
+    3 => array(
+        "name" => "nextTurnOrEnd",
+        "type" => "game",
+        "action" => "stNextTurnOrEnd",
+        //TODO - updateGameProgression
+        "transitions" => array("nextPlayer" => 2, "endGame" => 99)
+),
     
 /*
     Examples:

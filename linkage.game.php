@@ -76,74 +76,16 @@ class Linkage extends Table
         self::DbQuery( $sql );
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
-        
-        //init board table on database (nice and easy as no pieces played at start of game)
-        $sql = "INSERT INTO board (board_x,board_y) VALUES ";
-        $sql_values = array();
-        for( $x=0; $x<7; $x++ )
-        {
-            for( $y=0; $y<7; $y++ )
-            {
-                $sql_values[] = "('$x','$y')";
-            }
-        }
-        $sql .= implode($sql_values, ',');
-        self::DbQuery($sql);
 
         //mark the ommitted space token, either player choice or center space.
-        $sql = "UPDATE
-                    `board`
-                SET
-                    `color` = '000000'
-                WHERE
-                    `board_x` = 3 
-                AND `board_y` = 3";
-                self::DbQuery($sql);
+        self::insertPlayedPiece(3,3,3,3,"000000",0);
 
-        //net up is the possible moves step!
+        //TODO for testing purposes...
+        //self::insertPlayedPiece(4,3,5,3,"00359f",0);
+        self::insertPlayedPiece(2,2,2,3,"860000",1);
 
-        //for testing purposes...
-        $sql = "UPDATE
-                    `board`
-                SET
-                    `color` = '00359f',
-                    `piece_half` = 'left'
-                WHERE
-                    board_x = 4 
-                AND board_y = 3";
-        self::DbQuery( $sql );
-
-        $sql = "UPDATE
-                    `board`
-                SET
-                    `color` = '00359f',
-                    `piece_half` = 'right'
-                WHERE
-                    board_x = 5 
-                AND board_y = 3";
-        self::DbQuery( $sql );
-
-        $sql = "UPDATE
-                    `board`
-                SET
-                    `color` = '860000',
-                    `piece_half` = 'top',
-                    `last_played` = 1
-                WHERE
-                    board_x = 2 
-                AND board_y = 2";
-        self::DbQuery( $sql );
-
-        $sql = "UPDATE
-                    `board`
-                SET
-                    `color` = '860000',
-                    `piece_half` = 'bottom',
-                    `last_played` = 1
-                WHERE
-                    board_x = 2 
-                AND board_y = 3";
-        self::DbQuery( $sql );
+        //TODO fun logging hack
+        //self::insertPlayedPiece(0,0,0,0,"860000",count(self::getPossibleMoves()));
 
         /************ Start the game initialization *****/
 
@@ -184,14 +126,14 @@ class Linkage extends Table
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
   
-        // get every space on the board that is not empty.
-        $result['board'] = self::getObjectListFromDB("SELECT board_x x, 
-                                                             board_y y,
-                                                             color color,
-                                                             piece_half half,
-                                                             last_played lastPlayed
-        FROM board
-        WHERE color IS NOT NULL");
+        //get details of every piece played. Spaces that are empty are not included here. Only one piece is last played.
+        $result['playedpiece'] = self::getObjectListFromDB("SELECT x1 x1, 
+                                                                   y1 y1,
+                                                                   x2 x2,
+                                                                   y2 y2,
+                                                                   color color,
+                                                                   last_played lastPlayed
+                                                            FROM playedpiece");
   
         return $result;
     }
@@ -222,6 +164,158 @@ class Linkage extends Table
         In this space, you can put any utility methods useful for your game logic
     */
 
+    function insertPlayedPiece($x1, $x2, $y1, $y2, $color, $last_played)
+    {
+        $color = '"'.$color.'"'; //extra formatting to deal with this being non-numeric (a . is an append symbol)
+        $sql = "INSERT INTO `playedpiece`(`x1`, `y1`, `x2`, `y2`, `color`, `last_played`) VALUES ($x1, $x2, $y1, $y2, $color, $last_played)";
+        return self::DbQuery($sql);
+    }
+
+    function getPlayedPieces()
+    {
+        $sql = "SELECT `x1` x1, `y1` y1, `x2`, `y2`, `color`, `last_played`
+                FROM `playedpiece`";
+        return self::getObjectListFromDB($sql);
+    }
+
+    function getLastPlayedPiece()
+    {
+        $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`, `last_played` 
+                FROM `playedpiece` 
+                WHERE `last_played` = 1";
+        return self::getObjectFromDB($sql);
+    }
+
+    function getArrayOfSpaces()
+    {
+        $possibleMoves = array();
+        for($x=0; $x<7; $x++)
+        {
+            $possibleMoves[$x] = array();
+            for($y=0; $y<7; $y++)
+            {
+                $possibleMoves[$x][$y] = true;
+            }
+        }
+        return $possibleMoves;
+    }
+
+    //only rules here are must place on an empty space and must not place adjacent to the last played piece.
+    //must also be adjacent to another playable square (i.e. single spaces are not playable).
+    function getPossibleMoves()
+    {
+        //TODO - refector
+        $possibleMoves = self::getArrayOfSpaces();
+        $playedPieces = self::getPlayedPieces();
+
+        for ($i=0;$i<count($playedPieces);$i++)
+        {
+            $playedPiece = $playedPieces[$i];
+            $possibleMoves[$playedPiece["x1"]][$playedPiece["y1"]] = false; //x1 and y1
+            $possibleMoves[$playedPiece["x2"]][$playedPiece["y2"]] = false; //x2 and y2
+        }
+
+        //might have double (or triple!) set some of these but I don't care they'll all end up false.
+        $lastPlayedPiece = self::getLastPlayedPiece();
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]+1, $lastPlayedPiece["y1"]);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]-1, $lastPlayedPiece["y1"]);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]+1);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]-1);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]+1, $lastPlayedPiece["y2"]);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]-1, $lastPlayedPiece["y2"]);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]+1);
+        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]-1);
+
+        //TODO test this
+        //Finally, for each one, make sure they're not a standalone space.
+        for($x=0; $x<count($possibleMoves); $x++)
+        {
+            $possibleMovesColumn = $possibleMoves[$x];
+            for($y=0; $y<count($possibleMovesColumn); $y++)
+            {
+                if ($possibleMovesColumn[$y])
+                {
+                    if (!self::isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
+                    && !self::isThereAPlayableSpaceLeft($possibleMoves, $x, $y)
+                    && !self::isThereAPlayableSpaceBelow($possibleMoves, $x, $y)
+                    && !self::isThereAPlayableSpaceRight($possibleMoves, $x, $y))
+                    {
+                        $possibleMoves[$x][$y] = false;
+                    }
+                }
+            }
+        }
+        return $possibleMoves;
+    }
+
+    function markAsNotPossibleMoveIfSpace($possibleMoves, $x, $y)
+    {
+        if (self::isSpace($x, $y))
+        {
+            $possibleMoves[$x][$y] = false;
+        }
+        return $possibleMoves;
+    }
+
+    function isSpace($x, $y)
+    {
+        return $x >= 0
+            && $y >= 0
+            && $x < 7
+            && $y < 7;
+    }
+
+    function isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
+    {   
+        if ($y > 0)
+        {
+            return $possibleMoves[$x][$y-1];
+        }
+        else 
+        {
+            //there is no space
+            return false;
+        }
+    }
+
+    function isThereAPlayableSpaceLeft($possibleMoves, $x, $y)
+    {   
+        if ($x > 0)
+        {
+            return $possibleMoves[$x-1][$y];
+        }
+        else 
+        {
+            //there is no space
+            return false;
+        }
+    }
+
+    function isThereAPlayableSpaceBelow($possibleMoves, $x, $y)
+    {   
+        if ($y < 6)
+        {
+            return $possibleMoves[$x][$y+1];
+        }
+        else 
+        {
+            //there is no space
+            return false;
+        }
+    }
+
+    function isThereAPlayableSpaceRight($possibleMoves, $x, $y)
+    {   
+        if ($x < 6)
+        {
+            return $possibleMoves[$x+1][$y];
+        }
+        else 
+        {
+            //there is no space
+            return false;
+        }
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
@@ -231,32 +325,41 @@ class Linkage extends Table
         Each time a player is doing some game action, one of the methods below is called.
         (note: each method below must match an input method in linkage.action.php)
     */
-
-    /*
     
-    Example:
+    function placePiece($x, $y, $color)
+    {      
+        //check action possible, check action sensible etc.
+        self::checkAction('placePiece'); 
 
-    function playCard( $card_id )
-    {
-        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'playCard' ); 
+        $possibleMoves = self::getPossibleMoves();
+
+        if (!$possibleMoves[$x][$y]
+        || !self::isThereAPlayableSpaceBelow($possibleMoves, $x, $y))
+        {
+            throw new feException( "Impossible move" );
+            return;
+        }
+
+        //TODO: are there enough of that colour left?
         
-        $player_id = self::getActivePlayerId();
+        //we've decided we are playing a piece, so remove any existing last played pieces.
+        $sql = "UPDATE playedpiece SET last_played = 0";
+        self::DbQuery($sql);
+
+        self::insertPlayedPiece($x,$y,$x,$y+1,$color,1);
+
+        self::notifyAllPlayers("addToken",
+            clienttranslate('${player_name} places a token'),
+            array(
+                    'player_name' => self::getActivePlayerName(),
+                    'x' => $x,
+                    'y' => $y,
+                    'colour' => $color
+                 ) 
+            );
         
-        // Add your game logic to play a card there 
-        ...
-        
-        // Notify all players about the card played
-        self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
-            'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
-            'card_name' => $card_name,
-            'card_id' => $card_id
-        ) );
-          
+        $this->gamestate->nextState('placePiece');
     }
-    
-    */
 
     
 //////////////////////////////////////////////////////////////////////////////
@@ -268,7 +371,10 @@ class Linkage extends Table
         These methods function is to return some additional information that is specific to the current
         game state.
     */
-
+    function argPlayerTurn()
+    {
+        return array('possibleMoves' => self::getPossibleMoves());
+    }
     /*
     
     Example for game state "MyGameState":
@@ -295,6 +401,12 @@ class Linkage extends Table
         The action method of state X is called everytime the current game state is set to X.
     */
     
+    function stNextTurnOrEnd()
+    {
+        $this->activeNextPlayer();
+        $this->gamestate->nextState('nextPlayer');
+    }
+
     /*
     
     Example for game state "MyGameState":

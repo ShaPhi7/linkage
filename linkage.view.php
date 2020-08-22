@@ -45,9 +45,9 @@
         $vertical_offset = 55.5;
         $horizontal_scale = 42.75;
         $vertical_scale = 42.5;
-        for ($x=0; $x<7; $x++)
+        for ($x=6; $x>=0; $x--)
         {
-            for ($y=0; $y<7; $y++)
+            for ($y=6; $y>=0; $y--)
             {
                 $this->page->insert_block("space",
                     array (
