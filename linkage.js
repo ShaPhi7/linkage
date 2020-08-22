@@ -477,7 +477,7 @@ function (dojo, declare) {
         },
 
         onPotentialPiece: function(event)
-        {
+        {//now you can add in notifications
             dojo.stopEvent(event);
 
             xy = this.getXYFromTwoWordId(event.currentTarget.id);
@@ -497,7 +497,6 @@ function (dojo, declare) {
                 return;      
             }  
 
-            debugger;
             if (!this.isValidMove(x, y))
             {
                 //TODO - error
