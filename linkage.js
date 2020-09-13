@@ -153,14 +153,37 @@ function (dojo, declare) {
         setupStockColour: function(color, unplayedPieces) {
         	for(var i=0; i<unplayedPieces; i++)
             {
-        		dojo.place(this.format_block('jstpl_unplayed_piece', {
-    	            n: i,
-    	            color: color,
-    	        }) , 'stockHolder_' + color);
-    	        dojo.style('unplayed_piece_' + i + '_' + color, "left", "25%");
-    	        dojo.style('unplayed_piece_' + i + '_' + color, "top", "100px");
-    	        dojo.style('unplayed_piece_' + i + '_' + color, "position", "absolute");
+                //note that playing one piece removes one vertical and one horizontal piece of that colour
+                this.addUnplayedPieceToStockVertical(i, color);
+                this.addUnplayedPieceToStockHorizontal(i, color);
             }
+        },
+
+        addUnplayedPieceToStockVertical: function(i, color)
+        {
+            this.addUnplayedPieceToStock(i, color, false);
+
+            dojo.style('unplayed_piece_' + i + '_' + color, "top", "100px");
+        },
+        
+        addUnplayedPieceToStockHorizontal: function(i, color)
+        {
+            id = i + "h";
+            this.addUnplayedPieceToStock(id, color, true);
+
+            dojo.style('unplayed_piece_' + id + '_' + color, "transform", "rotate(90deg)");
+            dojo.style('unplayed_piece_' + id + '_' + color, "top", "250px");
+        },
+
+        addUnplayedPieceToStock: function(i, color, horizontal)
+        {
+            dojo.place(this.format_block('jstpl_unplayed_piece', {
+                n: i,
+                color: color,
+                h: horizontal,
+            }) , 'stockHolder_' + color);
+            dojo.style('unplayed_piece_' + i + '_' + color, "left", "25%");
+            dojo.style('unplayed_piece_' + i + '_' + color, "position", "absolute");
         },
 
         ///////////////////////////////////////////////////
