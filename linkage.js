@@ -24,10 +24,12 @@ function (dojo, declare) {
     return declare("bgagame.linkage", ebg.core.gamegui, {
         constructor: function(){
             console.log('linkage constructor');
-              
-            this.colourToPlay  = "";
+            
             this.possibleMoves = [];
             this.playedPieces  = [];
+
+            this.colourToPlay  = "";
+            this.horizontalToPlay = false;
         },
         
 
@@ -290,6 +292,7 @@ function (dojo, declare) {
            return numberOfPiecesForColor;
        },
 
+       //TODO - can we make these use dojo.attr instead
        getX_YFromTwoWordId : function(id)
        {
             xy = this.getXYFromTwoWordId(id);
@@ -503,14 +506,16 @@ function (dojo, declare) {
             {
                 return;
             }
-
-            var id = event.currentTarget.id;
+            var unplayedPiece = event.currentTarget;
+            var id = unplayedPiece.id;
 
             console.log('id: ' + id);
 
-            this.colourToPlay = id.split('_')[3];
+            this.colourToPlay = dojo.attr(id, 'color');
+            this.horizontalToPlay = dojo.attr(id, 'h');            
 
             console.log('colourToPlay: ' + this.colourToPlay);
+            console.log('horizontalToPlay: ' + this.horizontalToPlay);
 
             this.destroyPotentialPieceIfPresent();      
         },
