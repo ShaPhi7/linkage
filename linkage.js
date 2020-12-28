@@ -32,24 +32,24 @@ function (dojo, declare) {
             this.horizontalToPlay = false;
         },
         
-
-        addTokenOnBoardForXY: function(x, y)
-        {
-            this.addTokenOnBoard(x, y, this.colourToPlay);
-        },
-
-        addTokenOnBoard: function(x, y, colour)
+        addTokenOnBoard: function(x, y, colour, h)
         {
             x_y = x + '_' + y;
             dojo.place(this.format_block('jstpl_piece', {
                 x_y: x_y,
                 color: colour,
+                h: h,
             }) , 'space_' + x_y);
 
             y2 = y;
             y2++;
-            this.playedPieces.push({x1:x, y1:y, x2: x, y2: y2, color: colour});
-            //TODO - y2 is int, rest are strings. LastPlayed is missing. Horizontal?
+            this.addToPlayedPieces(x1=x, y1=y, x2=x, y2=y2, color=colour, h=h);
+            //TODO - y2 is int, rest are strings. LastPlayed is missing.
+        },
+
+        addToPlayedPieces: function(x, y, x2, y2, colour, h)
+        { //TODO NEXT - make work with horizontal
+            this.playedPieces.push({x1:x, y1:y, x2: x, y2: y2, color: colour, h: h});
         },
 
         addTokenOnBoardForPiece: function(piece)
@@ -68,7 +68,8 @@ function (dojo, declare) {
                 x = piece.x1;
                 y = piece.y1;
                 colour = piece.color;
-                this.addTokenOnBoard(x, y, colour);
+                h = piece.h;
+                this.addTokenOnBoard(x, y, colour, h);
             
                 //TODO not needed?
                 //pieceName = 'piece_' + $x_y;
@@ -130,7 +131,6 @@ function (dojo, declare) {
                 piece = gamedatas.playedpiece[i];
                 this.addTokenOnBoardForPiece(piece);
             }
-            this.playedPieces = gamedatas.playedpiece;
 
             //this will become a method that checks how many of these there should be and dishes them out.
         	this.setupStock();
@@ -279,9 +279,9 @@ function (dojo, declare) {
        getNumberOfPiecesOnBoardForColor: function(color)
        {
            var numberOfPiecesForColor = 0;
-           for (var i in this.gamedatas.playedpiece)
+           for (var i in this.playedPieces)
            {
-               piece = this.gamedatas.playedpiece[i];
+               piece = this.playedPieces[i];
                
                if (piece.color == color)
                {
@@ -364,9 +364,9 @@ function (dojo, declare) {
 
        isPlayedPieceOnSpace: function(x, y)
        {
-            for (var pp in this.gamedatas.playedpiece)
+            for (var pp in this.playedPieces)
             {
-                playedPiece = this.gamedatas.playedpiece[pp];
+                playedPiece = this.playedPieces[pp];
                 if (x == playedPiece.x1
                  && y == playedPiece.y1)
                 {
