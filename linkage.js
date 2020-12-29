@@ -29,7 +29,7 @@ function (dojo, declare) {
             this.playedPieces  = [];
 
             this.colourToPlay  = "";
-            this.horizontalToPlay = false;
+            this.horizontalToPlay = "false";
         },
         
         addTokenOnBoard: function(x, y, colour, h)
@@ -41,15 +41,28 @@ function (dojo, declare) {
                 h: h,
             }) , 'space_' + x_y);
 
+            x2 = x;
             y2 = y;
-            y2++;
-            this.addToPlayedPieces(x1=x, y1=y, x2=x, y2=y2, color=colour, h=h);
-            //TODO - y2 is int, rest are strings. LastPlayed is missing.
+
+            //TODO - find a better way
+            if (h == 'true')
+            {
+                x2++;
+                x2 = '' + x2 + '';
+            }
+            else
+            {
+                y2++;
+                y2 = '' + y2 + '';
+            }
+
+            this.addToPlayedPieces(x1=x, y1=y, x2=x, y2=y2, color=colour);
+            
         },
 
-        addToPlayedPieces: function(x, y, x2, y2, colour, h)
-        { //TODO NEXT - make work with horizontal
-            this.playedPieces.push({x1:x, y1:y, x2: x, y2: y2, color: colour, h: h});
+        addToPlayedPieces: function(x, y, x2, y2, colour)
+        {
+            this.playedPieces.push({x1:x, y1:y, x2: x2, y2: y2, color: colour});
         },
 
         addTokenOnBoardForPiece: function(piece)
@@ -59,10 +72,6 @@ function (dojo, declare) {
             {
                 this.addOmmittedSpaceMarkerOnBoard(piece);
             }
-            else if (this.isHorizontal(piece))
-            {
-                //TODO
-            }
             else
             {
                 x = piece.x1;
@@ -70,13 +79,6 @@ function (dojo, declare) {
                 colour = piece.color;
                 h = piece.h;
                 this.addTokenOnBoard(x, y, colour, h);
-            
-                //TODO not needed?
-                //pieceName = 'piece_' + $x_y;
-                //this.placeOnObject(pieceName, 'board');
-                //dojo.place(pieceName, 'space_' + $x_y);
-                //dojo.style(pieceName, "left", "0px");
-                //dojo.style(pieceName, "top", "0px");
             }
 
             if (piece.lastPlayed == "1")
@@ -463,14 +465,25 @@ function (dojo, declare) {
             return false;
         },
 
-        //TODO - this check should be smarter and allow placement where I'm hovering over the lower part of where a vertical piece would go.
+        //TODO NEXT - this check should be smarter and allow placement where I'm hovering over the lower part of where a vertical piece would go.
         isValidMove : function(x, y)
         {
-            yPlusOne = y;
-            yPlusOne++;
+            if (this.horizontalToPlay == 'true')
+            {
+                xPlusOne = x;
+                xPlusOne++;
+                //TODO - currently breaks if on edge of board
+                return this.possibleMoves[xPlusOne][y]
+                    && this.possibleMoves[x][y];
+            }
+            else
+            {
+                yPlusOne = y;
+                yPlusOne++;
 
-            return this.possibleMoves[x][y]
-              && this.possibleMoves[x][yPlusOne];
+                return this.possibleMoves[x][y]
+                    && this.possibleMoves[x][yPlusOne];
+            }
         },
 
         destroyPotentialPieceIfPresent : function()
@@ -490,7 +503,13 @@ function (dojo, declare) {
             dojo.place(this.format_block('jstpl_potential_piece', {
                 x_y: x_y,
                 color: this.colourToPlay,
+                h: this.horizontalToPlay //TODO - keeps showing as undefined, why won't it set???
             }) , 'space_' + x_y);
+
+            if (this.horizontalToPlay == 'true')
+            {
+                dojo.style('potential_piece_' + x + '_' + y, "transform", "rotate(90deg)");
+            }
 
             dojo.query('.potentialPiece').connect('onclick', this, 'onPotentialPiece');
         },
@@ -521,7 +540,7 @@ function (dojo, declare) {
         },
 
         onPotentialPiece: function(event)
-        {//now you can add in notifications
+        {
             dojo.stopEvent(event);
 
             xy = this.getXYFromTwoWordId(event.currentTarget.id);
@@ -550,13 +569,15 @@ function (dojo, declare) {
             //TODO - add check to make sure they can only play one tile per turn - global variable check or something?
 
             this.ajaxcall( "/linkage/linkage/placePiece.html", {
-                x:x,
-                y:y,
-                color:this.colourToPlay
+                x: x,
+                y: y,
+                color: this.colourToPlay,
+                h: this.horizontalToPlay,
             }, this, function(result){});
 
             this.destroyPotentialPieceIfPresent();
             this.colourToPlay = "";
+            //horizontalToPlay is just boolean so is not reset here
         },
 
         /* Example:
@@ -642,7 +663,7 @@ function (dojo, declare) {
            console.log('notif_addToken');
            console.log('notif');
 
-           this.addTokenOnBoard(notif.args.x, notif.args.y, notif.args.colour);
+           this.addTokenOnBoard(notif.args.x, notif.args.y, notif.args.colour, notif.args.h);
            this.moveLastPlayedMarker(notif.args.x, notif.args.y);
        }
    });             

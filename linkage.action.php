@@ -46,8 +46,9 @@
         $x = self::getArg("x", AT_posint, true);
         $y = self::getArg("y", AT_posint, true);
         $color = self::getArg("color", AT_alphanum, true);
+        $h = self::getArg("h", AT_alphanum, true);
 
-        $result = $this->game->placePiece($x, $y, $color);
+        $result = $this->game->placePiece($x, $y, $color, $h);
         self::ajaxResponse( );
     }
   }

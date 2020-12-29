@@ -326,7 +326,7 @@ class Linkage extends Table
         (note: each method below must match an input method in linkage.action.php)
     */
     
-    function placePiece($x, $y, $color)
+    function placePiece($x, $y, $color, $h)
     {      
         //check action possible, check action sensible etc.
         self::checkAction('placePiece'); 
@@ -346,6 +346,7 @@ class Linkage extends Table
         $sql = "UPDATE playedpiece SET last_played = 0";
         self::DbQuery($sql);
 
+        //TODO - make work with horizontal
         self::insertPlayedPiece($x,$y,$x,$y+1,$color,1);
 
         self::notifyAllPlayers("addToken",
@@ -354,7 +355,8 @@ class Linkage extends Table
                     'player_name' => self::getActivePlayerName(),
                     'x' => $x,
                     'y' => $y,
-                    'colour' => $color
+                    'colour' => $color,
+                    'h' => $h
                  ) 
             );
         
