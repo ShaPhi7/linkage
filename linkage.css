@@ -112,11 +112,13 @@
     /*border-color: black;
 	border-style: solid;
 	border-width: thin;*/
+	transform-origin: 100% 50%;
 }
 
 .potentialPiece {
 	opacity: 0.5;
 	cursor: pointer; 
+	transform-origin: 100% 50%;
 }
 
 .unplayedPiece {

@@ -47,6 +47,7 @@ function (dojo, declare) {
             //TODO - find a better way
             if (h == 'true')
             {
+                dojo.style('piece_' + x + '_' + y, "transform", "rotate(90deg)");
                 x2++;
                 x2 = '' + x2 + '';
             }
@@ -572,7 +573,7 @@ function (dojo, declare) {
                 x: x,
                 y: y,
                 color: this.colourToPlay,
-                h: this.horizontalToPlay,
+                h: this.horizontalToPlay, //note - sometimes debugger shows h as unset, even though it is.
             }, this, function(result){});
 
             this.destroyPotentialPieceIfPresent();
