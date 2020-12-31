@@ -80,11 +80,9 @@ class Linkage extends Table
         //mark the ommitted space token, either player choice or center space.
         self::insertPlayedPiece(3,3,3,3,"000000",0);
 
-        //TODO for testing purposes...
+        //Note - if you just want some pieces set on the board to test, you can quickly add them here.
         //self::insertPlayedPiece(4,3,5,3,"00359f",0);
-        self::insertPlayedPiece(2,2,2,3,"860000",1);
-
-        //TODO fun logging hack
+        //self::insertPlayedPiece(2,2,2,3,"860000",1);
         //self::insertPlayedPiece(0,0,0,0,"860000",count(self::getPossibleMoves()));
 
         /************ Start the game initialization *****/
@@ -134,7 +132,7 @@ class Linkage extends Table
                                                                    color color,
                                                                    last_played lastPlayed
                                                             FROM playedpiece");
-  
+
         return $result;
     }
 
@@ -217,15 +215,17 @@ class Linkage extends Table
 
         //might have double (or triple!) set some of these but I don't care they'll all end up false.
         $lastPlayedPiece = self::getLastPlayedPiece();
-        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]+1, $lastPlayedPiece["y1"]);
-        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]-1, $lastPlayedPiece["y1"]);
-        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]+1);
-        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]-1);
-        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]+1, $lastPlayedPiece["y2"]);
-        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]-1, $lastPlayedPiece["y2"]);
-        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]+1);
-        $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]-1);
-
+        if ($lastPlayedPiece)
+        {
+            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]+1, $lastPlayedPiece["y1"]);
+            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]-1, $lastPlayedPiece["y1"]);
+            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]+1);
+            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]-1);
+            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]+1, $lastPlayedPiece["y2"]);
+            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]-1, $lastPlayedPiece["y2"]);
+            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]+1);
+            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]-1);
+        }
         //TODO test this
         //Finally, for each one, make sure they're not a standalone space.
         for($x=0; $x<count($possibleMoves); $x++)
@@ -421,7 +421,8 @@ class Linkage extends Table
     */
     function argPlayerTurn()
     {
-        return array('possibleMoves' => self::getPossibleMoves());
+        return array('possibleMoves' => self::getPossibleMoves(),
+                     'lastPlayedPiece' => self::getLastPlayedPiece());
     }
     /*
     

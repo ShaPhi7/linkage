@@ -45,7 +45,8 @@ function (dojo, declare) {
             y2 = y;
 
             //TODO - find a better way
-            if (h == 'true')
+            if (h == true
+              || h == 'true')
             {
                 dojo.style('piece_' + x + '_' + y, "transform", "rotate(90deg)");
                 x2++;
@@ -78,13 +79,8 @@ function (dojo, declare) {
                 x = piece.x1;
                 y = piece.y1;
                 colour = piece.color;
-                h = piece.h;
+                h = this.isHorizontal(piece)
                 this.addTokenOnBoard(x, y, colour, h);
-            }
-
-            if (piece.lastPlayed == "1")
-            {
-                this.addLastPlayedMarkerOnPiece(piece);
             }
         },
         
@@ -132,12 +128,15 @@ function (dojo, declare) {
             for (var i in gamedatas.playedpiece)
             {
                 piece = gamedatas.playedpiece[i];
-                if (this.isHorizontal(piece))
-                {
-                    piece.h = 'true';
-                }
                 this.addTokenOnBoardForPiece(piece);
+                if (piece.lastPlayed == 1)
+                {
+                    this.addLastPlayedMarkerOnPiece(piece);
+                }
             }
+
+            //either put it on the last played piece, or put it at the side of the board.
+            this.placeLastPlayedMarkerOnBoardIfNeeded();
 
             //this will become a method that checks how many of these there should be and dishes them out.
         	this.setupStock();
@@ -151,6 +150,20 @@ function (dojo, declare) {
             console.log("Ending game setup");
         },
         
+        placeLastPlayedMarkerOnBoardIfNeeded: function()
+        {
+            lastPlayedMarker = dojo.query('.lastPlayedMarker')[0]; //if piece is on board
+            if (lastPlayedMarker)
+            {
+                //already on board
+            }
+            else
+            {
+                //TODO - put somewhere nice
+                dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'board');
+            }
+        },
+
         setupStock: function() {
         	this.setupStockColour("00359f", this.getNumberOfPiecesInStockForColor("00359f"));
         	this.setupStockColour("ffffff", this.getNumberOfPiecesInStockForColor("ffffff"));
@@ -419,15 +432,12 @@ function (dojo, declare) {
             if (!this.shouldIgnoreMouseOverPossibleMove())
             {
                 xy = this.getXYFromTwoWordId(event.currentTarget.id);
-                this.updatePossibleMoveIfNeeded(x, y)
+                this.updatePossibleMoveIfNeeded(xy[0], xy[1])
             }
         },
 
         updatePossibleMoveIfNeeded : function(x, y)
         {
-            x = xy[0];
-            y = xy[1];
-
             //adjust the move for the board limits
             if (this.horizontalToPlay == 'true'
                 && !this.isValidMove(x, y))
@@ -458,6 +468,8 @@ function (dojo, declare) {
             {
                 return true;
             }
+
+            //TODO - add check for only 6 pieces
 
             return false;
         },
@@ -564,8 +576,6 @@ function (dojo, declare) {
 
         placePotentialPiece : function(x, y)
         {
-
-
             x_y = x + '_' + y;
 
             dojo.place(this.format_block('jstpl_potential_piece', {
@@ -636,6 +646,8 @@ function (dojo, declare) {
 
             //TODO - add check to make sure they can only play one tile per turn - global variable check or something?
 
+            //TODO - add check to make sure there can only be 6 of each colour
+
             this.ajaxcall( "/linkage/linkage/placePiece.html", {
                 x: x,
                 y: y,
@@ -645,7 +657,7 @@ function (dojo, declare) {
 
             this.destroyPotentialPieceIfPresent();
             this.colourToPlay = "";
-            //horizontalToPlay is just boolean so is not reset here
+            //horizontalToPlay is just a boolean so is not reset here
         },
 
         /* Example:
@@ -728,11 +740,13 @@ function (dojo, declare) {
         */
        notif_addToken: function(notif)
        {
-           console.log('notif_addToken');
-           console.log('notif');
-
            this.addTokenOnBoard(notif.args.x, notif.args.y, notif.args.colour, notif.args.h);
            this.moveLastPlayedMarker(notif.args.x, notif.args.y);
+       },
+
+       notif_updateUnplayedPieces: function(notif)
+       {
+            console.log('Notif_updateUnplayedPieces');
        }
    });             
 });
