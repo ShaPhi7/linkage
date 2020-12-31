@@ -24,30 +24,46 @@ function (dojo, declare) {
     return declare("bgagame.linkage", ebg.core.gamegui, {
         constructor: function(){
             console.log('linkage constructor');
-              
-            this.colourToPlay  = "";
+            
             this.possibleMoves = [];
             this.playedPieces  = [];
+
+            this.colourToPlay  = "";
+            this.horizontalToPlay = "false";
         },
         
-
-        addTokenOnBoardForXY: function(x, y)
-        {
-            this.addTokenOnBoard(x, y, this.colourToPlay);
-        },
-
-        addTokenOnBoard: function(x, y, colour)
+        addTokenOnBoard: function(x, y, colour, h)
         {
             x_y = x + '_' + y;
             dojo.place(this.format_block('jstpl_piece', {
                 x_y: x_y,
                 color: colour,
+                h: h,
             }) , 'space_' + x_y);
 
+            x2 = x;
             y2 = y;
-            y2++;
-            this.playedPieces.push({x1:x, y1:y, x2: x, y2: y2, color: colour});
-            //TODO - y2 is int, rest are strings. LastPlayed is missing. Horizontal?
+
+            //TODO - find a better way
+            if (h == 'true')
+            {
+                dojo.style('piece_' + x + '_' + y, "transform", "rotate(90deg)");
+                x2++;
+                x2 = '' + x2 + '';
+            }
+            else
+            {
+                y2++;
+                y2 = '' + y2 + '';
+            }
+
+            this.addToPlayedPieces(x1=x, y1=y, x2=x, y2=y2, color=colour);
+            
+        },
+
+        addToPlayedPieces: function(x, y, x2, y2, colour)
+        {
+            this.playedPieces.push({x1:x, y1:y, x2: x2, y2: y2, color: colour});
         },
 
         addTokenOnBoardForPiece: function(piece)
@@ -57,23 +73,13 @@ function (dojo, declare) {
             {
                 this.addOmmittedSpaceMarkerOnBoard(piece);
             }
-            else if (this.isHorizontal(piece))
-            {
-                //TODO
-            }
             else
             {
                 x = piece.x1;
                 y = piece.y1;
                 colour = piece.color;
-                this.addTokenOnBoard(x, y, colour);
-            
-                //TODO not needed?
-                //pieceName = 'piece_' + $x_y;
-                //this.placeOnObject(pieceName, 'board');
-                //dojo.place(pieceName, 'space_' + $x_y);
-                //dojo.style(pieceName, "left", "0px");
-                //dojo.style(pieceName, "top", "0px");
+                h = piece.h;
+                this.addTokenOnBoard(x, y, colour, h);
             }
 
             if (piece.lastPlayed == "1")
@@ -126,9 +132,12 @@ function (dojo, declare) {
             for (var i in gamedatas.playedpiece)
             {
                 piece = gamedatas.playedpiece[i];
+                if (this.isHorizontal(piece))
+                {
+                    piece.h = 'true';
+                }
                 this.addTokenOnBoardForPiece(piece);
             }
-            this.playedPieces = gamedatas.playedpiece;
 
             //this will become a method that checks how many of these there should be and dishes them out.
         	this.setupStock();
@@ -153,14 +162,37 @@ function (dojo, declare) {
         setupStockColour: function(color, unplayedPieces) {
         	for(var i=0; i<unplayedPieces; i++)
             {
-        		dojo.place(this.format_block('jstpl_unplayed_piece', {
-    	            n: i,
-    	            color: color,
-    	        }) , 'stockHolder_' + color);
-    	        dojo.style('unplayed_piece_' + i + '_' + color, "left", "25%");
-    	        dojo.style('unplayed_piece_' + i + '_' + color, "top", "100px");
-    	        dojo.style('unplayed_piece_' + i + '_' + color, "position", "absolute");
+                //note that playing one piece removes one vertical and one horizontal piece of that colour
+                this.addUnplayedPieceToStockVertical(i, color);
+                this.addUnplayedPieceToStockHorizontal(i, color);
             }
+        },
+
+        addUnplayedPieceToStockVertical: function(i, color)
+        {
+            this.addUnplayedPieceToStock(i, color, false);
+
+            dojo.style('unplayed_piece_' + i + '_' + color, "top", "100px");
+        },
+        
+        addUnplayedPieceToStockHorizontal: function(i, color)
+        {
+            id = i + "h";
+            this.addUnplayedPieceToStock(id, color, true);
+
+            dojo.style('unplayed_piece_' + id + '_' + color, "transform", "rotate(90deg)");
+            dojo.style('unplayed_piece_' + id + '_' + color, "top", "250px");
+        },
+
+        addUnplayedPieceToStock: function(i, color, horizontal)
+        {
+            dojo.place(this.format_block('jstpl_unplayed_piece', {
+                n: i,
+                color: color,
+                h: horizontal,
+            }) , 'stockHolder_' + color);
+            dojo.style('unplayed_piece_' + i + '_' + color, "left", "25%");
+            dojo.style('unplayed_piece_' + i + '_' + color, "position", "absolute");
         },
 
         ///////////////////////////////////////////////////
@@ -254,9 +286,9 @@ function (dojo, declare) {
        getNumberOfPiecesOnBoardForColor: function(color)
        {
            var numberOfPiecesForColor = 0;
-           for (var i in this.gamedatas.playedpiece)
+           for (var i in this.playedPieces)
            {
-               piece = this.gamedatas.playedpiece[i];
+               piece = this.playedPieces[i];
                
                if (piece.color == color)
                {
@@ -267,6 +299,7 @@ function (dojo, declare) {
            return numberOfPiecesForColor;
        },
 
+       //TODO - can we make these use dojo.attr instead
        getX_YFromTwoWordId : function(id)
        {
             xy = this.getXYFromTwoWordId(id);
@@ -338,9 +371,9 @@ function (dojo, declare) {
 
        isPlayedPieceOnSpace: function(x, y)
        {
-            for (var pp in this.gamedatas.playedpiece)
+            for (var pp in this.playedPieces)
             {
-                playedPiece = this.gamedatas.playedpiece[pp];
+                playedPiece = this.playedPieces[pp];
                 if (x == playedPiece.x1
                  && y == playedPiece.y1)
                 {
@@ -383,9 +416,29 @@ function (dojo, declare) {
         {
             dojo.stopEvent(event);
 
-            xy = this.getXYFromTwoWordId(event.currentTarget.id);
+            if (!this.shouldIgnoreMouseOverPossibleMove())
+            {
+                xy = this.getXYFromTwoWordId(event.currentTarget.id);
+                this.updatePossibleMoveIfNeeded(x, y)
+            }
+        },
+
+        updatePossibleMoveIfNeeded : function(x, y)
+        {
             x = xy[0];
             y = xy[1];
+
+            //adjust the move for the board limits
+            if (this.horizontalToPlay == 'true'
+                && !this.isValidMove(x, y))
+            {
+                x = x-1;
+            }
+            else if (this.horizontalToPlay == 'false'
+            && !this.isValidMove(x, y))
+            {
+                y = y-1;
+            }
 
             if (this.shouldUpdatePossibleMove(x, y))
             {
@@ -394,7 +447,7 @@ function (dojo, declare) {
             }
         },
 
-        shouldUpdatePossibleMove : function(x, y)
+        shouldIgnoreMouseOverPossibleMove : function()
         {
             if (!this.isCurrentPlayerActive())
             {
@@ -405,7 +458,10 @@ function (dojo, declare) {
             {
                 return false;
             }
+        },
 
+        shouldUpdatePossibleMove : function(x, y)
+        {
             if (!this.isValidMove(x, y))
             {
                 return false;
@@ -437,14 +493,61 @@ function (dojo, declare) {
             return false;
         },
 
-        //TODO - this check should be smarter and allow placement where I'm hovering over the lower part of where a vertical piece would go.
+        isSpace : function(x, y)
+        {
+            return x >= 0
+            && y >= 0
+            && x < 7
+            && y < 7;
+        },
+
         isValidMove : function(x, y)
         {
-            yPlusOne = y;
-            yPlusOne++;
+            if (!this.isSpace(x, y))
+            {
+                return false;
+            }
 
-            return this.possibleMoves[x][y]
-              && this.possibleMoves[x][yPlusOne];
+            if (this.horizontalToPlay == 'true')
+            {
+                return this.isValidMoveHorizontal(x, y);
+            }
+            else
+            {
+                return this.isValidMoveVertical(x, y);
+            }
+        },
+
+        isValidMoveHorizontal : function(x, y)
+        {
+            if (x == 6)
+            {
+                return false;
+            }
+            else
+            {
+                xPlusOne = x;
+                xPlusOne++;
+
+                return this.possibleMoves[xPlusOne][y]
+                    && this.possibleMoves[x][y];
+            }
+        },
+
+        isValidMoveVertical : function(x, y)
+        {
+            if (y == 6)
+            {
+                return false;
+            }
+            else
+            {
+                yPlusOne = y;
+                yPlusOne++;
+
+                return this.possibleMoves[x][y]
+                    && this.possibleMoves[x][yPlusOne];
+            }
         },
 
         destroyPotentialPieceIfPresent : function()
@@ -459,12 +562,20 @@ function (dojo, declare) {
 
         placePotentialPiece : function(x, y)
         {
+
+
             x_y = x + '_' + y;
 
             dojo.place(this.format_block('jstpl_potential_piece', {
                 x_y: x_y,
                 color: this.colourToPlay,
+                h: this.horizontalToPlay //note - sometimes shows as unset in debugger, but it is set
             }) , 'space_' + x_y);
+
+            if (this.horizontalToPlay == 'true')
+            {
+                dojo.style('potential_piece_' + x + '_' + y, "transform", "rotate(90deg)");
+            }
 
             dojo.query('.potentialPiece').connect('onclick', this, 'onPotentialPiece');
         },
@@ -480,20 +591,22 @@ function (dojo, declare) {
             {
                 return;
             }
-
-            var id = event.currentTarget.id;
+            var unplayedPiece = event.currentTarget;
+            var id = unplayedPiece.id;
 
             console.log('id: ' + id);
 
-            this.colourToPlay = id.split('_')[3];
+            this.colourToPlay = dojo.attr(id, 'color');
+            this.horizontalToPlay = dojo.attr(id, 'h');            
 
             console.log('colourToPlay: ' + this.colourToPlay);
+            console.log('horizontalToPlay: ' + this.horizontalToPlay);
 
             this.destroyPotentialPieceIfPresent();      
         },
 
         onPotentialPiece: function(event)
-        {//now you can add in notifications
+        {
             dojo.stopEvent(event);
 
             xy = this.getXYFromTwoWordId(event.currentTarget.id);
@@ -522,13 +635,15 @@ function (dojo, declare) {
             //TODO - add check to make sure they can only play one tile per turn - global variable check or something?
 
             this.ajaxcall( "/linkage/linkage/placePiece.html", {
-                x:x,
-                y:y,
-                color:this.colourToPlay
+                x: x,
+                y: y,
+                color: this.colourToPlay,
+                h: this.horizontalToPlay, //note - sometimes debugger shows h as unset, even though it is.
             }, this, function(result){});
 
             this.destroyPotentialPieceIfPresent();
             this.colourToPlay = "";
+            //horizontalToPlay is just boolean so is not reset here
         },
 
         /* Example:
@@ -614,7 +729,7 @@ function (dojo, declare) {
            console.log('notif_addToken');
            console.log('notif');
 
-           this.addTokenOnBoard(notif.args.x, notif.args.y, notif.args.colour);
+           this.addTokenOnBoard(notif.args.x, notif.args.y, notif.args.colour, notif.args.h);
            this.moveLastPlayedMarker(notif.args.x, notif.args.y);
        }
    });             

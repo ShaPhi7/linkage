@@ -326,7 +326,19 @@ class Linkage extends Table
         (note: each method below must match an input method in linkage.action.php)
     */
     
-    function placePiece($x, $y, $color)
+    function placePiece($x, $y, $color, $h)
+    {
+        if ($h == 'true')
+        {
+            self::placePieceHorizontal($x, $y, $color, $h);
+        }   
+        else
+        {
+            self::placePieceVertical($x, $y, $color, $h);
+        }
+    }
+
+    function placePieceVertical($x, $y, $color, $h)
     {      
         //check action possible, check action sensible etc.
         self::checkAction('placePiece'); 
@@ -354,13 +366,49 @@ class Linkage extends Table
                     'player_name' => self::getActivePlayerName(),
                     'x' => $x,
                     'y' => $y,
-                    'colour' => $color
+                    'colour' => $color,
+                    'h' => $h
                  ) 
             );
         
         $this->gamestate->nextState('placePiece');
     }
 
+    function placePieceHorizontal($x, $y, $color, $h)
+    {
+        //check action possible, check action sensible etc.
+        self::checkAction('placePiece'); 
+
+        $possibleMoves = self::getPossibleMoves();
+
+        if (!$possibleMoves[$x][$y]
+        || !self::isThereAPlayableSpaceRight($possibleMoves, $x, $y))
+        {
+            throw new feException("Impossible move");
+            return;
+        }
+
+        //TODO: are there enough of that colour left?
+
+        //we've decided we are playing a piece, so remove any existing last played pieces.
+        $sql = "UPDATE playedpiece SET last_played = 0";
+        self::DbQuery($sql);
+
+        self::insertPlayedPiece($x,$y,$x+1,$y,$color,1);
+
+        self::notifyAllPlayers("addToken",
+            clienttranslate('${player_name} places a token'),
+            array(
+                    'player_name' => self::getActivePlayerName(),
+                    'x' => $x,
+                    'y' => $y,
+                    'colour' => $color,
+                    'h' => $h
+                ) 
+            );
+
+        $this->gamestate->nextState('placePiece');
+    }
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
