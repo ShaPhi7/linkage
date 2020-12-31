@@ -132,7 +132,7 @@ function (dojo, declare) {
             for (var i in gamedatas.playedpiece)
             {
                 piece = gamedatas.playedpiece[i];
-                if (piece.x1 < piece.x2)
+                if (this.isHorizontal(piece))
                 {
                     piece.h = 'true';
                 }
@@ -416,9 +416,29 @@ function (dojo, declare) {
         {
             dojo.stopEvent(event);
 
-            xy = this.getXYFromTwoWordId(event.currentTarget.id);
+            if (!this.shouldIgnoreMouseOverPossibleMove())
+            {
+                xy = this.getXYFromTwoWordId(event.currentTarget.id);
+                this.updatePossibleMoveIfNeeded(x, y)
+            }
+        },
+
+        updatePossibleMoveIfNeeded : function(x, y)
+        {
             x = xy[0];
             y = xy[1];
+
+            //adjust the move for the board limits
+            if (this.horizontalToPlay == 'true'
+                && !this.isValidMove(x, y))
+            {
+                x = x-1;
+            }
+            else if (this.horizontalToPlay == 'false'
+            && !this.isValidMove(x, y))
+            {
+                y = y-1;
+            }
 
             if (this.shouldUpdatePossibleMove(x, y))
             {
@@ -427,7 +447,7 @@ function (dojo, declare) {
             }
         },
 
-        shouldUpdatePossibleMove : function(x, y)
+        shouldIgnoreMouseOverPossibleMove : function()
         {
             if (!this.isCurrentPlayerActive())
             {
@@ -438,7 +458,10 @@ function (dojo, declare) {
             {
                 return false;
             }
+        },
 
+        shouldUpdatePossibleMove : function(x, y)
+        {
             if (!this.isValidMove(x, y))
             {
                 return false;
@@ -470,16 +493,39 @@ function (dojo, declare) {
             return false;
         },
 
-        //TODO NEXT - this check should be smarter and allow placement where I'm hovering over the lower part of where a vertical piece would go.
         isValidMove : function(x, y)
         {
             if (this.horizontalToPlay == 'true')
             {
+                return this.isValidMoveHorizontal(x, y);
+            }
+            else
+            {
+                return this.isValidMoveVertical(x, y);
+            }
+        },
+
+        isValidMoveHorizontal : function(x, y)
+        {
+            if (x == 6)
+            {
+                return false;
+            }
+            else
+            {
                 xPlusOne = x;
                 xPlusOne++;
-                //TODO - currently breaks if on edge of board
+
                 return this.possibleMoves[xPlusOne][y]
                     && this.possibleMoves[x][y];
+            }
+        },
+
+        isValidMoveVertical : function(x, y)
+        {
+            if (y == 6)
+            {
+                return false;
             }
             else
             {
@@ -503,12 +549,14 @@ function (dojo, declare) {
 
         placePotentialPiece : function(x, y)
         {
+
+
             x_y = x + '_' + y;
 
             dojo.place(this.format_block('jstpl_potential_piece', {
                 x_y: x_y,
                 color: this.colourToPlay,
-                h: this.horizontalToPlay //TODO - keeps showing as undefined, why won't it set???
+                h: this.horizontalToPlay //note - sometimes shows as unset in debugger, but it is set
             }) , 'space_' + x_y);
 
             if (this.horizontalToPlay == 'true')
