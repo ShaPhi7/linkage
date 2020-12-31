@@ -361,7 +361,7 @@ class Linkage extends Table
                  ) 
             );
         
-        self::notifyAllPlayers("updateUnplayedPieces", '', array());
+        self::notifyAllPlayers("updateStock", '', array());
 
         $this->gamestate->nextState('placePiece');
     }

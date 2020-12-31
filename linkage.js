@@ -139,9 +139,8 @@ function (dojo, declare) {
             this.placeLastPlayedMarkerOnBoardIfNeeded();
 
             //this will become a method that checks how many of these there should be and dishes them out.
-        	this.setupStock();
+            this.setupStock();
             
-            dojo.query('.unplayedPiece').connect('onclick', this, 'onUnplayedPiece');
             dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
             //TODO - do I need to care about removing these connectors?
             // Setup game notifications to handle (see "setupNotifications" method below)
@@ -164,47 +163,68 @@ function (dojo, declare) {
             }
         },
 
-        setupStock: function() {
-        	this.setupStockColour("00359f", this.getNumberOfPiecesInStockForColor("00359f"));
-        	this.setupStockColour("ffffff", this.getNumberOfPiecesInStockForColor("ffffff"));
-        	this.setupStockColour("860000", this.getNumberOfPiecesInStockForColor("860000"));
-            this.setupStockColour("e48a01", this.getNumberOfPiecesInStockForColor("e48a01"));
-    	},
+        setupStock: function()
+        {
+            this.setupStockColour("00359f");
+        	this.setupStockColour("ffffff");
+        	this.setupStockColour("860000");
+            this.setupStockColour("e48a01");
+
+            dojo.query('.unplayedPiece').connect('onclick', this, 'onUnplayedPiece');
+        },
         
-        setupStockColour: function(color, unplayedPieces) {
-        	for(var i=0; i<unplayedPieces; i++)
+        setupStockColour: function(color)
+        {
+            if (this.getNumberOfPiecesInStockForColor(color) > 0)
             {
-                //note that playing one piece removes one vertical and one horizontal piece of that colour
-                this.addUnplayedPieceToStockVertical(i, color);
-                this.addUnplayedPieceToStockHorizontal(i, color);
+                this.addUnplayedPieceToStockVertical(color);
+                this.addUnplayedPieceToStockHorizontal(color);
             }
         },
 
-        addUnplayedPieceToStockVertical: function(i, color)
+        addUnplayedPieceToStockVertical: function(color)
         {
-            this.addUnplayedPieceToStock(i, color, false);
+            id = 'unplayed_piece_v';
+            this.addUnplayedPieceToStock(id, color, false);
 
-            dojo.style('unplayed_piece_' + i + '_' + color, "top", "100px");
+            dojo.style(id + '_' + color, "top", "100px");
         },
         
-        addUnplayedPieceToStockHorizontal: function(i, color)
+        addUnplayedPieceToStockHorizontal: function(color)
         {
-            id = i + "h";
+            id = 'unplayed_piece_h';
             this.addUnplayedPieceToStock(id, color, true);
 
-            dojo.style('unplayed_piece_' + id + '_' + color, "transform", "rotate(90deg)");
-            dojo.style('unplayed_piece_' + id + '_' + color, "top", "250px");
+            dojo.style(id + '_' + color, "transform", "rotate(90deg)");
+            dojo.style(id + '_' + color, "top", "250px");
         },
 
-        addUnplayedPieceToStock: function(i, color, horizontal)
+        addUnplayedPieceToStock: function(id, color, horizontal)
         {
             dojo.place(this.format_block('jstpl_unplayed_piece', {
-                n: i,
+                n: id,
                 color: color,
                 h: horizontal,
             }) , 'stockHolder_' + color);
-            dojo.style('unplayed_piece_' + i + '_' + color, "left", "25%");
-            dojo.style('unplayed_piece_' + i + '_' + color, "position", "absolute");
+            dojo.style(id + '_' + color, "left", "25%");
+            dojo.style(id + '_' + color, "position", "absolute");
+        },
+
+        updateStock: function()
+        {
+            this.removeUnplayedPiecesIfStockEmpty("00359f");
+        	this.removeUnplayedPiecesIfStockEmpty("ffffff");
+        	this.removeUnplayedPiecesIfStockEmpty("860000");
+            this.removeUnplayedPiecesIfStockEmpty("e48a01");
+        },
+
+        removeUnplayedPiecesIfStockEmpty: function(color)
+        {
+            if (!this.getNumberOfPiecesInStockForColor(color) > 0)
+            {
+                dojo.destroy('unplayed_piece_v' + '_' + color);
+                dojo.destroy('unplayed_piece_h' + '_' + color);
+            }
         },
 
         ///////////////////////////////////////////////////
@@ -723,8 +743,8 @@ function (dojo, declare) {
             // 
             dojo.subscribe( 'addToken', this, "notif_addToken" );
             this.notifqueue.setSynchronous( 'addToken', 500 );
-            dojo.subscribe( 'updateUnplayedPieces', this, "notif_updateUnplayedPieces" );
-            this.notifqueue.setSynchronous( 'updateUnplayedPieces', 500 );
+            dojo.subscribe( 'updateStock', this, "notif_updateStock" );
+            this.notifqueue.setSynchronous( 'updateStock', 500 );
         },  
         
         /*
@@ -745,10 +765,9 @@ function (dojo, declare) {
            this.moveLastPlayedMarker(notif.args.x, notif.args.y);
        },
 
-       notif_updateUnplayedPieces: function(notif)
+       notif_updateStock: function(notif)
        {
-            
+            this.updateStock();
        }
    });             
 });
-
