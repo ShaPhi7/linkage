@@ -451,13 +451,15 @@ function (dojo, declare) {
         {
             if (!this.isCurrentPlayerActive())
             {
-                return false;
+                return true;
             }
 
             if (this.colourToPlay == "")
             {
-                return false;
+                return true;
             }
+
+            return false;
         },
 
         shouldUpdatePossibleMove : function(x, y)
