@@ -493,8 +493,21 @@ function (dojo, declare) {
             return false;
         },
 
+        isSpace : function(x, y)
+        {
+            return x >= 0
+            && y >= 0
+            && x < 7
+            && y < 7;
+        },
+
         isValidMove : function(x, y)
         {
+            if (!this.isSpace(x, y))
+            {
+                return false;
+            }
+
             if (this.horizontalToPlay == 'true')
             {
                 return this.isValidMoveHorizontal(x, y);
