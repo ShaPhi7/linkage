@@ -328,7 +328,7 @@ class Linkage extends Table
     
     function placePiece($x, $y, $color, $h)
     {
-        if ($h)
+        if ($h == 'true')
         {
             self::placePieceHorizontal($x, $y, $color, $h);
         }   
@@ -358,7 +358,6 @@ class Linkage extends Table
         $sql = "UPDATE playedpiece SET last_played = 0";
         self::DbQuery($sql);
 
-        //TODO - make work with horizontal
         self::insertPlayedPiece($x,$y,$x,$y+1,$color,1);
 
         self::notifyAllPlayers("addToken",

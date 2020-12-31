@@ -132,6 +132,10 @@ function (dojo, declare) {
             for (var i in gamedatas.playedpiece)
             {
                 piece = gamedatas.playedpiece[i];
+                if (piece.x1 < piece.x2)
+                {
+                    piece.h = 'true';
+                }
                 this.addTokenOnBoardForPiece(piece);
             }
 
