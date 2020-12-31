@@ -184,6 +184,12 @@ class Linkage extends Table
         return self::getObjectFromDB($sql);
     }
 
+    function unmarkLastPlayedPiece()
+    {
+        $sql = "UPDATE playedpiece SET last_played = 0";
+        return self::DbQuery($sql);
+    }
+
     function getArrayOfSpaces()
     {
         $possibleMoves = array();
@@ -325,28 +331,13 @@ class Linkage extends Table
         Each time a player is doing some game action, one of the methods below is called.
         (note: each method below must match an input method in linkage.action.php)
     */
-    
-    function placePiece($x, $y, $color, $h)
-    {
-        if ($h == 'true')
-        {
-            self::placePieceHorizontal($x, $y, $color, $h);
-        }   
-        else
-        {
-            self::placePieceVertical($x, $y, $color, $h);
-        }
-    }
 
-    function placePieceVertical($x, $y, $color, $h)
+    function placePiece($x, $y, $color, $h)
     {      
         //check action possible, check action sensible etc.
         self::checkAction('placePiece'); 
 
-        $possibleMoves = self::getPossibleMoves();
-
-        if (!$possibleMoves[$x][$y]
-        || !self::isThereAPlayableSpaceBelow($possibleMoves, $x, $y))
+        if (!self::validMove($x, $y, $h))
         {
             throw new feException( "Impossible move" );
             return;
@@ -355,10 +346,9 @@ class Linkage extends Table
         //TODO: are there enough of that colour left?
         
         //we've decided we are playing a piece, so remove any existing last played pieces.
-        $sql = "UPDATE playedpiece SET last_played = 0";
-        self::DbQuery($sql);
+        self::unmarkLastPlayedPiece();
 
-        self::insertPlayedPiece($x,$y,$x,$y+1,$color,1);
+        self::insertPiece($x,$y, $color, $h);
 
         self::notifyAllPlayers("addToken",
             clienttranslate('${player_name} places a token'),
@@ -371,43 +361,46 @@ class Linkage extends Table
                  ) 
             );
         
+        self::notifyAllPlayers("updateUnplayedPieces", '', array());
+
         $this->gamestate->nextState('placePiece');
     }
 
-    function placePieceHorizontal($x, $y, $color, $h)
+    function validMove($x, $y, $h)
     {
-        //check action possible, check action sensible etc.
-        self::checkAction('placePiece'); 
-
         $possibleMoves = self::getPossibleMoves();
-
-        if (!$possibleMoves[$x][$y]
-        || !self::isThereAPlayableSpaceRight($possibleMoves, $x, $y))
+        if ($h == 'true')
         {
-            throw new feException("Impossible move");
-            return;
+            return self::validMoveHorizontal($x, $y, $possibleMoves);
+        }   
+        else
+        {
+            return self::validMoveVertical($x, $y, $possibleMoves);
         }
+    }
 
-        //TODO: are there enough of that colour left?
+    function validMoveHorizontal($x, $y, $possibleMoves)
+    {
+        return $possibleMoves[$x][$y]
+          && self::isThereAPlayableSpaceRight($possibleMoves, $x, $y);
+    }
 
-        //we've decided we are playing a piece, so remove any existing last played pieces.
-        $sql = "UPDATE playedpiece SET last_played = 0";
-        self::DbQuery($sql);
+    function validMoveVertical($x, $y, $possibleMoves)
+    {
+        return $possibleMoves[$x][$y]
+          && self::isThereAPlayableSpaceBelow($possibleMoves, $x, $y);
+    }
 
-        self::insertPlayedPiece($x,$y,$x+1,$y,$color,1);
-
-        self::notifyAllPlayers("addToken",
-            clienttranslate('${player_name} places a token'),
-            array(
-                    'player_name' => self::getActivePlayerName(),
-                    'x' => $x,
-                    'y' => $y,
-                    'colour' => $color,
-                    'h' => $h
-                ) 
-            );
-
-        $this->gamestate->nextState('placePiece');
+    function insertPiece($x, $y, $color, $h)
+    {
+        if ($h == 'true')
+        {
+            return self::insertPlayedPiece($x,$y,$x+1,$y,$color,1);
+        }
+        else
+        {
+            return self::insertPlayedPiece($x,$y,$x,$y+1,$color,1);
+        }
     }
     
 //////////////////////////////////////////////////////////////////////////////

@@ -169,7 +169,6 @@ function (dojo, declare) {
         	this.setupStockColour("ffffff", this.getNumberOfPiecesInStockForColor("ffffff"));
         	this.setupStockColour("860000", this.getNumberOfPiecesInStockForColor("860000"));
             this.setupStockColour("e48a01", this.getNumberOfPiecesInStockForColor("e48a01"));
-            //TODO - add notifications for when these pieces deplete, and validation against adding extra.
     	},
         
         setupStockColour: function(color, unplayedPieces) {
@@ -724,6 +723,8 @@ function (dojo, declare) {
             // 
             dojo.subscribe( 'addToken', this, "notif_addToken" );
             this.notifqueue.setSynchronous( 'addToken', 500 );
+            dojo.subscribe( 'updateUnplayedPieces', this, "notif_updateUnplayedPieces" );
+            this.notifqueue.setSynchronous( 'updateUnplayedPieces', 500 );
         },  
         
         /*
@@ -746,7 +747,7 @@ function (dojo, declare) {
 
        notif_updateUnplayedPieces: function(notif)
        {
-            console.log('Notif_updateUnplayedPieces');
+            
        }
    });             
 });
