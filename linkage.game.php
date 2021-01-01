@@ -176,6 +176,14 @@ class Linkage extends Table
         return self::getObjectListFromDB($sql);
     }
 
+    function getPlayedPiecesWithoutMarkers()
+    {
+        $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`
+        FROM `playedpiece` 
+        WHERE `color` <> 000000";
+        return self::getObjectListFromDB($sql);
+    }
+
     function getLastPlayedPiece()
     {
         $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`, `last_played` 
@@ -325,8 +333,7 @@ class Linkage extends Table
 
     function calculateNumberOfColourGroups()
     {
-        $playedPieces = self::getPlayedPieces();
-        unset($playedPieces["000000"]);
+        $playedPieces = self::getPlayedPiecesWithoutMarkers();
         $colorToPieceLocation = array("ffffff" => array(),
                                       "00359f" => array(),
                                       "860000" => array(),
@@ -342,18 +349,23 @@ class Linkage extends Table
         $colours = array_keys($colorToPieceLocation);
         $spacesFound = array();
         $groups = 0; 
-        foreach ($colours as $colour => $space)//can do this as 2 foreach loops if doesn't work
+        foreach ($colours as $colour)//can do this as 2 foreach loops if doesn't work
         {
-            if (!in_array($space, $spacesFound))
+            $spacesForColour = $colorToPieceLocation[$colour];
+            foreach ($spacesForColour as $space)
             {
-                self::findAdjacentSpaces($colour, $spacesFound, $space["x"], $space["y"]);
-                $groups++;
-            }
+                if (!in_array($space, $spacesFound))
+                {
+                    self::findAdjacentSpaces($spacesForColour, $spacesFound, $space["x"], $space["y"]);
+                    //self::findAdjacentSpaces($colour, $spacesFound, $colour["x"], $colour["y"]);
+                    $groups++;
+                }
+            }   
         }
         return $groups;
     }
 
-    function findAdjacentSpaces($colour, $spacesFound, $x, $y)
+    function findAdjacentSpaces($spacesForColour, $spacesFound, $x, $y)
     {
         $space = array($x, $y);
         if (in_array($space, $spacesFound))
@@ -362,13 +374,13 @@ class Linkage extends Table
             return;
         }
         
-        if (in_array($space, $colour))
+        if (in_array($space, $spacesForColour))
         {
             $spacesFound[] = $space;
-            self::findAdjacentSpaces($colour, $spacesFound, $x+1, $y);
-            self::findAdjacentSpaces($colour, $spacesFound, $x, $y+1);
-            self::findAdjacentSpaces($colour, $spacesFound, $x, $y-1);
-            self::findAdjacentSpaces($colour, $spacesFound, $x-1, $y);
+            self::findAdjacentSpaces($spacesForColour, $spacesFound, $x+1, $y);
+            self::findAdjacentSpaces($spacesForColour, $spacesFound, $x, $y+1);
+            self::findAdjacentSpaces($spacesForColour, $spacesFound, $x, $y-1);
+            self::findAdjacentSpaces($spacesForColour, $spacesFound, $x-1, $y);
         }
     }
 
