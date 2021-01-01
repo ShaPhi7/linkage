@@ -323,6 +323,55 @@ class Linkage extends Table
         }
     }
 
+    function calculateNumberOfColourGroups()
+    {
+        $playedPieces = self::getPlayedPieces();
+        unset($playedPieces["000000"]);
+        $colorToPieceLocation = array("ffffff" => array(),
+                                      "00359f" => array(),
+                                      "860000" => array(),
+                                      "e48a01" => array());
+            foreach ($playedPieces as $pp)
+        {
+            $currentArray = $colorToPieceLocation[$pp["color"]];
+            $currentArray[] = array("x" => $pp["x1"], "y" => $pp["x2"]);
+            $currentArray[] = array("x" => $pp["y1"], "y" => $pp["y2"]);
+            $colorToPieceLocation[$pp["color"]] = $currentArray;
+        }
+
+        $colours = array_keys($colorToPieceLocation);
+        $spacesFound = array();
+        $groups = 0; 
+        foreach ($colours as $colour => $space)//can do this as 2 foreach loops if doesn't work
+        {
+            if (!in_array($space, $spacesFound))
+            {
+                self::findAdjacentSpaces($colour, $spacesFound, $space["x"], $space["y"]);
+                $groups++;
+            }
+        }
+        return $groups;
+    }
+
+    function findAdjacentSpaces($colour, $spacesFound, $x, $y)
+    {
+        $space = array($x, $y);
+        if (in_array($space, $spacesFound))
+        {
+            //already found this space
+            return;
+        }
+        
+        if (in_array($space, $colour))
+        {
+            $spacesFound[] = $space;
+            self::findAdjacentSpaces($colour, $spacesFound, $x+1, $y);
+            self::findAdjacentSpaces($colour, $spacesFound, $x, $y+1);
+            self::findAdjacentSpaces($colour, $spacesFound, $x, $y-1);
+            self::findAdjacentSpaces($colour, $spacesFound, $x-1, $y);
+        }
+    }
+
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -445,8 +494,18 @@ class Linkage extends Table
     
     function stNextTurnOrEnd()
     {
-        $this->activeNextPlayer();
-        $this->gamestate->nextState('nextPlayer');
+        $numberOfGroups = self::calculateNumberOfColourGroups();
+
+        if (count(self::getPossibleMoves()) > 0)
+        {
+            //TODO - can remove last played marker to free up space and pass go?
+            $this->activeNextPlayer();
+            $this->gamestate->nextState('nextPlayer');
+        }
+        else
+        {
+            $this->gamestate->nextState('endGame');    
+        }
     }
 
     /*
