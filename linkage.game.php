@@ -31,7 +31,7 @@ class Linkage extends Table
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
-        
+        //TODO - use this?
         self::initGameStateLabels( array( 
             //    "my_first_global_variable" => 10,
             //    "my_second_global_variable" => 11,
@@ -39,7 +39,9 @@ class Linkage extends Table
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-        ) );        
+        ) );    
+
+        $this->spacesFound = array();    
 	}
 	
     protected function getGameName( )
@@ -83,7 +85,6 @@ class Linkage extends Table
         //Note - if you just want some pieces set on the board to test, you can quickly add them here.
         //self::insertPlayedPiece(4,3,5,3,"00359f",0);
         //self::insertPlayedPiece(2,2,2,3,"860000",1);
-        //self::insertPlayedPiece(0,0,0,0,"860000",count(self::getPossibleMoves()));
 
         /************ Start the game initialization *****/
 
@@ -180,7 +181,7 @@ class Linkage extends Table
     {
         $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`
         FROM `playedpiece` 
-        WHERE `color` <> 000000";
+        WHERE `color` <> '000000'";
         return self::getObjectListFromDB($sql);
     }
 
@@ -212,9 +213,28 @@ class Linkage extends Table
         return $possibleMoves;
     }
 
+    function getNumberOfPossibleMoves()
+    {
+        $numberOfPossibleMoves = 0;
+
+        $booleanArrayOfPossibleMoves = self::getBooleanArrayOfPossibleMoves();
+        for($x=0; $x<7; $x++)
+        {
+            for($y=0; $y<7; $y++)
+            {
+                if($booleanArrayOfPossibleMoves[$x][$y] == true)
+                {
+                    $numberOfPossibleMoves++;
+                }
+            }
+        }
+
+        return $numberOfPossibleMoves;
+    }
+
     //only rules here are must place on an empty space and must not place adjacent to the last played piece.
     //must also be adjacent to another playable square (i.e. single spaces are not playable).
-    function getPossibleMoves()
+    function getBooleanArrayOfPossibleMoves()
     {
         //TODO - refector
         $possibleMoves = self::getArrayOfSpaces();
@@ -338,26 +358,26 @@ class Linkage extends Table
                                       "00359f" => array(),
                                       "860000" => array(),
                                       "e48a01" => array());
-            foreach ($playedPieces as $pp)
+        foreach ($playedPieces as $pp)
         {
             $currentArray = $colorToPieceLocation[$pp["color"]];
-            $currentArray[] = array("x" => $pp["x1"], "y" => $pp["x2"]);
-            $currentArray[] = array("x" => $pp["y1"], "y" => $pp["y2"]);
+            $currentArray[] = array("x" => $pp["x1"], "y" => $pp["y1"]);
+            $currentArray[] = array("x" => $pp["x2"], "y" => $pp["y2"]);
             $colorToPieceLocation[$pp["color"]] = $currentArray;
         }
 
         $colours = array_keys($colorToPieceLocation);
-        $spacesFound = array();
+        $this->spacesFound = array();
         $groups = 0; 
         foreach ($colours as $colour)//can do this as 2 foreach loops if doesn't work
         {
             $spacesForColour = $colorToPieceLocation[$colour];
+
             foreach ($spacesForColour as $space)
             {
-                if (!in_array($space, $spacesFound))
+                if (!in_array($space, $this->spacesFound))
                 {
-                    self::findAdjacentSpaces($spacesForColour, $spacesFound, $space["x"], $space["y"]);
-                    //self::findAdjacentSpaces($colour, $spacesFound, $colour["x"], $colour["y"]);
+                    self::findAdjacentSpaces($spacesForColour, $space["x"], $space["y"]);
                     $groups++;
                 }
             }   
@@ -365,10 +385,11 @@ class Linkage extends Table
         return $groups;
     }
 
-    function findAdjacentSpaces($spacesForColour, $spacesFound, $x, $y)
+    function findAdjacentSpaces($spacesForColour, $x, $y)
     {
-        $space = array($x, $y);
-        if (in_array($space, $spacesFound))
+        $space = array("x" => $x, "y" => $y);
+
+        if (in_array($space, $this->spacesFound))
         {
             //already found this space
             return;
@@ -376,11 +397,12 @@ class Linkage extends Table
         
         if (in_array($space, $spacesForColour))
         {
-            $spacesFound[] = $space;
-            self::findAdjacentSpaces($spacesForColour, $spacesFound, $x+1, $y);
-            self::findAdjacentSpaces($spacesForColour, $spacesFound, $x, $y+1);
-            self::findAdjacentSpaces($spacesForColour, $spacesFound, $x, $y-1);
-            self::findAdjacentSpaces($spacesForColour, $spacesFound, $x-1, $y);
+            //TODO - do not check space if it goes below 0 or above 6
+            array_push($this->spacesFound, $space);   
+            self::findAdjacentSpaces($spacesForColour, $x+1, $y);
+            self::findAdjacentSpaces($spacesForColour, $x, $y+1);
+            self::findAdjacentSpaces($spacesForColour, $x, $y-1);
+            self::findAdjacentSpaces($spacesForColour, $x-1, $y);
         }
     }
 
@@ -429,7 +451,7 @@ class Linkage extends Table
 
     function validMove($x, $y, $h)
     {
-        $possibleMoves = self::getPossibleMoves();
+        $possibleMoves = self::getBooleanArrayOfPossibleMoves();
         if ($h == 'true')
         {
             return self::validMoveHorizontal($x, $y, $possibleMoves);
@@ -475,7 +497,7 @@ class Linkage extends Table
     */
     function argPlayerTurn()
     {
-        return array('possibleMoves' => self::getPossibleMoves(),
+        return array('possibleMoves' => self::getBooleanArrayOfPossibleMoves(),
                      'lastPlayedPiece' => self::getLastPlayedPiece());
     }
     /*
@@ -506,16 +528,44 @@ class Linkage extends Table
     
     function stNextTurnOrEnd()
     {
-        $numberOfGroups = self::calculateNumberOfColourGroups();
+        $numberOfPossibleMoves = self::getNumberOfPossibleMoves();
+        $colourGroups = self::calculateNumberOfColourGroups();
 
-        if (count(self::getPossibleMoves()) > 0)
+        if ($numberOfPossibleMoves > 0)
         {
+            //logging
+            $possibleMoves = $numberOfPossibleMoves;
+            self::notifyAllPlayers("log",
+            clienttranslate('There are '.$possibleMoves.' possible moves'),
+            array(
+                    'logging' => $possibleMoves
+                 ) 
+            );
+
+            self::notifyAllPlayers("log",
+            clienttranslate('There are '.$colourGroups.' colour groups'),
+            array(
+                    'logging' => $colourGroups
+                 ) 
+            );
+
             //TODO - can remove last played marker to free up space and pass go?
             $this->activeNextPlayer();
             $this->gamestate->nextState('nextPlayer');
         }
         else
         {
+            if (self::calculateNumberOfColourGroups() >= 12)
+            {
+                //more wins - white
+                $winner = 'ffffff';
+            }
+            else
+            {
+                //less wins - black
+                $winner = '000000';
+            }
+            self::DbQuery("UPDATE player SET player_score = 1 WHERE player_color = '${winner}'");
             $this->gamestate->nextState('endGame');    
         }
     }

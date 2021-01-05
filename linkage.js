@@ -745,6 +745,8 @@ function (dojo, declare) {
             this.notifqueue.setSynchronous( 'addToken', 500 );
             dojo.subscribe( 'updateStock', this, "notif_updateStock" );
             this.notifqueue.setSynchronous( 'updateStock', 500 );
+            dojo.subscribe( 'log', this, "notif_log" );
+            this.notifqueue.setSynchronous( 'log', 500 );
         },  
         
         /*
@@ -768,6 +770,11 @@ function (dojo, declare) {
        notif_updateStock: function(notif)
        {
             this.updateStock();
+       },
+
+       notif_log: function(notif)
+       {
+           console.log(notif.args.logging);
        }
    });             
 });
