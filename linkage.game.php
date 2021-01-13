@@ -369,7 +369,7 @@ class Linkage extends Table
         $colours = array_keys($colorToPieceLocation);
         $this->spacesFound = array();
         $groups = 0; 
-        foreach ($colours as $colour)//can do this as 2 foreach loops if doesn't work
+        foreach ($colours as $colour)
         {
             $spacesForColour = $colorToPieceLocation[$colour];
 
@@ -533,7 +533,7 @@ class Linkage extends Table
 
         if ($numberOfPossibleMoves > 0)
         {
-            //logging
+            //TODO - logging?
             $possibleMoves = $numberOfPossibleMoves;
             self::notifyAllPlayers("log",
             clienttranslate('There are '.$possibleMoves.' possible moves'),
@@ -555,18 +555,34 @@ class Linkage extends Table
         }
         else
         {
-            if (self::calculateNumberOfColourGroups() >= 12)
+            $this->unmarkLastPlayedPiece();
+            $newNumberOfPossibleMoves = self::getNumberOfPossibleMoves();
+            
+            if ($newNumberOfPossibleMoves > 0)
             {
-                //more wins - white
-                $winner = 'ffffff';
+                //TODO - better message
+                self::notifyAllPlayers("removeLastPlayedPiece",
+                clienttranslate('There are no moves left, so the next turn is used to remove the last played token'),
+                array() 
+                );
+
+                $this->gamestate->nextState('nextPlayer');
             }
             else
             {
-                //less wins - black
-                $winner = '000000';
+                if (self::calculateNumberOfColourGroups() >= 12)
+                {
+                    //more wins - white
+                    $winner = 'ffffff';
+                }
+                else
+                {
+                    //less wins - black
+                    $winner = '000000';
+                }
+                self::DbQuery("UPDATE player SET player_score = 1 WHERE player_color = '${winner}'");
+                $this->gamestate->nextState('endGame');    
             }
-            self::DbQuery("UPDATE player SET player_score = 1 WHERE player_color = '${winner}'");
-            $this->gamestate->nextState('endGame');    
         }
     }
 
