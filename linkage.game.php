@@ -149,7 +149,9 @@ class Linkage extends Table
     */
     function getGameProgression()
     {
-        //you could take into account pieces that we know can not be played due to surrounded spaces.
+        //TODO - you could find amount of single spaces left over and add 4% on for every other one
+        //TODO - rounding errors, replay game through to see
+        //TODO - ends gameon 96%, how to get to 100%?
         return count($this->getPlayedPiecesWithoutMarkers())*100/24;
     }
 
@@ -388,6 +390,11 @@ class Linkage extends Table
     {
         $space = array("x" => $x, "y" => $y);
 
+        if (!$this->isSpace($x, $y))
+        {
+            return;
+        }
+
         if (in_array($space, $this->spacesFound))
         {
             //already found this space
@@ -396,7 +403,6 @@ class Linkage extends Table
         
         if (in_array($space, $spacesForColour))
         {
-            //TODO - do not check space if it goes below 0 or above 6
             array_push($this->spacesFound, $space);   
             self::findAdjacentSpaces($spacesForColour, $x+1, $y);
             self::findAdjacentSpaces($spacesForColour, $x, $y+1);
