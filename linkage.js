@@ -69,7 +69,6 @@ function (dojo, declare) {
 
         addTokenOnBoardForPiece: function(piece)
         {
-            //TODO: do you need the safety of checking that x1 and y1 is the start of the piece?
             if (this.isOmmittedSpaceMarker(piece))
             {
                 this.addOmmittedSpaceMarkerOnBoard(piece);
@@ -142,6 +141,8 @@ function (dojo, declare) {
             this.setupStock();
             
             dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
+            dojo.query('.unplayedPiece').connect('onmousemove', this, 'onMouseMoveOverUnplayedPiece');
+            dojo.query('#stock').connect('onmousemove', this, 'onMouseMoveOverStock');
             //TODO - do I need to care about removing these connectors?
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -457,6 +458,7 @@ function (dojo, declare) {
 
         updatePossibleMoveIfNeeded : function(x, y)
         {
+            //TODO - does this need to be even better at placing the piece?
             //adjust the move for the board limits
             if (this.horizontalToPlay == 'true'
                 && !this.isValidMove(x, y))
@@ -617,9 +619,6 @@ function (dojo, declare) {
             dojo.query('.potentialPiece').connect('onclick', this, 'onPotentialPiece');
         },
 
-        /**
-         * this just sets the colour that the player has chosen to play.
-         */
         onUnplayedPiece: function(event)
         {
             dojo.stopEvent(event);
@@ -639,7 +638,44 @@ function (dojo, declare) {
             console.log('colourToPlay: ' + this.colourToPlay);
             console.log('horizontalToPlay: ' + this.horizontalToPlay);
 
-            this.destroyPotentialPieceIfPresent();      
+            this.destroyPotentialPieceIfPresent();
+            this.updatePossibleMoveIfNeeded(6, 6);
+        },
+
+        onMouseMoveOverUnplayedPiece: function(event)
+        {
+            dojo.stopEvent(event);
+
+            if (!this.isCurrentPlayerActive())
+            {
+                return;
+            }
+
+            var unplayedPiece = event.currentTarget;
+            var id = unplayedPiece.id;
+            
+            dojo.style(id, "opacity", 0.7);
+        },
+
+        onMouseMoveOverStock: function(event)
+        {
+            dojo.stopEvent(event);
+
+            if (!this.isCurrentPlayerActive())
+            {
+                return;
+            }
+            
+            unplayedPieces = dojo.query('.unplayedPiece');
+            for (var i in unplayedPieces)
+            {
+                piece = unplayedPieces[i];
+                id = piece.id;
+                if (id)
+                {
+                    dojo.style(id, "opacity", 1);
+                }
+            }
         },
 
         onPotentialPiece: function(event)
