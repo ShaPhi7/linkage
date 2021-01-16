@@ -488,7 +488,13 @@ function (dojo, declare) {
                 return true;
             }
 
-            //TODO - add check for only 6 pieces
+            if (this.getNumberOfPiecesOnBoardForColor(this.colourToPlay) > 5)
+            {
+                return true;
+            }
+
+            //we don't check if it's a valid move here, because if it is,
+            //we let the possible move show nearby (see updatePossibleMoveIfNeeded).
 
             return false;
         },
