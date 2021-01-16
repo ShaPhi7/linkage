@@ -659,19 +659,21 @@ function (dojo, declare) {
 
             if(!this.checkAction('placePiece'))    // Check that this action is possible at this moment
             {
-                //TODO - error
+                //TODO - error handling for all of these cases
                 return;      
             }  
 
             if (!this.isValidMove(x, y))
             {
-                //TODO - error
                 return;
             }
 
             //TODO - add check to make sure they can only play one tile per turn - global variable check or something?
 
-            //TODO - add check to make sure there can only be 6 of each colour
+            if (!this.getNumberOfPiecesOnBoardForColor(this.colourToPlay) > 5)
+            {
+                return;
+            }
 
             this.ajaxcall( "/linkage/linkage/placePiece.html", {
                 x: x,
