@@ -77,7 +77,7 @@ $machinestates = array(
         "name" => "nextTurnOrEnd",
         "type" => "game",
         "action" => "stNextTurnOrEnd",
-        //TODO - updateGameProgression
+        "updateGameProgression" => "true",
         "transitions" => array("nextPlayer" => 2, "endGame" => 99)
 ),
     

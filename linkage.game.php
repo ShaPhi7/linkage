@@ -149,9 +149,8 @@ class Linkage extends Table
     */
     function getGameProgression()
     {
-        // TODO: compute and return the game progression
-
-        return 0;
+        //you could take into account pieces that we know can not be played due to surrounded spaces.
+        return count($this->getPlayedPiecesWithoutMarkers())*100/24;
     }
 
 
