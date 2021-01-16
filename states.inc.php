@@ -70,7 +70,7 @@ $machinestates = array(
             "type" => "activeplayer",
             "args" => "argPlayerTurn",
     		"possibleactions" => array( "placePiece"),
-    		"transitions" => array( "placePiece" => 10) //TODO - add zombie? does player have to play?
+    		"transitions" => array( "placePiece" => 10, "zombiePass" => 10)
     ),
 
     10 => array(
