@@ -31,14 +31,9 @@ class Linkage extends Table
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
-        //TODO - use this?
+
         self::initGameStateLabels( array( 
-            //    "my_first_global_variable" => 10,
-            //    "my_second_global_variable" => 11,
-            //      ...
-            //    "my_first_game_variant" => 100,
-            //    "my_second_game_variant" => 101,
-            //      ...
+            //ommitted_space_marker_variant => 100; //TODO
         ) );    
 
         $this->spacesFound = array();    
@@ -530,7 +525,7 @@ class Linkage extends Table
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
-    
+    //TDO - refactor
     function stNextTurnOrEnd()
     {
         $numberOfPossibleMoves = self::getNumberOfPossibleMoves();
@@ -554,7 +549,6 @@ class Linkage extends Table
                  ) 
             );
 
-            //TODO - can remove last played marker to free up space and pass go?
             $this->activeNextPlayer();
             $this->gamestate->nextState('nextPlayer');
         }
