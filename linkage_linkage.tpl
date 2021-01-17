@@ -36,6 +36,12 @@
 	    <div id="stockHolder_e48a01">
 	    </div>
 	</div>
+	<div id ="markerStock">
+		<div id="stockHolder_lastPlayed">
+		</div>
+		<div id="stockHolder_ommittedSpace">
+		</div>
+	</div>
 </div>
 
 <script type="text/javascript">

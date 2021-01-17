@@ -159,8 +159,7 @@ function (dojo, declare) {
             }
             else
             {
-                //TODO - put somewhere nice
-                dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'board');
+                dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'stockHolder_lastPlayed');
             }
         },
 
