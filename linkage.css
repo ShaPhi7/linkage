@@ -66,11 +66,12 @@
 }
 
 #stock {
-	width: 407px;
+	width: 120px;
 	height: 407px;
 	background-color: rgba(255,255,255,0.4);
 	position: relative;
 	display: inline-block;
+	vertical-align: top;
 }
 
 .space {
@@ -169,32 +170,32 @@
 
 #stockHolder_00359f {
 	/*background-color: #00359f;*/
-	width: 24%;
-	height: 100%;
+	width: 100%;
+	height: 24%;
 	display: inline-block;
 	position: relative;
 }
 
 #stockHolder_ffffff {
 	/*background-color: #ffffff;*/
-	width: 24%;
-	height: 100%;
+	width: 100%;
+	height: 24%;
 	display: inline-block;
 	position: relative;
 }
 
 #stockHolder_860000 {
 	/*background-color: #860000;*/
-	width: 24%;
-	height: 100%;
+	width: 100%;
+	height: 24%;
 	display: inline-block;
 	position: relative;
 }
 
 #stockHolder_e48a01 {
 	/*background-color: #e48a01;*/
-	width: 24%;
-	height: 100%;
+	width: 100%;
+	height: 24%;
 	display: inline-block;
 	position: relative;
 }

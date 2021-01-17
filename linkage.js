@@ -188,7 +188,8 @@ function (dojo, declare) {
             id = 'unplayed_piece_v';
             this.addUnplayedPieceToStock(id, color, false);
 
-            dojo.style(id + '_' + color, "top", "100px");
+            dojo.style(id + '_' + color, "left", "10px");
+            dojo.style(id + '_' + color, "transform", "scale(0.5, 0.5)");
         },
         
         addUnplayedPieceToStockHorizontal: function(color)
@@ -196,8 +197,8 @@ function (dojo, declare) {
             id = 'unplayed_piece_h';
             this.addUnplayedPieceToStock(id, color, true);
 
-            dojo.style(id + '_' + color, "transform", "rotate(90deg)");
-            dojo.style(id + '_' + color, "top", "250px");
+            dojo.style(id + '_' + color, "transform", "scale(0.5, 0.5) rotate(90deg)");
+            dojo.style(id + '_' + color, "left", "60px");
         },
 
         addUnplayedPieceToStock: function(id, color, horizontal)
