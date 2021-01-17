@@ -87,12 +87,19 @@ function (dojo, declare) {
         {   
             dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'board');
             this.placeOnObject('lastPlayedMarker_0', 'piece_' + piece.x1 + '_' + piece.y1);
-            //dojo.place('last_played_marker', pieceName);
         },
 
         moveLastPlayedMarker: function(x, y)
         {
             this.slideToObject('lastPlayedMarker_0', 'piece_' + x + '_' + y).play();
+        },
+
+        addLastPlayedMarkerToStockIfNeeded: function()
+        {
+            if (!dojo.query('.lastPlayedMarker')[0])
+            {
+                dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'stockHolder_lastPlayed');
+            }
         },
 
         addOmmittedSpaceMarkerOnBoard: function(piece)
@@ -135,7 +142,7 @@ function (dojo, declare) {
             }
 
             //either put it on the last played piece, or put it at the side of the board.
-            this.placeLastPlayedMarkerOnBoardIfNeeded();
+            this.addLastPlayedMarkerToStockIfNeeded();
 
             //this will become a method that checks how many of these there should be and dishes them out.
             this.setupStock();
@@ -148,19 +155,6 @@ function (dojo, declare) {
             this.setupNotifications();
 
             console.log("Ending game setup");
-        },
-        
-        placeLastPlayedMarkerOnBoardIfNeeded: function()
-        {
-            lastPlayedMarker = dojo.query('.lastPlayedMarker')[0]; //if piece is on board
-            if (lastPlayedMarker)
-            {
-                //already on board
-            }
-            else
-            {
-                dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'stockHolder_lastPlayed');
-            }
         },
 
         setupStock: function()
@@ -820,7 +814,7 @@ function (dojo, declare) {
 
        notif_removeLastPlayedPiece: function(notif)
        {
-           this.slideToObject('lastPlayedMarker_0', 'ommittedSpaceMarker_0').play();
+           this.slideToObject('lastPlayedMarker_0', 'stockHolder_lastPlayed').play();
        },
 
        notif_log: function(notif)
