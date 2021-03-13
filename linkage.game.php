@@ -506,7 +506,54 @@ class Linkage extends Table
             return $this->insertPlayedPiece($x,$y,$x,$y+1,$color,1);
         }
     }
-    
+
+    function logStateOfPlay($possibleMoves, $colourGroups)
+    {
+        self::notifyAllPlayers("log",
+        clienttranslate('There are now '.$possibleMoves.' possible moves'),
+        array(
+                'logging' => $possibleMoves
+             ) 
+        );
+
+        self::notifyAllPlayers("log",
+        clienttranslate('There are now '.$colourGroups.' colour groups'),
+        array(
+                'logging' => $colourGroups
+             ) 
+        );
+    }
+
+    function prepareNextTurn($numberOfPossibleMoves, $colourGroups)
+    {
+        $this->logStateOfPlay($numberOfPossibleMoves, $colourGroups);
+
+        $this->activeNextPlayer();
+        $this->gamestate->nextState('nextPlayer');
+    }
+
+    function unmarkLastPieceToPlayOn()
+    {
+        $this->unmarkLastPlayedPiece();
+        $newNumberOfPossibleMoves = $this->getNumberOfPossibleMoves();
+            
+        return $newNumberOfPossibleMoves > 0
+    }
+
+    function setWinner()
+    {
+        if ($this->calculateNumberOfColourGroups() >= 12)
+        {
+            //more wins - white
+            $winner = 'ffffff';
+        }
+        else
+        {
+            //less wins - black
+            $winner = '000000';
+        }
+        self::DbQuery("UPDATE player SET player_score = 1 WHERE player_color = '${winner}'");
+    }
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
 ////////////
@@ -546,7 +593,6 @@ class Linkage extends Table
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
-    //TDO - refactor
     function stNextTurnOrEnd()
     {
         $numberOfPossibleMoves = $this->getNumberOfPossibleMoves();
@@ -554,30 +600,11 @@ class Linkage extends Table
 
         if ($numberOfPossibleMoves > 0)
         {
-            $possibleMoves = $numberOfPossibleMoves;
-            self::notifyAllPlayers("log",
-            clienttranslate('There are now '.$possibleMoves.' possible moves'),
-            array(
-                    'logging' => $possibleMoves
-                 ) 
-            );
-
-            self::notifyAllPlayers("log",
-            clienttranslate('There are now '.$colourGroups.' colour groups'),
-            array(
-                    'logging' => $colourGroups
-                 ) 
-            );
-
-            $this->activeNextPlayer();
-            $this->gamestate->nextState('nextPlayer');
+            $this->prepareNextTurn($numberOfPossibleMoves, $colourGroups);
         }
         else
         {
-            $this->unmarkLastPlayedPiece();
-            $newNumberOfPossibleMoves = $this->getNumberOfPossibleMoves();
-            
-            if ($newNumberOfPossibleMoves > 0)
+            if ($this->unmarkLastPieceToPlayOn())
             {
                 self::notifyAllPlayers("removeLastPlayedPiece",
                 clienttranslate('There are no moves left, so the next turn is used to remove the last played token'),
@@ -588,17 +615,7 @@ class Linkage extends Table
             }
             else
             {
-                if ($this->calculateNumberOfColourGroups() >= 12)
-                {
-                    //more wins - white
-                    $winner = 'ffffff';
-                }
-                else
-                {
-                    //less wins - black
-                    $winner = '000000';
-                }
-                self::DbQuery("UPDATE player SET player_score = 1 WHERE player_color = '${winner}'");
+                $this->setWinner();
                 $this->gamestate->nextState('endGame');    
             }
         }
