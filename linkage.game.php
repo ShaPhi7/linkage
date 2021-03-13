@@ -537,7 +537,7 @@ class Linkage extends Table
         $this->unmarkLastPlayedPiece();
         $newNumberOfPossibleMoves = $this->getNumberOfPossibleMoves();
             
-        return $newNumberOfPossibleMoves > 0
+        return $newNumberOfPossibleMoves > 0;
     }
 
     function setWinner()
