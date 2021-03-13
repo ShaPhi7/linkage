@@ -46,16 +46,16 @@ $gameinfos = array(
     'not_recommend_player_number' => null,
     
     // Estimated game duration, in minutes (used only for the launch, afterward the real duration is computed)
-    'estimated_duration' => 30, //TODO
+    'estimated_duration' => 30,
     
     // Time in second add to a player when "giveExtraTime" is called (speed profile = fast)
-    'fast_additional_time' => 30, //TODO
+    'fast_additional_time' => 30,
     
     // Time in second add to a player when "giveExtraTime" is called (speed profile = medium)
-    'medium_additional_time' => 40, //TODO
+    'medium_additional_time' => 40,
     
     // Time in second add to a player when "giveExtraTime" is called (speed profile = slow)
-    'slow_additional_time' => 50, //TODO
+    'slow_additional_time' => 50,
     
     // If you are using a tie breaker in your game (using "player_score_aux"), you must describe here
 // the formula used to compute "player_score_aux". This description will be used as a tooltip to explain
@@ -77,16 +77,16 @@ $gameinfos = array(
     
     
     // Complexity of the game, from 0 (extremely simple) to 5 (extremely complex)
-    'complexity' => 3, //TODO
+    'complexity' => 3,
     
     // Luck of the game, from 0 (absolutely no luck in this game) to 5 (totally luck driven)
-    'luck' => 3, //TODO
+    'luck' => 3,
     
     // Strategy of the game, from 0 (no strategy can be setup) to 5 (totally based on strategy)
-    'strategy' => 3, //TODO
+    'strategy' => 3,
     
     // Diplomacy of the game, from 0 (no interaction in this game) to 5 (totally based on interaction and discussion between players)
-    'diplomacy' => 3, //TODO
+    'diplomacy' => 3,
     
     // Colors attributed to players
     'player_colors' => array( "ffffff", "000000"),
@@ -132,7 +132,7 @@ $gameinfos = array(
             //  http://en.doc.boardgamearena.com/Game_meta-information:_gameinfos.inc.php
             //  IMPORTANT: this list should be ORDERED, with the most important tag first.
             //  IMPORTANT: it is mandatory that the FIRST tag is 1, 2, 3 and 4 (= game category)
-    'tags' => array( 2 ), //TODO
+    'tags' => array( 2 ),
     
     
             //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)

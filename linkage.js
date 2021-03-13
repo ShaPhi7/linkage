@@ -329,24 +329,6 @@ function (dojo, declare) {
            return numberOfPiecesForColor;
        },
 
-       //TODO - can we make these use dojo.attr instead
-       getX_YFromTwoWordId : function(id)
-       {
-            xy = this.getXYFromTwoWordId(id);
-            return xy[0] + '_' + xy[1];
-       },
-
-       getXYFromTwoWordId: function(id)
-       {
-            parts = id.split('_');
-
-            var xy = [];
-            xy[0] = parts[2];
-            xy[1] = parts[3];
-            
-            return xy;
-       },
-
        isHorizontal: function(piece)
        {
             return piece.x1 < piece.x2
@@ -371,9 +353,7 @@ function (dojo, declare) {
                     if (!this.isPlayedPieceOnSpace(x, y))
                     {
                         moveToShow = this.getMoveToShow(x, y);
-                        x_y = x + '_' + y;
-
-                        dojo.place(this.format_block('jstpl_' + moveToShow + '_move', {x_y: x_y}), 'space_' + x_y);
+                        dojo.place(this.format_block('jstpl_' + moveToShow + '_move', {x_y: x + '_' + y, x: x, y: y}), 'space_' + x_y);
                     }
                }            
            }
@@ -446,8 +426,8 @@ function (dojo, declare) {
 
             if (!this.shouldIgnoreMouseOverPossibleMove())
             {
-                xy = this.getXYFromTwoWordId(event.currentTarget.id);
-                this.updatePossibleMoveIfNeeded(xy[0], xy[1])
+                id = event.currentTarget.id;
+                this.updatePossibleMoveIfNeeded(dojo.getAttr(id, 'x'), dojo.getAttr(id, 'y'));
             }
         },
 
@@ -513,14 +493,12 @@ function (dojo, declare) {
 
         possibleMoveIsAlreadyShown : function(x, y)
         {
+            debugger;
             potential_piece = dojo.query('.potentialPiece')[0]; //if piece is on board
             if (potential_piece)
             {
-                currentX = this.getXYFromTwoWordId(potential_piece.id)[0];
-                currentY = this.getXYFromTwoWordId(potential_piece.id)[1];
-
-                if (x == currentX
-                &&  y == currentY)
+                if (x == dojo.getAttr(potential_piece.id, "x")
+                &&  y == dojo.getAttr(potential_piece.id, "y"))
                 {
                     //same piece, do nothing
                     return true;
@@ -572,6 +550,7 @@ function (dojo, declare) {
 
         isValidMoveVertical : function(x, y)
         {
+            debugger;
             if (y == 6)
             {
                 return false;
@@ -591,8 +570,7 @@ function (dojo, declare) {
             potential_piece = dojo.query('.potentialPiece')[0]; //if piece is on board
             if (potential_piece)
             {
-                x_y = this.getX_YFromTwoWordId(potential_piece.id);
-                dojo.destroy("potential_piece_" + x_y);
+                dojo.destroy(potential_piece.id);
             }
         },
 
@@ -602,13 +580,15 @@ function (dojo, declare) {
 
             dojo.place(this.format_block('jstpl_potential_piece', {
                 x_y: x_y,
+                x: x,
+                y: y,
                 color: this.colourToPlay,
                 h: this.horizontalToPlay //note - sometimes shows as unset in debugger, but it is set
             }) , 'space_' + x_y);
 
             if (this.horizontalToPlay == 'true')
             {
-                dojo.style('potential_piece_' + x + '_' + y, "transform", "rotate(90deg)");
+                dojo.style('potential_piece_' + x_y, "transform", "rotate(90deg)");
             }
 
             dojo.query('.potentialPiece').connect('onclick', this, 'onPotentialPiece');
@@ -678,17 +658,13 @@ function (dojo, declare) {
         {
             dojo.stopEvent(event);
 
-            xy = this.getXYFromTwoWordId(event.currentTarget.id);
-            x = xy[0];
-            y = xy[1];
-
             if(!this.checkAction('placePiece'))    // Check that this action is possible at this moment
             {
                 this.showMessage("It is not your turn", "error");
                 return;      
             }  
 
-            if (!this.isValidMove(x, y))
+            if (!this.isValidMove(dojo.getAttr(event.currentTarget.id, "x"), dojo.getAttr(event.currentTarget.id, "y")))
             {
                 this.showMessage("That is not a valid move", "error");
                 return;
@@ -707,8 +683,8 @@ function (dojo, declare) {
             }
 
             this.ajaxcall( "/linkage/linkage/placePiece.html", {
-                x: x,
-                y: y,
+                x: dojo.getAttr(event.currentTarget.id, "x"),
+                y: dojo.getAttr(event.currentTarget.id, "y"),
                 color: this.colourToPlay,
                 h: this.horizontalToPlay, //sometimes debugger appears to show h as unset, even though it is.
             }, this, function(result){});

@@ -9,6 +9,8 @@
 --  need a way to distinguish between the More and Less players
 --  ommitted marker variation
 --  stats
+--  game infos
+--  colours used throughout code is horrible
 -- 
 -- BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
 -- Linkage implementation : © Shaun Phillips <smphillips@alumni.york.ac.uk>
@@ -53,11 +55,11 @@
 
 var jstpl_piece = '<div class="piece piece_${color}" id="piece_${x_y}" style="left: 0px; top: 0px;"></div>';
 
-var jstpl_potential_piece = '<div class="piece piece_${color} potentialPiece" id="potential_piece_${x_y}" color="${color}" h="${h}" style="left: 0px; top: 0px;"></div>';
+var jstpl_potential_piece = '<div class="piece piece_${color} potentialPiece" id="potential_piece_${x_y}" x="${x}" y="${y}" color="${color}" h="${h}" style="left: 0px; top: 0px;"></div>';
 
 var jstpl_unplayed_piece = '<div class="unplayedPiece piece_${color}" id="${n}_${color}" color="${color}" h="${h}"></div>';
 
-var jstpl_possible_move = '<div class="possibleMove" id="possible_move_${x_y}"></div>'
+var jstpl_possible_move = '<div class="possibleMove" id="possible_move_${x_y}" x="${x}" y="${y}"></div>'
 
 var jstpl_unavailable_move = '<div class="unavailableMove" id="unavailable_move_${x_y}"></div>'
 
