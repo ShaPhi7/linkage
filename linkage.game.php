@@ -237,32 +237,56 @@ class Linkage extends Table
     //must also be adjacent to another playable square (i.e. single spaces are not playable).
     function getBooleanArrayOfPossibleMoves()
     {
-        //TODO - refector
         $possibleMoves = $this->getArrayOfSpaces();
+        $possibleMoves = $this->markPlayedPiecesAsNotPossibleMoves($possibleMoves);
+        $possibleMoves = $this->markAdjacentSpacesToLastPlayedPieceAsNotPossibleMovesIfPresent($possibleMoves);
+        $possibleMoves = $this->markStandaloneSpacesAsNotPossibleMoves($possibleMoves);
+        
+        return $possibleMoves;
+    }
+
+    function markPlayedPiecesAsNotPossibleMoves($possibleMoves)
+    {
         $playedPieces = $this->getPlayedPieces();
 
         for ($i=0;$i<count($playedPieces);$i++)
         {
             $playedPiece = $playedPieces[$i];
-            $possibleMoves[$playedPiece["x1"]][$playedPiece["y1"]] = false; //x1 and y1
-            $possibleMoves[$playedPiece["x2"]][$playedPiece["y2"]] = false; //x2 and y2
+            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $playedPiece["x1"], $playedPiece["y1"]);
+            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $playedPiece["x2"], $playedPiece["y2"]);
         }
 
-        //might have double (or triple!) set some of these but I don't care they'll all end up false.
+        return $possibleMoves;
+    }
+
+    function markAdjacentSpacesToLastPlayedPieceAsNotPossibleMovesIfPresent($possibleMoves)
+    {
         $lastPlayedPiece = $this->getLastPlayedPiece();
         if ($lastPlayedPiece)
         {
-            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]+1, $lastPlayedPiece["y1"]);
-            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]-1, $lastPlayedPiece["y1"]);
-            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]+1);
-            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]-1);
-            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]+1, $lastPlayedPiece["y2"]);
-            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]-1, $lastPlayedPiece["y2"]);
-            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]+1);
-            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]-1);
+            $possibleMoves = $this->markAdjacentSpacesToLastPlayedPieceAsNotPossibleMoves($possibleMoves, $lastPlayedPiece);
         }
-        //TODO test this
-        //Finally, for each one, make sure they're not a standalone space.
+
+        return $possibleMoves;
+    }
+
+    function markAdjacentSpacesToLastPlayedPieceAsNotPossibleMoves($possibleMoves, $lastPlayedPiece)
+    {
+        //might have double (or triple!) set some of these but I don't care they'll all end up false.
+        $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]+1, $lastPlayedPiece["y1"]);
+        $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]-1, $lastPlayedPiece["y1"]);
+        $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]+1);
+        $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]-1);
+        $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]+1, $lastPlayedPiece["y2"]);
+        $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]-1, $lastPlayedPiece["y2"]);
+        $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]+1);
+        $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]-1);
+
+        return $possibleMoves;
+    }
+
+    function markStandaloneSpacesAsNotPossibleMoves($possibleMoves)
+    {
         for($x=0; $x<count($possibleMoves); $x++)
         {
             $possibleMovesColumn = $possibleMoves[$x];
@@ -270,16 +294,24 @@ class Linkage extends Table
             {
                 if ($possibleMovesColumn[$y])
                 {
-                    if (!$this->isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
-                    && !$this->isThereAPlayableSpaceLeft($possibleMoves, $x, $y)
-                    && !$this->isThereAPlayableSpaceBelow($possibleMoves, $x, $y)
-                    && !$this->isThereAPlayableSpaceRight($possibleMoves, $x, $y))
-                    {
-                        $possibleMoves[$x][$y] = false;
-                    }
+                    $possibleMoves = $this->markAsNotPossibleMoveIfStandaloneSpace($possibleMoves, $x, $y);
                 }
             }
         }
+
+        return $possibleMoves;
+    }
+
+    function markAsNotPossibleMoveIfStandaloneSpace($possibleMoves, $x, $y)
+    {
+        if (!$this->isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
+        && !$this->isThereAPlayableSpaceLeft($possibleMoves, $x, $y)
+        && !$this->isThereAPlayableSpaceBelow($possibleMoves, $x, $y)
+        && !$this->isThereAPlayableSpaceRight($possibleMoves, $x, $y))
+        {
+            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $x, $y);
+        }
+
         return $possibleMoves;
     }
 
@@ -300,56 +332,36 @@ class Linkage extends Table
             && $y < 7;
     }
 
-    function isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
-    {   
-        if ($y > 0)
+    function isPlayableSpace($possibleMoves, $x, $y)
+    {
+        if ($this->isSpace($x, $y))
         {
-            return $possibleMoves[$x][$y-1];
+            return $possibleMoves[$x][$y];
         }
-        else 
+        else
         {
-            //there is no space
             return false;
         }
+    }
+
+    function isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
+    {   
+        return $this->isPlayableSpace($possibleMoves, $x, $y-1);
     }
 
     function isThereAPlayableSpaceLeft($possibleMoves, $x, $y)
     {   
-        if ($x > 0)
-        {
-            return $possibleMoves[$x-1][$y];
-        }
-        else 
-        {
-            //there is no space
-            return false;
-        }
+        return $this->isPlayableSpace($possibleMoves, $x-1, $y);
     }
 
     function isThereAPlayableSpaceBelow($possibleMoves, $x, $y)
     {   
-        if ($y < 6)
-        {
-            return $possibleMoves[$x][$y+1];
-        }
-        else 
-        {
-            //there is no space
-            return false;
-        }
+        return $this->isPlayableSpace($possibleMoves, $x, $y+1);
     }
 
     function isThereAPlayableSpaceRight($possibleMoves, $x, $y)
     {   
-        if ($x < 6)
-        {
-            return $possibleMoves[$x+1][$y];
-        }
-        else 
-        {
-            //there is no space
-            return false;
-        }
+        return $this->isPlayableSpace($possibleMoves, $x+1, $y);
     }
 
     function calculateNumberOfColourGroups()
@@ -542,17 +554,16 @@ class Linkage extends Table
 
         if ($numberOfPossibleMoves > 0)
         {
-            //TODO - logging?
             $possibleMoves = $numberOfPossibleMoves;
             self::notifyAllPlayers("log",
-            clienttranslate('There are '.$possibleMoves.' possible moves'),
+            clienttranslate('There are now '.$possibleMoves.' possible moves'),
             array(
                     'logging' => $possibleMoves
                  ) 
             );
 
             self::notifyAllPlayers("log",
-            clienttranslate('There are '.$colourGroups.' colour groups'),
+            clienttranslate('There are now '.$colourGroups.' colour groups'),
             array(
                     'logging' => $colourGroups
                  ) 
