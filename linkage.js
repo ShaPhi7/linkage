@@ -152,7 +152,7 @@ function (dojo, declare) {
             dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
             dojo.query('.unplayedPiece').connect('onmousemove', this, 'onMouseMoveOverUnplayedPiece');
             dojo.query('#stock').connect('onmousemove', this, 'onMouseMoveOverStock');
-            //TODO - do I need to care about removing these connectors?
+            
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -379,8 +379,8 @@ function (dojo, declare) {
            }
              
            dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
-           //TODO what should this say?
-           //this.addTooltipToClass( 'possibleMove', '', _('Place a mo here') );
+           
+           this.addTooltipToClass( 'possibleMove', '', _('Place a piece here') );
        },
 
        removeAnyShowingMoves: function()
@@ -682,13 +682,6 @@ function (dojo, declare) {
             xy = this.getXYFromTwoWordId(event.currentTarget.id);
             x = xy[0];
             y = xy[1];
-
-            //TODO - get this check to work, it's because it is a child not as a class perhaps? Maybe get the elements manually?
-            /*if (!dojo.hasClass('space_' + x + '_' + y, 'possibleMove'))
-            {
-                //not a possible move so do nothing.
-                return;
-            }*/
 
             if(!this.checkAction('placePiece'))    // Check that this action is possible at this moment
             {
