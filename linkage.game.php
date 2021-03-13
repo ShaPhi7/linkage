@@ -75,11 +75,11 @@ class Linkage extends Table
         self::reloadPlayersBasicInfos();
 
         //mark the ommitted space token, either player choice or center space.
-        self::insertPlayedPiece(3,3,3,3,"000000",0);
+        $this->insertPlayedPiece(3,3,3,3,"000000",0);
 
         //Note - if you just want some pieces set on the board to test, you can quickly add them here.
-        //self::insertPlayedPiece(4,3,5,3,"00359f",0);
-        //self::insertPlayedPiece(2,2,2,3,"860000",1);
+        //$this->insertPlayedPiece(4,3,5,3,"00359f",0);
+        //$this->insertPlayedPiece(2,2,2,3,"860000",1);
 
         /************ Start the game initialization *****/
 
@@ -90,9 +90,6 @@ class Linkage extends Table
         // (note: statistics used in this file must be defined in your stats.inc.php file)
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
-
-        // TODO: setup the initial game situation here
-       
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -221,7 +218,7 @@ class Linkage extends Table
     {
         $numberOfPossibleMoves = 0;
 
-        $booleanArrayOfPossibleMoves = self::getBooleanArrayOfPossibleMoves();
+        $booleanArrayOfPossibleMoves = $this->getBooleanArrayOfPossibleMoves();
         for($x=0; $x<7; $x++)
         {
             for($y=0; $y<7; $y++)
@@ -241,8 +238,8 @@ class Linkage extends Table
     function getBooleanArrayOfPossibleMoves()
     {
         //TODO - refector
-        $possibleMoves = self::getArrayOfSpaces();
-        $playedPieces = self::getPlayedPieces();
+        $possibleMoves = $this->getArrayOfSpaces();
+        $playedPieces = $this->getPlayedPieces();
 
         for ($i=0;$i<count($playedPieces);$i++)
         {
@@ -252,17 +249,17 @@ class Linkage extends Table
         }
 
         //might have double (or triple!) set some of these but I don't care they'll all end up false.
-        $lastPlayedPiece = self::getLastPlayedPiece();
+        $lastPlayedPiece = $this->getLastPlayedPiece();
         if ($lastPlayedPiece)
         {
-            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]+1, $lastPlayedPiece["y1"]);
-            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]-1, $lastPlayedPiece["y1"]);
-            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]+1);
-            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]-1);
-            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]+1, $lastPlayedPiece["y2"]);
-            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]-1, $lastPlayedPiece["y2"]);
-            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]+1);
-            $possibleMoves = self::markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]-1);
+            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]+1, $lastPlayedPiece["y1"]);
+            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"]-1, $lastPlayedPiece["y1"]);
+            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]+1);
+            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x1"], $lastPlayedPiece["y1"]-1);
+            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]+1, $lastPlayedPiece["y2"]);
+            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"]-1, $lastPlayedPiece["y2"]);
+            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]+1);
+            $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $lastPlayedPiece["x2"], $lastPlayedPiece["y2"]-1);
         }
         //TODO test this
         //Finally, for each one, make sure they're not a standalone space.
@@ -273,10 +270,10 @@ class Linkage extends Table
             {
                 if ($possibleMovesColumn[$y])
                 {
-                    if (!self::isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
-                    && !self::isThereAPlayableSpaceLeft($possibleMoves, $x, $y)
-                    && !self::isThereAPlayableSpaceBelow($possibleMoves, $x, $y)
-                    && !self::isThereAPlayableSpaceRight($possibleMoves, $x, $y))
+                    if (!$this->isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
+                    && !$this->isThereAPlayableSpaceLeft($possibleMoves, $x, $y)
+                    && !$this->isThereAPlayableSpaceBelow($possibleMoves, $x, $y)
+                    && !$this->isThereAPlayableSpaceRight($possibleMoves, $x, $y))
                     {
                         $possibleMoves[$x][$y] = false;
                     }
@@ -288,7 +285,7 @@ class Linkage extends Table
 
     function markAsNotPossibleMoveIfSpace($possibleMoves, $x, $y)
     {
-        if (self::isSpace($x, $y))
+        if ($this->isSpace($x, $y))
         {
             $possibleMoves[$x][$y] = false;
         }
@@ -357,7 +354,7 @@ class Linkage extends Table
 
     function calculateNumberOfColourGroups()
     {
-        $playedPieces = self::getPlayedPiecesWithoutMarkers();
+        $playedPieces = $this->getPlayedPiecesWithoutMarkers();
         $colorToPieceLocation = array("ffffff" => array(),
                                       "00359f" => array(),
                                       "860000" => array(),
@@ -381,7 +378,7 @@ class Linkage extends Table
             {
                 if (!in_array($space, $this->spacesFound))
                 {
-                    self::findAdjacentSpaces($spacesForColour, $space["x"], $space["y"]);
+                    $this->findAdjacentSpaces($spacesForColour, $space["x"], $space["y"]);
                     $groups++;
                 }
             }   
@@ -407,10 +404,10 @@ class Linkage extends Table
         if (in_array($space, $spacesForColour))
         {
             array_push($this->spacesFound, $space);   
-            self::findAdjacentSpaces($spacesForColour, $x+1, $y);
-            self::findAdjacentSpaces($spacesForColour, $x, $y+1);
-            self::findAdjacentSpaces($spacesForColour, $x, $y-1);
-            self::findAdjacentSpaces($spacesForColour, $x-1, $y);
+            $this->findAdjacentSpaces($spacesForColour, $x+1, $y);
+            $this->findAdjacentSpaces($spacesForColour, $x, $y+1);
+            $this->findAdjacentSpaces($spacesForColour, $x, $y-1);
+            $this->findAdjacentSpaces($spacesForColour, $x-1, $y);
         }
     }
 
@@ -428,22 +425,22 @@ class Linkage extends Table
         //check action possible, check action sensible etc.
         self::checkAction('placePiece'); 
 
-        if (!self::validMove($x, $y, $h))
+        if (!$this->validMove($x, $y, $h))
         {
             throw new feException("Impossible move");
             return;
         }
 
-        if (count(self::getPlayedPiecesForColor($color)) > 5)
+        if (count($this->getPlayedPiecesForColor($color)) > 5)
         {
             throw new feException("Too many pieces of this colour");
             return;
         }
         
         //we've decided we are playing a piece, so remove any existing last played pieces.
-        self::unmarkLastPlayedPiece();
+        $this->unmarkLastPlayedPiece();
 
-        self::insertPiece($x,$y, $color, $h);
+        $this->insertPiece($x,$y, $color, $h);
 
         self::notifyAllPlayers("addToken",
             clienttranslate('${player_name} places a token'),
@@ -463,38 +460,38 @@ class Linkage extends Table
 
     function validMove($x, $y, $h)
     {
-        $possibleMoves = self::getBooleanArrayOfPossibleMoves();
+        $possibleMoves = $this->getBooleanArrayOfPossibleMoves();
         if ($h == 'true')
         {
-            return self::validMoveHorizontal($x, $y, $possibleMoves);
+            return $this->validMoveHorizontal($x, $y, $possibleMoves);
         }   
         else
         {
-            return self::validMoveVertical($x, $y, $possibleMoves);
+            return $this->validMoveVertical($x, $y, $possibleMoves);
         }
     }
 
     function validMoveHorizontal($x, $y, $possibleMoves)
     {
         return $possibleMoves[$x][$y]
-          && self::isThereAPlayableSpaceRight($possibleMoves, $x, $y);
+          && $this->isThereAPlayableSpaceRight($possibleMoves, $x, $y);
     }
 
     function validMoveVertical($x, $y, $possibleMoves)
     {
         return $possibleMoves[$x][$y]
-          && self::isThereAPlayableSpaceBelow($possibleMoves, $x, $y);
+          && $this->isThereAPlayableSpaceBelow($possibleMoves, $x, $y);
     }
 
     function insertPiece($x, $y, $color, $h)
     {
         if ($h == 'true')
         {
-            return self::insertPlayedPiece($x,$y,$x+1,$y,$color,1);
+            return $this->insertPlayedPiece($x,$y,$x+1,$y,$color,1);
         }
         else
         {
-            return self::insertPlayedPiece($x,$y,$x,$y+1,$color,1);
+            return $this->insertPlayedPiece($x,$y,$x,$y+1,$color,1);
         }
     }
     
@@ -509,8 +506,8 @@ class Linkage extends Table
     */
     function argPlayerTurn()
     {
-        return array('possibleMoves' => self::getBooleanArrayOfPossibleMoves(),
-                     'lastPlayedPiece' => self::getLastPlayedPiece());
+        return array('possibleMoves' => $this->getBooleanArrayOfPossibleMoves(),
+                     'lastPlayedPiece' => $this->getLastPlayedPiece());
     }
     /*
     
@@ -540,8 +537,8 @@ class Linkage extends Table
     //TDO - refactor
     function stNextTurnOrEnd()
     {
-        $numberOfPossibleMoves = self::getNumberOfPossibleMoves();
-        $colourGroups = self::calculateNumberOfColourGroups();
+        $numberOfPossibleMoves = $this->getNumberOfPossibleMoves();
+        $colourGroups = $this->calculateNumberOfColourGroups();
 
         if ($numberOfPossibleMoves > 0)
         {
@@ -567,7 +564,7 @@ class Linkage extends Table
         else
         {
             $this->unmarkLastPlayedPiece();
-            $newNumberOfPossibleMoves = self::getNumberOfPossibleMoves();
+            $newNumberOfPossibleMoves = $this->getNumberOfPossibleMoves();
             
             if ($newNumberOfPossibleMoves > 0)
             {
@@ -580,7 +577,7 @@ class Linkage extends Table
             }
             else
             {
-                if (self::calculateNumberOfColourGroups() >= 12)
+                if ($this->calculateNumberOfColourGroups() >= 12)
                 {
                     //more wins - white
                     $winner = 'ffffff';
