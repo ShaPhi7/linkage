@@ -181,6 +181,14 @@ class Linkage extends Table
         return self::getObjectListFromDB($sql);
     }
 
+    function getPlayedPiecesForColor($color)
+    {
+        $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`
+        FROM `playedpiece` 
+        WHERE `color` = '$color'";
+        return self::getObjectListFromDB($sql);
+    }
+
     function getLastPlayedPiece()
     {
         $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`, `last_played` 
@@ -422,11 +430,15 @@ class Linkage extends Table
 
         if (!self::validMove($x, $y, $h))
         {
-            throw new feException( "Impossible move" );
+            throw new feException("Impossible move");
             return;
         }
 
-        //TODO: are there enough of that colour left?
+        if (count(self::getPlayedPiecesForColor($color)) > 5)
+        {
+            throw new feException("Too many pieces of this colour");
+            return;
+        }
         
         //we've decided we are playing a piece, so remove any existing last played pieces.
         self::unmarkLastPlayedPiece();
@@ -559,7 +571,6 @@ class Linkage extends Table
             
             if ($newNumberOfPossibleMoves > 0)
             {
-                //TODO - better message
                 self::notifyAllPlayers("removeLastPlayedPiece",
                 clienttranslate('There are no moves left, so the next turn is used to remove the last played token'),
                 array() 

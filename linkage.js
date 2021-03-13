@@ -31,7 +31,7 @@ function (dojo, declare) {
             this.colourToPlay  = "";
             this.horizontalToPlay = "false";
 
-            this.takenTurn = "false"; //used to stop played placing more than one piece
+            this.takenTurn = "false"; //used to stop players placing more than one piece
         },
         
         addTokenOnBoard: function(x, y, colour, h)
@@ -379,8 +379,6 @@ function (dojo, declare) {
            }
              
            dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
-           
-           this.addTooltipToClass( 'possibleMove', '', _('Place a piece here') );
        },
 
        removeAnyShowingMoves: function()
@@ -622,6 +620,7 @@ function (dojo, declare) {
 
             if (!this.isCurrentPlayerActive())
             {
+                this.showMessage("It is not your turn", "error");
                 return;
             }
             var unplayedPiece = event.currentTarget;
@@ -817,6 +816,7 @@ function (dojo, declare) {
 
        notif_removeLastPlayedPiece: function(notif)
        {
+           this.showMessage("There are no moves left, so this turn is used to remove the last played token", "info"),
            this.slideToObject('lastPlayedMarker_0', 'stockHolder_lastPlayed').play();
        },
 

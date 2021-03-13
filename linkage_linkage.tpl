@@ -6,6 +6,7 @@
 --	understand why code in .js works and get rid of what is not needed.
 --	curved edges on game board should be transparent
 -- 	board doesn't line up exactly with pixels
+--  need a way to distinguish between the More and Less players
 -- 
 -- BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
 -- Linkage implementation : © Shaun Phillips <smphillips@alumni.york.ac.uk>
