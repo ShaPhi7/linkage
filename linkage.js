@@ -30,6 +30,8 @@ function (dojo, declare) {
 
             this.colourToPlay  = "";
             this.horizontalToPlay = "false";
+
+            this.takenTurn = "false"; //used to stop played placing more than one piece
         },
         
         addTokenOnBoard: function(x, y, colour, h)
@@ -235,6 +237,7 @@ function (dojo, declare) {
             switch(stateName)
             {
                 case 'playerTurn':
+                    this.takenTurn = 'false';
                     this.possibleMoves = args.args.possibleMoves;
                     this.updatePossibleMoves();
                     break;
@@ -689,19 +692,25 @@ function (dojo, declare) {
 
             if(!this.checkAction('placePiece'))    // Check that this action is possible at this moment
             {
-                //TODO - error handling for all of these cases
+                this.showMessage("It is not your turn", "error");
                 return;      
             }  
 
             if (!this.isValidMove(x, y))
             {
+                this.showMessage("That is not a valid move", "error");
                 return;
             }
 
-            //TODO - add check to make sure they can only play one tile per turn - global variable check or something?
+            if (this.takenTurn == 'true')
+            {
+                this.showMessage("You have already played this turn", "error");
+                return;
+            }
 
             if (!this.getNumberOfPiecesOnBoardForColor(this.colourToPlay) > 5)
             {
+                this.showMessage("There are no pieces of that colour remaining", "error");
                 return;
             }
 
@@ -709,9 +718,10 @@ function (dojo, declare) {
                 x: x,
                 y: y,
                 color: this.colourToPlay,
-                h: this.horizontalToPlay, //note - sometimes debugger shows h as unset, even though it is.
+                h: this.horizontalToPlay, //sometimes debugger appears to show h as unset, even though it is.
             }, this, function(result){});
 
+            this.takenTurn = 'true';
             this.destroyPotentialPieceIfPresent();
             this.colourToPlay = "";
             //horizontalToPlay is just a boolean so is not reset here
@@ -768,7 +778,7 @@ function (dojo, declare) {
         {
             console.log( 'notifications subscriptions setup' );
             
-            // TODO: here, associate your game notifications with local methods
+            // here, associate your game notifications with local methods
             
             // Example 1: standard notification handling
             // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
