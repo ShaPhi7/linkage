@@ -121,14 +121,12 @@
 	top: 0px;
 	left: 0px;
 	transform-origin: 100% 50%;
-	border-radius: 3px;
 }
 
 .potentialPiece {
 	opacity: 0.5;
 	cursor: pointer; 
 	transform-origin: 100% 50%;
-	border-radius: 3px;
 }
 
 .unplayedPiece {
@@ -142,7 +140,7 @@
 	border-color: black;
 	border-style: solid;
 	border-width: thin; 
-	border-radius: 3px;
+	border-radius: 10px;
 }
 
 .lastPlayedMarker {
