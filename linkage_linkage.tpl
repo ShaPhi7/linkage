@@ -2,12 +2,6 @@
 
 <!-- 
 --------
--- TODO:
---  ommitted marker variation
---  stats
---  game infos
---  colours used throughout code is horrible
--- 
 -- BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
 -- Linkage implementation : © Shaun Phillips <smphillips@alumni.york.ac.uk>
 -- 

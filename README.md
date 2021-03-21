@@ -2,8 +2,11 @@ Source code for the Linkage game on boardgamearena.com by smpphillips.
 
 Please be aware that images are not present. Any images derivated from publishers artwork are copyrighted and cannot be licensed under a free license like Creative Commons.
 
-The following is a final TODO list:
-
+The following is a final checklist:
+ommitted marker variation?
+stats
+game infos
+colours used throughout code is horrible
 Metadata and graphics
 Game_meta-information: gameinfos.inc.php has correct and up to date information about the game
 Game box graphics is 3D version of the game box (if available) and publisher icon is correct (see Game art: img directory). Space around the box has to be transparent, not white.
@@ -15,11 +18,9 @@ Total size should not exceed 10M, image compression should be used otherwise
 If you use extra fonts, they should be freeware (please include a .txt with the licence information)
 Server side
 When giving their turn to a player, you give them some extra time with the giveExtraTime() function
-Game progression is implemented (getGameProgression() in php)
 Zombie turn is implemented (zombieTurn() in php). Note: it can only be tested if you explicitly click on the quit button to create a zombie. If you are expelled it does not generated a Zombie.
 You have defined and implemented some meaningful statistics for your game (i.e. total points, point from source A, B, C...)
 Game has meaningful notification messages (but don't overkill it, more user logs will slow down the loading)
-You implemented tiebreaking (using aux score field) and updated tiebreaker description in meta-data
 Client side
 Please check that you use ajaxcall only on player actions and never programmatically. Otherwise, your code will very likely create race conditions resulting in deadlocks or other errors.
 Special testing
