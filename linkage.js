@@ -49,7 +49,7 @@ function (dojo, declare) {
             hStr = h.toString();
             if (hStr == 'true')
             {
-                dojo.style('piece_' + x + '_' + y, "transform", "rotate(90deg)");
+                dojo.style('piece_' + x_y, "transform", "rotate(90deg)");
                 x2 = Number(x) + 1;
             }
             else
@@ -127,7 +127,6 @@ function (dojo, declare) {
         {
             console.log("Starting game setup");
             
-            // Setting up player boards
             for(var player_id in gamedatas.players)
             {
                 var player = gamedatas.players[player_id];
@@ -258,18 +257,6 @@ function (dojo, declare) {
             
             switch( stateName )
             {
-            
-            /* Example:
-            
-            case 'myGameState':
-            
-                // Hide the HTML block we are displaying only during this game state
-                dojo.style( 'my_html_block_id', 'display', 'none' );
-                
-                break;
-           */
-           
-           
             case 'dummmy':
                 break;
             }               
@@ -286,18 +273,6 @@ function (dojo, declare) {
             {            
                 switch( stateName )
                 {
-/*               
-                 Example:
- 
-                 case 'myGameState':
-                    
-                    // Add 3 action buttons in the action status bar:
-                    
-                    this.addActionButton( 'button_1_id', _('Button 1 label'), 'onMyMethodToCall1' ); 
-                    this.addActionButton( 'button_2_id', _('Button 2 label'), 'onMyMethodToCall2' ); 
-                    this.addActionButton( 'button_3_id', _('Button 3 label'), 'onMyMethodToCall3' ); 
-                    break;
-*/
                 }
             }
         },        
@@ -717,41 +692,6 @@ function (dojo, declare) {
             this.colourToPlay = "";
             //horizontalToPlay is just a boolean so is not reset here
         },
-
-        /* Example:
-        
-        onMyMethodToCall1: function( evt )
-        {
-            console.log( 'onMyMethodToCall1' );
-            
-            // Preventing default browser reaction
-            dojo.stopEvent( evt );
-
-            // Check that this action is possible (see "possibleactions" in states.inc.php)
-            if( ! this.checkAction( 'myAction' ) )
-            {   return; }
-
-            this.ajaxcall( "/linkage/linkage/myAction.html", { 
-                                                                    lock: true, 
-                                                                    myArgument1: arg1, 
-                                                                    myArgument2: arg2,
-                                                                    ...
-                                                                 }, 
-                         this, function( result ) {
-                            
-                            // What to do after the server call if it succeeded
-                            // (most of the time: nothing)
-                            
-                         }, function( is_error) {
-
-                            // What to do after the server call in anyway (success or failure)
-                            // (most of the time: nothing)
-
-                         } );        
-        },        
-        
-        */
-
         
         ///////////////////////////////////////////////////
         //// Reaction to cometD notifications
@@ -769,17 +709,6 @@ function (dojo, declare) {
         {
             console.log( 'notifications subscriptions setup' );
             
-            // here, associate your game notifications with local methods
-            
-            // Example 1: standard notification handling
-            // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-            
-            // Example 2: standard notification handling + tell the user interface to wait
-            //            during 3 seconds after calling the method in order to let the players
-            //            see what is happening in the game.
-            // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-            // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
-            // 
             dojo.subscribe('addToken', this, "notif_addToken");
             this.notifqueue.setSynchronous('addToken', 500);
             dojo.subscribe('updateStock', this, "notif_updateStock");
@@ -790,18 +719,6 @@ function (dojo, declare) {
             this.notifqueue.setSynchronous('removeLastPlayedPiece', 500);
         },  
         
-        /*
-        Example:
-        
-        notif_cardPlayed: function( notif )
-        {
-            console.log( 'notif_cardPlayed' );
-            console.log( notif );
-            
-            // Note: notif.args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
-        },    
-        
-        */
        notif_addToken: function(notif)
        {
            this.addTokenOnBoard(notif.args.x, notif.args.y, notif.args.colour, notif.args.h);
