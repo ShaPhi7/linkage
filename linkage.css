@@ -224,3 +224,11 @@
 	display: inline-block;
 	position: relative;
 }
+
+#goal_000000:after {
+	content: 'GOAL: 11 or less colour groups';
+  }
+
+#goal_ffffff:after{
+	content: "GOAL: 12 or more colour groups";
+}

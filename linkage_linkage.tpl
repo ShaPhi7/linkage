@@ -67,6 +67,8 @@ var jstpl_last_played_marker = '<div class="lastPlayedMarker" id="lastPlayedMark
 
 var jstpl_ommitted_space_marker = '<div class="ommittedSpaceMarker" id="ommittedSpaceMarker_${n}"></div>';
 
+var jstpl_player_goal = '<div class="goal goal_${color}" id="goal_${color}"></div>';
+
 </script>  
 
 {OVERALL_GAME_FOOTER}

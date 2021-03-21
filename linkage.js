@@ -111,7 +111,6 @@ function (dojo, declare) {
             dojo.place(this.format_block('jstpl_ommitted_space_marker', {n: 0}), 'board');
             this.placeOnObject('ommittedSpaceMarker_0', 'space_' + piece.x1 + '_' + piece.y1);
             this.addTooltip( 'ommittedSpaceMarker_0', '', _('This black marker indicates that pieces may not be placed on this square.') );
-            debugger;
         },
         
         /*
@@ -135,6 +134,9 @@ function (dojo, declare) {
             for(var player_id in gamedatas.players)
             {
                 var player = gamedatas.players[player_id];
+
+                var player_board_div = $('player_board_'+player_id);
+                dojo.place(this.format_block('jstpl_player_goal', player), player_board_div);
             }
 
             for (var i in gamedatas.playedpiece)
@@ -497,7 +499,6 @@ function (dojo, declare) {
 
         possibleMoveIsAlreadyShown : function(x, y)
         {
-            debugger;
             potential_piece = dojo.query('.potentialPiece')[0]; //if piece is on board
             if (potential_piece)
             {
@@ -554,7 +555,6 @@ function (dojo, declare) {
 
         isValidMoveVertical : function(x, y)
         {
-            debugger;
             if (y == 6)
             {
                 return false;

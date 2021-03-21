@@ -33,7 +33,7 @@ class Linkage extends Table
         parent::__construct();
 
         self::initGameStateLabels( array( 
-            //ommitted_space_marker_variant => 100; //TODO
+            //ommitted_space_marker_variant => 100;
         ) );    
 
         $this->spacesFound = array();    
@@ -141,9 +141,8 @@ class Linkage extends Table
     */
     function getGameProgression()
     {
-        //TODO - you could find amount of single spaces left over and add 4% on for every other one
-        //TODO - rounding errors, replay game through to see
-        //TODO - ends gameon 96%, how to get to 100%?
+        //note this is a quick and simplistic calculation.
+        //You could factor in the amount of single spaces left over that means not all pieces will be played.
         return count($this->getPlayedPiecesWithoutMarkers())*100/24;
     }
 
