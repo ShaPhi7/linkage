@@ -89,6 +89,7 @@ function (dojo, declare) {
         {   
             dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'board');
             this.placeOnObject('lastPlayedMarker_0', 'piece_' + piece.x1 + '_' + piece.y1);
+            this.addTooltip( 'lastPlayedMarker_0', '', _('This green marker indicates the piece that was played previously.') );
         },
 
         moveLastPlayedMarker: function(x, y)
@@ -101,6 +102,7 @@ function (dojo, declare) {
             if (!dojo.query('.lastPlayedMarker')[0])
             {
                 dojo.place(this.format_block('jstpl_last_played_marker', {n: 0}), 'stockHolder_lastPlayed');
+                this.addTooltip( 'lastPlayedMarker_0', '', _('This green marker indicates the piece that was played previously.') );
             }
         },
 
@@ -108,6 +110,8 @@ function (dojo, declare) {
         {
             dojo.place(this.format_block('jstpl_ommitted_space_marker', {n: 0}), 'board');
             this.placeOnObject('ommittedSpaceMarker_0', 'space_' + piece.x1 + '_' + piece.y1);
+            this.addTooltip( 'ommittedSpaceMarker_0', '', _('This black marker indicates that pieces may not be placed on this square.') );
+            debugger;
         },
         
         /*
