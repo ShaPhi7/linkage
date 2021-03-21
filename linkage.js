@@ -25,13 +25,13 @@ function (dojo, declare) {
         constructor: function(){
             console.log('linkage constructor');
             
-            this.possibleMoves = [];
-            this.playedPieces  = [];
+            this.possibleMoves = []; //from game.php, shows where pieces could be played each turn
+            this.playedPieces  = []; //useful to track this in js only as a helper
 
-            this.colourToPlay  = "";
-            this.horizontalToPlay = "false";
+            this.colourToPlay  = ""; 
+            this.horizontalToPlay = "false"; 
 
-            this.takenTurn = "false"; //used to stop players placing more than one piece
+            this.takenTurn = "false"; //only used to stop players placing more than one piece
         },
         
         addTokenOnBoard: function(x, y, colour, h)
@@ -45,22 +45,19 @@ function (dojo, declare) {
 
             x2 = x;
             y2 = y;
-
-            //TODO - find a better way
-            if (h == true
-              || h == 'true')
+           
+            hStr = h.toString();
+            if (hStr == 'true')
             {
                 dojo.style('piece_' + x + '_' + y, "transform", "rotate(90deg)");
-                x2++;
-                x2 = '' + x2 + '';
+                x2 = Number(x) + 1;
             }
             else
             {
-                y2++;
-                y2 = '' + y2 + '';
+                y2 = Number(y) + 1;
             }
 
-            this.addToPlayedPieces(x1=x, y1=y, x2=x, y2=y2, color=colour);
+            this.addToPlayedPieces(x1=x, y1=y, x2=x2.toString(), y2=y2.toString(), color=colour);
             
         },
 
@@ -245,7 +242,7 @@ function (dojo, declare) {
                 case 'playerTurn':
                     this.takenTurn = 'false';
                     this.possibleMoves = args.args.possibleMoves;
-                    this.updatePossibleMoves();
+                    this.updateMovesToShow();
                     break;
                 case 'dummmy':
                     break;
@@ -347,7 +344,7 @@ function (dojo, declare) {
                && piece.y1 == piece.y2;
        },
 
-       updatePossibleMoves: function()
+       updateMovesToShow: function()
        {
            // Remove any current moves that are showing
            this.removeAnyShowingMoves();
@@ -439,17 +436,45 @@ function (dojo, declare) {
 
         updatePossibleMoveIfNeeded : function(x, y)
         {
-            //TODO - does this need to be even better at placing the piece?
-            //adjust the move for the board limits
-            if (this.horizontalToPlay == 'true'
-                && !this.isValidMove(x, y))
+            //if the move isn't valid, try a neighbouring space.
+            if (!this.isValidMove(x, y))
             {
-                x = x-1;
-            }
-            else if (this.horizontalToPlay == 'false'
-            && !this.isValidMove(x, y))
-            {
-                y = y-1;
+                if (this.isValidMove(x-1, y))
+                {
+                    x = Number(x)-1;
+                }
+                else if (this.isValidMove(x, y-1))
+                {
+                    y = Number(y)-1;
+                }
+                else if (this.isValidMove(Number(x)+1, y))
+                {
+                    x = Number(x)+1;
+                }
+                else if (this.isValidMove(x, Number(y)+1))
+                {
+                    y = Number(y)+1;
+                }
+                else if (this.isValidMove(Number(x)-1, Number(y)-1))
+                {
+                    x = Number(x)-1;
+                    y = Number(y)-1;
+                }
+                else if (this.isValidMove(Number(x)-1, Number(y)+1))
+                {
+                    x = Number(x)-1;
+                    y = Number(y)+1;
+                }
+                else if (this.isValidMove(Number(x)+1, Number(y)-1))
+                {
+                    x = Number(x)+1;
+                    y = Number(y)-1;
+                }
+                else if (this.isValidMove(Number(x)+1, Number(y)+1))
+                {
+                    x = Number(x)+1;
+                    y = Number(y)+1;
+                }
             }
 
             if (this.shouldUpdatePossibleMove(x, y))
@@ -477,7 +502,7 @@ function (dojo, declare) {
             }
 
             //we don't check if it's a valid move here, because if it is,
-            //we let the possible move show nearby (see updatePossibleMoveIfNeeded).
+            //we try to show the possible move show nearby (see updatePossibleMoveIfNeeded).
 
             return false;
         },
@@ -545,11 +570,8 @@ function (dojo, declare) {
             }
             else
             {
-                xPlusOne = x;
-                xPlusOne++;
-
-                return this.possibleMoves[xPlusOne][y]
-                    && this.possibleMoves[x][y];
+                return this.possibleMoves[x][y]
+                    && this.possibleMoves[Number(x)+1][y];
             }
         },
 
@@ -561,11 +583,8 @@ function (dojo, declare) {
             }
             else
             {
-                yPlusOne = y;
-                yPlusOne++;
-
                 return this.possibleMoves[x][y]
-                    && this.possibleMoves[x][yPlusOne];
+                    && this.possibleMoves[x][Number(y)+1];
             }
         },
 
@@ -587,7 +606,7 @@ function (dojo, declare) {
                 x: x,
                 y: y,
                 color: this.colourToPlay,
-                h: this.horizontalToPlay //note - sometimes shows as unset in debugger, but it is set
+                h: this.horizontalToPlay //sometimes debugger appears to show h as unset, even though it is.
             }) , 'space_' + x_y);
 
             if (this.horizontalToPlay == 'true')
