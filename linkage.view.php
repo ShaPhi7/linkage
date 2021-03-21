@@ -41,9 +41,9 @@
 
         $this->page->begin_block( "linkage_linkage", "space" );
         
-        $horizontal_offset = 140;
-        $vertical_offset = 55.5;
-        $horizontal_scale = 42.75;
+        $horizontal_offset = 140.49;
+        $vertical_offset = 55;
+        $horizontal_scale = 42.5;
         $vertical_scale = 42.5;
         for ($x=6; $x>=0; $x--)
         {

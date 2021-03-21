@@ -86,8 +86,8 @@
 
 .space {
     /*background-color: red;*/
-    width: 40.5px;
-    height: 40.5px;
+    width: 41.5px;
+    height: 41.5px;
     position: absolute;
 	text-align: center;
 	vertical-align: middle;
@@ -96,8 +96,8 @@
 
 .possibleMove {
 	/*background-color: green;*/
-	width: 40.5px;
-    height: 40.5px;
+	width: 41.5px;
+    height: 41.5px;
     opacity: 0.4;
     filter: alpha(opacity=20); /* For IE8 and earlier */  
 	z-index: 0; 
@@ -106,8 +106,8 @@
 
 .unavailableMove {
 	background-color: red;
-	width: 40.5px;
-    height: 40.5px;
+	width: 41.5px;
+    height: 41.5px;
     opacity: 0.2;
     filter: alpha(opacity=20); /* For IE8 and earlier */   
 	z-index: 0;
@@ -115,34 +115,34 @@
 }
 
 .piece {
-	width: 40.5px;
-	height: 82px;
+	width: 41.5px;
+	height: 83px;
 	position: absolute;
 	top: 0px;
 	left: 0px;
-    /*border-color: black;
-	border-style: solid;
-	border-width: thin;*/
 	transform-origin: 100% 50%;
-	border-radius: 5px;
+	border-radius: 3px;
 }
 
 .potentialPiece {
 	opacity: 0.5;
 	cursor: pointer; 
 	transform-origin: 100% 50%;
-	border-radius: 5px;
+	border-radius: 3px;
 }
 
 .unplayedPiece {
-	width: 40.5px;
-	height: 82px;
+	width: 41.5px;
+	height: 83px;
 	position: relative;
 	top: 25%;
 	left: 25%;
 	margin: auto;
-	cursor: pointer; 
-	border-radius: 5px; 
+	cursor: pointer;
+	border-color: black;
+	border-style: solid;
+	border-width: thin; 
+	border-radius: 3px;
 }
 
 .lastPlayedMarker {
