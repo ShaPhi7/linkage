@@ -26,7 +26,7 @@ function (dojo, declare) {
             console.log('linkage constructor');
             
             this.possibleMoves = []; //from game.php, shows where pieces could be played each turn
-            this.playedPieces  = []; //useful to track this in js only as a helper
+            this.playedPieces  = []; //useful to track this in js mainly just as a helper
 
             this.colourToPlay  = ""; 
             this.horizontalToPlay = "false"; 

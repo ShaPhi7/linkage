@@ -72,6 +72,7 @@
 	position: relative;
 	display: inline-block;
 	vertical-align: top;
+	border-radius: 10px;
 }
 
 #markerStock {
@@ -115,7 +116,7 @@
 
 .piece {
 	width: 40.5px;
-	height: 81px;
+	height: 82px;
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -123,22 +124,25 @@
 	border-style: solid;
 	border-width: thin;*/
 	transform-origin: 100% 50%;
+	border-radius: 5px;
 }
 
 .potentialPiece {
 	opacity: 0.5;
 	cursor: pointer; 
 	transform-origin: 100% 50%;
+	border-radius: 5px;
 }
 
 .unplayedPiece {
 	width: 40.5px;
-	height: 81px;
+	height: 82px;
 	position: relative;
 	top: 25%;
 	left: 25%;
 	margin: auto;
-	cursor: pointer;  
+	cursor: pointer; 
+	border-radius: 5px; 
 }
 
 .lastPlayedMarker {
