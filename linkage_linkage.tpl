@@ -3,8 +3,6 @@
 <!-- 
 --------
 -- TODO:
---	curved edges on game board should be transparent
--- 	board doesn't line up exactly with pixels
 --  ommitted marker variation
 --  stats
 --  game infos
