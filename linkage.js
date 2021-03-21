@@ -353,7 +353,7 @@ function (dojo, declare) {
                     if (!this.isPlayedPieceOnSpace(x, y))
                     {
                         moveToShow = this.getMoveToShow(x, y);
-                        dojo.place(this.format_block('jstpl_' + moveToShow + '_move', {x_y: x + '_' + y, x: x, y: y}), 'space_' + x_y);
+                        dojo.place(this.format_block('jstpl_' + moveToShow + '_move', {x_y: x + '_' + y, x: x, y: y}), 'space_' + x + '_' + y);
                     }
                }            
            }
