@@ -22,7 +22,6 @@ Zombie turn is implemented (zombieTurn() in php). Note: it can only be tested if
 You have defined and implemented some meaningful statistics for your game (i.e. total points, point from source A, B, C...)
 Game has meaningful notification messages (but don't overkill it, more user logs will slow down the loading)
 Client side
-Please check that you use ajaxcall only on player actions and never programmatically. Otherwise, your code will very likely create race conditions resulting in deadlocks or other errors.
 Special testing
 Game is tested with spectator (non player observer): change the testuser in the URL to see the game as another user (same URL as when clicking on red arrow). As a spectator, you should be able to see the game as if you were sitting beside of the players at a real table: all public information, no private information.
 Game is tested with in-game replay from last move feature (by clicking on notification log items)

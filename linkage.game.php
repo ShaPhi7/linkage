@@ -90,6 +90,10 @@ class Linkage extends Table
         // (note: statistics used in this file must be defined in your stats.inc.php file)
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
+        self::initStat('table', 'pieces_played', 0);
+        //self::initStat('player', 'pieces_played_player', 0);
+        //self::initStat('player', 'pieces_played', 0);
+        //self::initStat('player', 'pieces_played_corner', 0);
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -159,6 +163,7 @@ class Linkage extends Table
     {
         $color = '"'.$color.'"'; //extra formatting to deal with this being non-numeric (a . is an append symbol)
         $sql = "INSERT INTO `playedpiece`(`x1`, `y1`, `x2`, `y2`, `color`, `last_played`) VALUES ($x1, $x2, $y1, $y2, $color, $last_played)";
+        
         return self::DbQuery($sql);
     }
 
@@ -166,6 +171,7 @@ class Linkage extends Table
     {
         $sql = "SELECT `x1` x1, `y1` y1, `x2`, `y2`, `color`, `last_played`
                 FROM `playedpiece`";
+
         return self::getObjectListFromDB($sql);
     }
 
@@ -174,6 +180,7 @@ class Linkage extends Table
         $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`
         FROM `playedpiece` 
         WHERE `color` <> '000000'";
+
         return self::getObjectListFromDB($sql);
     }
 
@@ -182,6 +189,7 @@ class Linkage extends Table
         $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`
         FROM `playedpiece` 
         WHERE `color` = '$color'";
+
         return self::getObjectListFromDB($sql);
     }
 
@@ -190,18 +198,21 @@ class Linkage extends Table
         $sql = "SELECT `x1`, `y1`, `x2`, `y2`, `color`, `last_played` 
                 FROM `playedpiece` 
                 WHERE `last_played` = 1";
+
         return self::getObjectFromDB($sql);
     }
 
     function unmarkLastPlayedPiece()
     {
         $sql = "UPDATE playedpiece SET last_played = 0";
+
         return self::DbQuery($sql);
     }
 
     function getArrayOfSpaces()
     {
         $possibleMoves = array();
+
         for($x=0; $x<7; $x++)
         {
             $possibleMoves[$x] = array();
@@ -210,14 +221,15 @@ class Linkage extends Table
                 $possibleMoves[$x][$y] = true;
             }
         }
+
         return $possibleMoves;
     }
 
     function getNumberOfPossibleMoves()
     {
         $numberOfPossibleMoves = 0;
-
         $booleanArrayOfPossibleMoves = $this->getBooleanArrayOfPossibleMoves();
+
         for($x=0; $x<7; $x++)
         {
             for($y=0; $y<7; $y++)
@@ -433,6 +445,9 @@ class Linkage extends Table
 
     function placePiece($x, $y, $color, $h)
     {      
+        //TODO - remove
+        self::calculateStats();
+
         //check action possible, check action sensible etc.
         self::checkAction('placePiece'); 
 
@@ -465,6 +480,9 @@ class Linkage extends Table
             );
         
         self::notifyAllPlayers("updateStock", '', array());
+
+        self::incStat(1, 'pieces_played');
+        self::incStat(1, 'pieces_played_player', self::getCurrentPlayerId());
 
         $this->gamestate->nextState('placePiece');
     }
@@ -553,6 +571,17 @@ class Linkage extends Table
         }
         self::DbQuery("UPDATE player SET player_score = 1 WHERE player_color = '${winner}'");
     }
+    
+    /*
+    function calculateStats()
+    {
+        $players = reloadPlayersBasicInfos(); //TODO - you'll just have to go to DB to get this?
+        for($player=0; $player<count($players); $player++)
+        {
+            getStat('pieces_played_player', $$player['player_id']);
+        }
+    }
+    */
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
 ////////////
@@ -615,6 +644,7 @@ class Linkage extends Table
             else
             {
                 $this->setWinner();
+                //$this->calculateStats();
                 $this->gamestate->nextState('endGame');    
             }
         }
