@@ -91,9 +91,9 @@ class Linkage extends Table
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
         self::initStat('table', 'pieces_played', 0);
-        //self::initStat('player', 'pieces_played_player', 0);
-        //self::initStat('player', 'pieces_played', 0);
-        //self::initStat('player', 'pieces_played_corner', 0);
+        self::initStat('player', 'pieces_played_player', 0);
+        self::initStat('player', 'pieces_played_corner', 0);
+        self::initStat('player', 'pieces_played_corner_percentage', 0);
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -343,6 +343,18 @@ class Linkage extends Table
             && $y < 7;
     }
 
+    function isCornerSpace($x, $y)
+    {
+        //as pieces can span 2 spaces, the x and y correspond to the top left of the piece.
+        return ($x == 0 & $y == 0)
+            || ($x == 0 & $y == 5)
+            || ($x == 0 & $y == 6)
+            || ($x == 6 & $y == 0)
+            || ($x == 5 & $y == 0)
+            || ($x == 5 & $y == 6)
+            || ($x == 6 & $y == 5);
+    }
+
     function isPlayableSpace($possibleMoves, $x, $y)
     {
         if ($this->isSpace($x, $y))
@@ -445,9 +457,6 @@ class Linkage extends Table
 
     function placePiece($x, $y, $color, $h)
     {      
-        //TODO - remove
-        self::calculateStats();
-
         //check action possible, check action sensible etc.
         self::checkAction('placePiece'); 
 
@@ -481,10 +490,23 @@ class Linkage extends Table
         
         self::notifyAllPlayers("updateStock", '', array());
 
+        $this->updateStatsForPiecePlayed($x, $y, $h);
+
+        //TODO - remove - helper to get to stats quicker
+        $this->calculateStats($x, $y);
+
+        $this->gamestate->nextState('placePiece');
+    }
+
+    function updateStatsForPiecePlayed($x, $y, $h)
+    {
         self::incStat(1, 'pieces_played');
         self::incStat(1, 'pieces_played_player', self::getCurrentPlayerId());
 
-        $this->gamestate->nextState('placePiece');
+        if ($this->isCornerSpace($x, $y, $h))
+        {
+            self::incStat(1, 'pieces_played_corner', self::getCurrentPlayerId());
+        }
     }
 
     function validMove($x, $y, $h)
@@ -572,16 +594,25 @@ class Linkage extends Table
         self::DbQuery("UPDATE player SET player_score = 1 WHERE player_color = '${winner}'");
     }
     
-    /*
     function calculateStats()
     {
-        $players = reloadPlayersBasicInfos(); //TODO - you'll just have to go to DB to get this?
-        for($player=0; $player<count($players); $player++)
+        $players = self::loadPlayersBasicInfos();
+        foreach($players as $player_id => $player )
         {
-            getStat('pieces_played_player', $$player['player_id']);
+            $piecesPlayedPlayer = self::getStat('pieces_played_player', $player_id);
+            $piecesPlayedCorner = self::getStat('pieces_played_corner', $player_id);
+            
+            $piecesPlayedCornerPercentage = 0;
+            if ($piecesPlayedPlayer > 0
+              && $piecesPlayedCorner > 0)
+            {
+                $piecesPlayedCornerPercentage = ($piecesPlayedCorner / $piecesPlayedPlayer) * 100;
+            }
+            
+            self::setStat($piecesPlayedCornerPercentage, 'pieces_played_corner_percentage', $player['player_id']);
         }
     }
-    */
+
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
 ////////////
@@ -644,7 +675,7 @@ class Linkage extends Table
             else
             {
                 $this->setWinner();
-                //$this->calculateStats();
+                $this->calculateStats();
                 $this->gamestate->nextState('endGame');    
             }
         }
