@@ -11,11 +11,6 @@ Metadata and graphics
 Game_meta-information: gameinfos.inc.php has correct and up to date information about the game
 Game box graphics is 3D version of the game box (if available) and publisher icon is correct (see Game art: img directory). Space around the box has to be transparent, not white.
 You have added a game_banner.jpg and some game_displayX.jpg images to make the game page pretty (NB: on the studio, you have to create a build for these images to appear on the studio game page)
-There is no images in img directory which are not needed anymore
-Multiple images (i.e. cards) are compressed in "Sprite" (see Game art: img directory)
-Each image should not exceed 4M
-Total size should not exceed 10M, image compression should be used otherwise
-If you use extra fonts, they should be freeware (please include a .txt with the licence information)
 Server side
 When giving their turn to a player, you give them some extra time with the giveExtraTime() function
 Zombie turn is implemented (zombieTurn() in php). Note: it can only be tested if you explicitly click on the quit button to create a zombie. If you are expelled it does not generated a Zombie.
