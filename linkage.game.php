@@ -568,6 +568,10 @@ class Linkage extends Table
         $this->logStateOfPlay($numberOfPossibleMoves, $colourGroups);
 
         $this->activeNextPlayer();
+       
+        $newActivePlayerId = $this->getActivePlayerId();
+        $this->giveExtraTime($newActivePlayerId);
+        
         $this->gamestate->nextState('nextPlayer');
     }
 

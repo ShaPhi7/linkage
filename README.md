@@ -12,8 +12,6 @@ Game_meta-information: gameinfos.inc.php has correct and up to date information 
 Game box graphics is 3D version of the game box (if available) and publisher icon is correct (see Game art: img directory). Space around the box has to be transparent, not white.
 You have added a game_banner.jpg and some game_displayX.jpg images to make the game page pretty (NB: on the studio, you have to create a build for these images to appear on the studio game page)
 Server side
-When giving their turn to a player, you give them some extra time with the giveExtraTime() function
-Zombie turn is implemented (zombieTurn() in php). Note: it can only be tested if you explicitly click on the quit button to create a zombie. If you are expelled it does not generated a Zombie.
 You have defined and implemented some meaningful statistics for your game (i.e. total points, point from source A, B, C...)
 Game has meaningful notification messages (but don't overkill it, more user logs will slow down the loading)
 Client side
