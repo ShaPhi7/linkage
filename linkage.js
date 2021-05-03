@@ -697,6 +697,7 @@ function (dojo, declare) {
             }
 
             this.ajaxcall( "/linkage/linkage/placePiece.html", {
+                lock: true,
                 x: dojo.getAttr(event.currentTarget.id, "x"),
                 y: dojo.getAttr(event.currentTarget.id, "y"),
                 color: this.colourToPlay,
