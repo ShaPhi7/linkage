@@ -31,6 +31,11 @@ function (dojo, declare) {
             this.colourToPlay  = ""; 
             this.horizontalToPlay = "false"; 
 
+            this.BLUE = "blue";
+            this.WHITE = "white";
+            this.RED = "red";
+            this.YELLOW = "yellow";
+
             this.takenTurn = "false"; //only used to stop players placing more than one piece
         },
         
@@ -163,10 +168,11 @@ function (dojo, declare) {
 
         setupStock: function()
         {
-            this.setupStockColour("00359f");
-        	this.setupStockColour("ffffff");
-        	this.setupStockColour("860000");
-            this.setupStockColour("e48a01");
+            debugger;
+            this.setupStockColour(this.BLUE);
+        	this.setupStockColour(this.WHITE);
+        	this.setupStockColour(this.RED);
+            this.setupStockColour(this.YELLOW);
 
             dojo.query('.unplayedPiece').connect('onclick', this, 'onUnplayedPiece');
         },
@@ -211,10 +217,10 @@ function (dojo, declare) {
 
         updateStock: function()
         {
-            this.removeUnplayedPiecesIfStockEmpty("00359f");
-        	this.removeUnplayedPiecesIfStockEmpty("ffffff");
-        	this.removeUnplayedPiecesIfStockEmpty("860000");
-            this.removeUnplayedPiecesIfStockEmpty("e48a01");
+            this.removeUnplayedPiecesIfStockEmpty(this.BLUE);
+        	this.removeUnplayedPiecesIfStockEmpty(this.WHITE);
+        	this.removeUnplayedPiecesIfStockEmpty(this.RED);
+            this.removeUnplayedPiecesIfStockEmpty(this.YELLOW);
         },
 
         removeUnplayedPiecesIfStockEmpty: function(color)

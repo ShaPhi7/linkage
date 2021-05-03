@@ -22,6 +22,11 @@ require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
 class Linkage extends Table
 {
+    const BLUE = "blue";
+    const WHITE = "white";
+    const RED = "red";
+    const YELLOW = "yellow";
+
 	function __construct( )
 	{
         // Your global variables labels:
@@ -390,10 +395,10 @@ class Linkage extends Table
     function calculateNumberOfColourGroups()
     {
         $playedPieces = $this->getPlayedPiecesWithoutMarkers();
-        $colorToPieceLocation = array("ffffff" => array(),
-                                      "00359f" => array(),
-                                      "860000" => array(),
-                                      "e48a01" => array());
+        $colorToPieceLocation = array(self::BLUE => array(),
+                                      self::WHITE => array(),
+                                      self::RED => array(),
+                                      self::YELLOW => array());
         foreach ($playedPieces as $pp)
         {
             $currentArray = $colorToPieceLocation[$pp["color"]];

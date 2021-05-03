@@ -22,13 +22,13 @@
 	    	</div>
 	</div>
 	<div id="stock">
-		<div id="stockHolder_00359f">
+		<div id="stockHolder_blue">
 	    </div>
-	    <div id="stockHolder_ffffff">
+	    <div id="stockHolder_white">
 	    </div>
-	    <div id="stockHolder_860000">
+	    <div id="stockHolder_red">
 	    </div>
-	    <div id="stockHolder_e48a01">
+	    <div id="stockHolder_yellow">
 	    </div>
 	</div>
 	<div id ="markerStock">

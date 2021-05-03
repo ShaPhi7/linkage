@@ -161,23 +161,23 @@
 	left: 0px;
 }
 
-.piece_00359f {
+.piece_blue {
 	background-color: #00359f;
 }
 
-.piece_ffffff {
+.piece_white {
 	background-color: #ffffff;
 }
 
-.piece_860000 {
+.piece_red {
 	background-color: #860000;
 }
 
-.piece_e48a01 {
+.piece_yellow {
 	background-color: #e48a01;
 }
 
-#stockHolder_00359f {
+#stockHolder_blue {
 	/*background-color: #00359f;*/
 	width: 100%;
 	height: 24%;
@@ -185,7 +185,7 @@
 	position: relative;
 }
 
-#stockHolder_ffffff {
+#stockHolder_white {
 	/*background-color: #ffffff;*/
 	width: 100%;
 	height: 24%;
@@ -193,7 +193,7 @@
 	position: relative;
 }
 
-#stockHolder_860000 {
+#stockHolder_red {
 	/*background-color: #860000;*/
 	width: 100%;
 	height: 24%;
@@ -201,7 +201,7 @@
 	position: relative;
 }
 
-#stockHolder_e48a01 {
+#stockHolder_yellow {
 	/*background-color: #e48a01;*/
 	width: 100%;
 	height: 24%;
