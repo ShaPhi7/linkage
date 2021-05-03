@@ -50,9 +50,7 @@
 
 #table {
 	margin: auto;
-	max-width: 990px;
-	display: inline-block;
-	position: relative;
+	text-align: center;
 	/*background-color: rgba(0,0,0,0.2);*/
 }
 
