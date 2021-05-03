@@ -497,8 +497,8 @@ class Linkage extends Table
 
         $this->updateStatsForPiecePlayed($x, $y, $h);
 
-        //TODO - remove - helper to get to stats quicker
-        $this->calculateStats($x, $y);
+        //note - helper to get to stats quicker for testing
+        //$this->calculateStats($x, $y);
 
         $this->gamestate->nextState('placePiece');
     }
