@@ -738,7 +738,8 @@ function (dojo, declare) {
 
        notif_log: function(notif)
        {
-           console.log(notif.args.logging);
+           //need to check if not null if you want to actually log
+           //console.log(notif.args.logging);
        }
    });             
 });

@@ -10,7 +10,6 @@ Game_meta-information: gameinfos.inc.php has correct and up to date information 
 
 Server side
 You have defined and implemented some meaningful statistics for your game (i.e. total points, point from source A, B, C...)
-Game has meaningful notification messages (but don't overkill it, more user logs will slow down the loading)
 
 Cleanup
 Remove all extra console.log from your js code

@@ -546,26 +546,17 @@ class Linkage extends Table
         }
     }
 
-    function logStateOfPlay($possibleMoves, $colourGroups)
+    function logStateOfPlay($colourGroups)
     {
         self::notifyAllPlayers("log",
-        clienttranslate('There are now '.$possibleMoves.' possible moves'),
-        array(
-                'logging' => $possibleMoves
-             ) 
-        );
-
-        self::notifyAllPlayers("log",
         clienttranslate('There are now '.$colourGroups.' colour groups'),
-        array(
-                'logging' => $colourGroups
-             ) 
+        array()
         );
     }
 
-    function prepareNextTurn($numberOfPossibleMoves, $colourGroups)
+    function prepareNextTurn($colourGroups)
     {
-        $this->logStateOfPlay($numberOfPossibleMoves, $colourGroups);
+        $this->logStateOfPlay($colourGroups);
 
         $this->activeNextPlayer();
        
@@ -658,12 +649,11 @@ class Linkage extends Table
     */
     function stNextTurnOrEnd()
     {
-        $numberOfPossibleMoves = $this->getNumberOfPossibleMoves();
         $colourGroups = $this->calculateNumberOfColourGroups();
 
-        if ($numberOfPossibleMoves > 0)
+        if ($this->getNumberOfPossibleMoves() > 0)
         {
-            $this->prepareNextTurn($numberOfPossibleMoves, $colourGroups);
+            $this->prepareNextTurn($colourGroups);
         }
         else
         {
