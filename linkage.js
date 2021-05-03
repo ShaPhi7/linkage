@@ -25,12 +25,15 @@ function (dojo, declare) {
         constructor: function(){
             console.log('linkage constructor');
             
+            this.debugMode = "true"; //used to turn console logging on and off
+
             this.possibleMoves = []; //from game.php, shows where pieces could be played each turn
             this.playedPieces  = []; //useful to track this in js mainly just as a helper
 
             this.colourToPlay  = ""; 
             this.horizontalToPlay = "false"; 
 
+            //if you change these, you must also update constants in game.php, .css and .tpl
             this.BLUE = "blue";
             this.WHITE = "white";
             this.RED = "red";
@@ -39,6 +42,14 @@ function (dojo, declare) {
             this.takenTurn = "false"; //only used to stop players placing more than one piece
         },
         
+        logIfDebugMode: function(log)
+        {
+            if (this.debugMode == "true")
+            {
+                console.log(log);
+            }
+        },
+
         addTokenOnBoard: function(x, y, colour, h)
         {
             x_y = x + '_' + y;
@@ -130,7 +141,7 @@ function (dojo, declare) {
         
         setup: function(gamedatas)
         {
-            console.log("Starting game setup");
+            this.logIfDebugMode("Starting game setup");
             
             for(var player_id in gamedatas.players)
             {
@@ -163,12 +174,11 @@ function (dojo, declare) {
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
-            console.log("Ending game setup");
+            this.logIfDebugMode("Ending game setup");
         },
 
         setupStock: function()
         {
-            debugger;
             this.setupStockColour(this.BLUE);
         	this.setupStockColour(this.WHITE);
         	this.setupStockColour(this.RED);
@@ -240,7 +250,7 @@ function (dojo, declare) {
         //
         onEnteringState: function(stateName, args)
         {
-            console.log('Entering state: '+ stateName);
+            this.logIfDebugMode('Entering state: '+ stateName);
             
             switch(stateName)
             {
@@ -259,7 +269,7 @@ function (dojo, declare) {
         //
         onLeavingState: function( stateName )
         {
-            console.log( 'Leaving state: '+stateName );
+            this.logIfDebugMode( 'Leaving state: '+stateName );
             
             switch( stateName )
             {
@@ -273,7 +283,7 @@ function (dojo, declare) {
         //        
         onUpdateActionButtons: function( stateName, args )
         {
-            console.log( 'onUpdateActionButtons: '+stateName );
+            this.logIfDebugMode( 'onUpdateActionButtons: '+stateName );
                       
             if( this.isCurrentPlayerActive() )
             {            
@@ -610,13 +620,13 @@ function (dojo, declare) {
             var unplayedPiece = event.currentTarget;
             var id = unplayedPiece.id;
 
-            console.log('id: ' + id);
+            this.logIfDebugMode('id: ' + id);
 
             this.colourToPlay = dojo.attr(id, 'color');
             this.horizontalToPlay = dojo.attr(id, 'h');            
 
-            console.log('colourToPlay: ' + this.colourToPlay);
-            console.log('horizontalToPlay: ' + this.horizontalToPlay);
+            this.logIfDebugMode('colourToPlay: ' + this.colourToPlay);
+            this.logIfDebugMode('horizontalToPlay: ' + this.horizontalToPlay);
 
             this.destroyPotentialPieceIfPresent();
             this.updatePossibleMoveIfNeeded(6, 6);
@@ -713,7 +723,7 @@ function (dojo, declare) {
         */
         setupNotifications: function()
         {
-            console.log( 'notifications subscriptions setup' );
+            this.logIfDebugMode( 'notifications subscriptions setup' );
             
             dojo.subscribe('addToken', this, "notif_addToken");
             this.notifqueue.setSynchronous('addToken', 500);
@@ -745,7 +755,7 @@ function (dojo, declare) {
        notif_log: function(notif)
        {
            //need to check if not null if you want to actually log
-           //console.log(notif.args.logging);
+           //this.logIfDebugMode(notif.args.logging);
        }
    });             
 });

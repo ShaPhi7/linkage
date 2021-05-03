@@ -2,18 +2,7 @@ Source code for the Linkage game on boardgamearena.com by smpphillips.
 
 Please be aware that images are not present. Any images derivated from publishers artwork are copyrighted and cannot be licensed under a free license like Creative Commons.
 
-The following is a final checklist:
-colours used throughout code is horrible
-
-Metadata and graphics
-Game_meta-information: gameinfos.inc.php has correct and up to date information about the game
-
-Server side
-You have defined and implemented some meaningful statistics for your game (i.e. total points, point from source A, B, C...)
-
 Cleanup
-Remove all extra console.log from your js code
-Remove all unnecessary debug logging from your php code
 Copyright headers in all source files have your name
 
 User Interface
