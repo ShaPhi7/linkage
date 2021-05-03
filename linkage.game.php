@@ -553,8 +553,9 @@ class Linkage extends Table
 
     function logStateOfPlay($colourGroups)
     {
+        $message = clienttranslate("There are now %s colour group(s)");
         self::notifyAllPlayers("log",
-        clienttranslate('There are now '.$colourGroups.' colour groups'),
+        sprintf($message, $colourGroups),
         array()
         );
     }
@@ -665,7 +666,7 @@ class Linkage extends Table
             if ($this->unmarkLastPieceToPlayOn())
             {
                 self::notifyAllPlayers("removeLastPlayedPiece",
-                clienttranslate('There are no moves left, so the next turn is used to remove the last played token'),
+                clienttranslate("No available moves - this turn is skipped"),
                 array() 
                 );
 

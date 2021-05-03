@@ -614,7 +614,7 @@ function (dojo, declare) {
 
             if (!this.isCurrentPlayerActive())
             {
-                this.showMessage("It is not your turn", "error");
+                this.showMessage(_("It is not your turn"), "error");
                 return;
             }
             var unplayedPiece = event.currentTarget;
@@ -674,25 +674,25 @@ function (dojo, declare) {
 
             if(!this.checkAction('placePiece'))    // Check that this action is possible at this moment
             {
-                this.showMessage("It is not your turn", "error");
+                this.showMessage(_("It is not your turn"), "error");
                 return;      
             }  
 
             if (!this.isValidMove(dojo.getAttr(event.currentTarget.id, "x"), dojo.getAttr(event.currentTarget.id, "y")))
             {
-                this.showMessage("That is not a valid move", "error");
+                this.showMessage(_("That is not a valid move"), "error");
                 return;
             }
 
             if (this.takenTurn == 'true')
             {
-                this.showMessage("You have already played this turn", "error");
+                this.showMessage(_("You have already played this turn"), "error");
                 return;
             }
 
             if (!this.getNumberOfPiecesOnBoardForColor(this.colourToPlay) > 5)
             {
-                this.showMessage("There are no pieces of that colour remaining", "error");
+                this.showMessage(_("There are no pieces of that colour remaining"), "error");
                 return;
             }
 
@@ -748,7 +748,7 @@ function (dojo, declare) {
 
        notif_removeLastPlayedPiece: function(notif)
        {
-           this.showMessage("There are no moves left, so this turn is used to remove the last played token", "info"),
+           this.showMessage(_("No available moves - this turn is skipped"), "info"),
            this.slideToObject('lastPlayedMarker_0', 'stockHolder_lastPlayed').play();
        },
 
