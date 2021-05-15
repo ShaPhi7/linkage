@@ -76,7 +76,6 @@ class Linkage extends Table
         }
         $sql .= implode( $values, ',' );
         self::DbQuery( $sql );
-        self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
 
         //mark the ommitted space token, either player choice or center space.
@@ -168,7 +167,7 @@ class Linkage extends Table
     {
         $color = '"'.$color.'"'; //extra formatting to deal with this being non-numeric (a . is an append symbol)
         $sql = "INSERT INTO `playedpiece`(`x1`, `y1`, `x2`, `y2`, `color`, `last_played`) VALUES ($x1, $x2, $y1, $y2, $color, $last_played)";
-        
+
         return self::DbQuery($sql);
     }
 
