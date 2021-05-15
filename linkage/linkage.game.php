@@ -589,7 +589,7 @@ class Linkage extends Table
         }
         else
         {
-            //less wins - black
+            //fewer wins - black
             $winner = '000000';
         }
         self::DbQuery("UPDATE player SET player_score = 1 WHERE player_color = '${winner}'");

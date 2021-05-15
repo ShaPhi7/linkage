@@ -226,7 +226,7 @@
 }
 
 #goal_000000:after {
-	content: 'Goal: 11 or less colour groups';
+	content: 'Goal: 11 or fewer colour groups';
   }
 
 #goal_ffffff:after{
