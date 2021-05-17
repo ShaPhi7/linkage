@@ -82,6 +82,21 @@
 	vertical-align: top;
 }
 
+#colourGroupsCounter {
+	width: 100px;
+	height: 100px;
+	background-color: rgba(255,255,255,0.4);
+	display: inline-block;
+	vertical-align: top;
+	border-radius: 10px;
+}
+
+.text {
+	vertical-align: top;
+	text-align: center;
+	innerHTML: 
+}
+
 .space {
     /*background-color: red;*/
     width: 41.5px;
@@ -166,7 +181,7 @@
 }
 
 .piece_white {
-	background-color: #ffffff;
+	background-color: white;
 }
 
 .piece_red {

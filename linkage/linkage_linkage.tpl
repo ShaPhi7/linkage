@@ -21,6 +21,7 @@
 	        <div id="pieces">
 	    	</div>
 	</div>
+
 	<div id="stock">
 		<div id="stockHolder_blue">
 	    </div>
@@ -31,11 +32,15 @@
 	    <div id="stockHolder_yellow">
 	    </div>
 	</div>
+
 	<div id ="markerStock">
 		<div id="stockHolder_lastPlayed">
 		</div>
 		<div id="stockHolder_ommittedSpace">
 		</div>
+	</div>
+
+	<div id ="colourGroupsCounter">
 	</div>
 </div>
 
@@ -58,6 +63,8 @@ var jstpl_last_played_marker = '<div class="lastPlayedMarker" id="lastPlayedMark
 var jstpl_ommitted_space_marker = '<div class="ommittedSpaceMarker" id="ommittedSpaceMarker_${n}"></div>';
 
 var jstpl_player_goal = '<div class="goal goal_${color}" id="goal_${color}"></div>';
+
+var jstpl_text = '<div class="text" id="cg"></div>'
 
 </script>  
 

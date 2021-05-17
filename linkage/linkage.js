@@ -167,6 +167,12 @@ function (dojo, declare) {
             //this will become a method that checks how many of these there should be and dishes them out.
             this.setupStock();
             
+            dojo.place(this.format_block('jstpl_text', {
+            }) , 'colourGroupsCounter');
+
+            var element = document.getElementById("cg");
+            element.innerHTML = "Colour groups";
+
             dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
             dojo.query('.unplayedPiece').connect('onmousemove', this, 'onMouseMoveOverUnplayedPiece');
             dojo.query('#stock').connect('onmousemove', this, 'onMouseMoveOverStock');
@@ -400,6 +406,12 @@ function (dojo, declare) {
             }
             return 'unavailable';
        },
+
+       updateColourGroupsCounter: function($numberOfColourGroups)
+       {
+            //TODO
+       },
+
         ///////////////////////////////////////////////////
         //// Player's action
         
@@ -734,6 +746,7 @@ function (dojo, declare) {
             this.notifqueue.setSynchronous('log', 100);
             dojo.subscribe('removeLastPlayedPiece', this, "notif_removeLastPlayedPiece");
             this.notifqueue.setSynchronous('removeLastPlayedPiece', 500);
+            dojo.subscribe('updateColourGroups', this, "notif_updateColourGroups");
         },  
         
        notif_addToken: function(notif)
@@ -751,6 +764,11 @@ function (dojo, declare) {
        {
            this.showMessage(_("No available moves - this turn is skipped"), "info"),
            this.slideToObject('lastPlayedMarker_0', 'stockHolder_lastPlayed').play();
+       },
+
+       notif_updateColourGroups: function(notif)
+       {
+           this.updateColourGroupsCounter(notif.args.cg);
        },
 
        notif_log: function(notif)

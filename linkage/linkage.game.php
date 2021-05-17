@@ -552,7 +552,10 @@ class Linkage extends Table
 
     function logStateOfPlay($colourGroups)
     {
+        self::notifyAllPlayers("updateColourGroups", "", array('cg' => $colourGroups));
+
         $message = clienttranslate("There are now %s colour group(s)");
+        
         self::notifyAllPlayers("log",
         sprintf($message, $colourGroups),
         array()
