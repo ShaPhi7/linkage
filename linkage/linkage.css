@@ -162,7 +162,7 @@
 }
 
 .piece_blue {
-	background-color: #00359f;
+	background-color: blue;
 }
 
 .piece_white {
@@ -170,11 +170,11 @@
 }
 
 .piece_red {
-	background-color: #860000;
+	background-color: red;
 }
 
 .piece_yellow {
-	background-color: #e48a01;
+	background-color: yellow;
 }
 
 #stockHolder_blue {
