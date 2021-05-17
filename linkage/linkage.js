@@ -164,14 +164,8 @@ function (dojo, declare) {
             //either put it on the last played piece, or put it at the side of the board.
             this.addLastPlayedMarkerToStockIfNeeded();
 
-            //this will become a method that checks how many of these there should be and dishes them out.
             this.setupStock();
-            
-            dojo.place(this.format_block('jstpl_text', {
-            }) , 'colourGroupsCounter');
-
-            var element = document.getElementById("cg");
-            element.innerHTML = "Colour groups";
+            this.setupColourGroupsCounter(gamedatas.colourGroups);
 
             dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
             dojo.query('.unplayedPiece').connect('onmousemove', this, 'onMouseMoveOverUnplayedPiece');
@@ -245,6 +239,31 @@ function (dojo, declare) {
             {
                 dojo.destroy('unplayed_piece_v' + '_' + color);
                 dojo.destroy('unplayed_piece_h' + '_' + color);
+            }
+        },
+
+        setupColourGroupsCounter: function(numberOfColourGroups)
+        {
+            this.addTooltip( 'colourGroupsCounter', '', _('This indicates the number of colour groups currently on the board.') );
+            dojo.place(this.format_block('jstpl_cg_text', {}) , 'colourGroupsCounter');
+    
+            var element = document.getElementById("cgText");
+            element.innerHTML = numberOfColourGroups;
+
+            this.setCgCounterColouring(numberOfColourGroups);
+        },
+
+        setCgCounterColouring: function(numberOfColourGroups)
+        {
+            if (numberOfColourGroups > 11)
+            {
+                dojo.style('colourGroupsCounter', "background-color", "black");
+                dojo.style('cgText', "color", "white");
+            }
+            else
+            {
+                dojo.style('colourGroupsCounter', 'background-color', 'white');
+                dojo.style('cgText', 'color', 'black');
             }
         },
 
@@ -407,9 +426,11 @@ function (dojo, declare) {
             return 'unavailable';
        },
 
-       updateColourGroupsCounter: function($numberOfColourGroups)
+       updateColourGroupsCounter: function(numberOfColourGroups)
        {
-            //TODO
+            var element = document.getElementById("cgText");
+            element.innerHTML = numberOfColourGroups;
+            this.setCgCounterColouring(numberOfColourGroups);
        },
 
         ///////////////////////////////////////////////////

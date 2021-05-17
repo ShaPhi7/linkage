@@ -134,6 +134,8 @@ class Linkage extends Table
                                                                    last_played lastPlayed
                                                             FROM playedpiece");
 
+        $result['colourGroups'] = self::calculateNumberOfColourGroups();
+
         return $result;
     }
 
@@ -586,13 +588,13 @@ class Linkage extends Table
     {
         if ($this->calculateNumberOfColourGroups() >= 12)
         {
-            //more wins - white
-            $winner = 'ffffff';
+            //more wins - black
+            $winner = '000000';
         }
         else
         {
-            //fewer wins - black
-            $winner = '000000';
+            //fewer wins - white
+            $winner = 'ffffff';
         }
         self::DbQuery("UPDATE player SET player_score = 1 WHERE player_color = '${winner}'");
     }

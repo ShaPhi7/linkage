@@ -83,18 +83,20 @@
 }
 
 #colourGroupsCounter {
-	width: 100px;
-	height: 100px;
-	background-color: rgba(255,255,255,0.4);
+	width: 50px;
+	height: 50px;
+	background-color: rgba(255,255,255);
 	display: inline-block;
 	vertical-align: top;
 	border-radius: 10px;
 }
 
 .text {
-	vertical-align: top;
+	vertical-align: middle;
 	text-align: center;
-	innerHTML: 
+	line-height: 50px;
+	font-size: xx-large;
+	background-color: rgba(255,255,255,0);
 }
 
 .space {
@@ -241,9 +243,9 @@
 }
 
 #goal_000000:after {
-	content: 'Goal: 11 or fewer colour groups';
+	content: "Goal: 12 or more colour groups";
   }
 
 #goal_ffffff:after{
-	content: "Goal: 12 or more colour groups";
+	content: 'Goal: 11 or fewer colour groups';
 }

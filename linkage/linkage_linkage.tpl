@@ -64,7 +64,7 @@ var jstpl_ommitted_space_marker = '<div class="ommittedSpaceMarker" id="ommitted
 
 var jstpl_player_goal = '<div class="goal goal_${color}" id="goal_${color}"></div>';
 
-var jstpl_text = '<div class="text" id="cg"></div>'
+var jstpl_cg_text = '<div class="text" id="cgText"></div>'
 
 </script>  
 
