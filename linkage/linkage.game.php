@@ -572,7 +572,7 @@ class Linkage extends Table
        
         $newActivePlayerId = $this->getActivePlayerId();
         $this->giveExtraTime($newActivePlayerId);
-        
+
         $this->gamestate->nextState('nextPlayer');
     }
 
@@ -629,8 +629,11 @@ class Linkage extends Table
     */
     function argPlayerTurn()
     {
+        $arrayOfSpaces = $this->getArrayOfSpaces();
+
         return array('possibleMoves' => $this->getBooleanArrayOfPossibleMoves(),
-                     'lastPlayedPiece' => $this->getLastPlayedPiece());
+                     'lastPlayedPiece' => $this->getLastPlayedPiece(),
+                     'unavailableMoves' => $this->markAdjacentSpacesToLastPlayedPieceAsNotPossibleMovesIfPresent($arrayOfSpaces));
     }
     /*
     

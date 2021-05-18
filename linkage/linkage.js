@@ -29,6 +29,7 @@ function (dojo, declare) {
 
             this.possibleMoves = []; //from game.php, shows where pieces could be played each turn
             this.playedPieces  = []; //useful to track this in js mainly just as a helper
+            this.unavailableMoves = []; //only the spaces that are adjacent to the last played piece
 
             this.colourToPlay  = ""; 
             this.horizontalToPlay = "false"; 
@@ -282,6 +283,7 @@ function (dojo, declare) {
                 case 'playerTurn':
                     this.takenTurn = 'false';
                     this.possibleMoves = args.args.possibleMoves;
+                    this.unavailableMoves = args.args.unavailableMoves;
                     this.updateMovesToShow();
                     break;
                 case 'dummmy':
@@ -362,17 +364,40 @@ function (dojo, declare) {
 
        updateMovesToShow: function()
        {
-           // Remove any current moves that are showing
-           this.removeAnyShowingMoves();
+            this.removeAnyShowingMoves();
+            this.updatePossibleMovesToShow();
+            this.updateUnavailableMovesToShow();
+       },
 
+       updatePossibleMovesToShow: function()
+       {
            for (var x in this.possibleMoves)
            {
                for (var y in this.possibleMoves[x])
                {
-                    if (!this.isPlayedPieceOnSpace(x, y))
+                    if (!this.isPlayedPieceOnSpace(x, y)
+                      && this.possibleMoves[x][y])
                     {
-                        moveToShow = this.getMoveToShow(x, y);
-                        dojo.place(this.format_block('jstpl_' + moveToShow + '_move', {x_y: x + '_' + y, x: x, y: y}), 'space_' + x + '_' + y);
+                        dojo.place(this.format_block('jstpl_possible_move', {x_y: x + '_' + y, x: x, y: y}), 'space_' + x + '_' + y);
+                    }
+               }            
+           }
+             
+           dojo.query('.possibleMove').connect('onmousemove', this, 'onMouseMoveOverPossibleMove');
+       },
+
+       updateUnavailableMovesToShow: function()
+       {
+
+        debugger;
+           for (var x in this.unavailableMoves)
+           {
+               for (var y in this.unavailableMoves[x])
+               {
+                    if (!this.isPlayedPieceOnSpace(x, y)
+                        && !this.unavailableMoves[x][y])
+                    {
+                        dojo.place(this.format_block('jstpl_unavailable_move', {x_y: x + '_' + y, x: x, y: y}), 'space_' + x + '_' + y);
                     }
                }            
            }
@@ -415,15 +440,6 @@ function (dojo, declare) {
             }
 
             return false;
-       },
-
-       getMoveToShow: function(x, y)
-       {
-            if (this.possibleMoves[x][y]) //gets set true/false in getPossibleMoves in game
-            {
-                return 'possible';
-            }
-            return 'unavailable';
        },
 
        updateColourGroupsCounter: function(numberOfColourGroups)
