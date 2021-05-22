@@ -66,6 +66,8 @@ var jstpl_player_goal = '<div class="goal goal_${color}" id="goal_${color}"></di
 
 var jstpl_cg_text = '<div class="text" id="cgText"></div>'
 
+var jstpl_unplayed_pieces_counter = '<div class="unplayedPiecesCounter" id="unplayedPiecesCounter_${color}"><span id=number></span></div>'
+
 </script>  
 
 {OVERALL_GAME_FOOTER}

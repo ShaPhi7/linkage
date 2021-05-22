@@ -34,6 +34,8 @@ function (dojo, declare) {
             this.colourToPlay  = ""; 
             this.horizontalToPlay = "false"; 
 
+            this.unplayedPiecesCounters = {};
+
             //if you change these, you must also update constants in game.php, .css and .tpl
             this.BLUE = "blue";
             this.WHITE = "white";
@@ -190,10 +192,32 @@ function (dojo, declare) {
         
         setupStockColour: function(color)
         {
+            this.addRemainingPiecesCounter(color)
             if (this.getNumberOfPiecesInStockForColor(color) > 0)
             {
                 this.addUnplayedPieceToStockVertical(color);
                 this.addUnplayedPieceToStockHorizontal(color);
+            }
+        },
+
+        addRemainingPiecesCounter: function(color)
+        {
+            counterId = 'unplayedPiecesCounter_' + color;
+            dojo.place(this.format_block('jstpl_unplayed_pieces_counter', {color: color}), 'stockHolder_' + color);
+            dojo.style(counterId, "left", "50px");
+            
+            var counter = new ebg.counter();
+            counter.create(counterId);
+            this.unplayedPiecesCounters[color] = counter;
+
+            numberOfPiecesRemainingForColor = this.getNumberOfPiecesInStockForColor(color);
+            if (numberOfPiecesRemainingForColor > 0)
+            {
+                counter.setValue(numberOfPiecesRemainingForColor);
+            }
+            else
+            {
+                counter.disable();
             }
         },
 
@@ -226,12 +250,19 @@ function (dojo, declare) {
             dojo.style(id + '_' + color, "position", "absolute");
         },
 
-        updateStock: function()
+        updateStock: function(colour)
         {
-            this.removeUnplayedPiecesIfStockEmpty(this.BLUE);
-        	this.removeUnplayedPiecesIfStockEmpty(this.WHITE);
-        	this.removeUnplayedPiecesIfStockEmpty(this.RED);
-            this.removeUnplayedPiecesIfStockEmpty(this.YELLOW);
+            this.removeUnplayedPiecesIfStockEmpty(colour);
+            counter = this.unplayedPiecesCounters[colour];
+            var numberOfRemainingPieces = this.getNumberOfPiecesInStockForColor(colour);
+            if (numberOfRemainingPieces > 0)
+            {
+                counter.toValue(numberOfRemainingPieces);
+            }
+            else
+            {
+                counter.disable();
+            }
         },
 
         removeUnplayedPiecesIfStockEmpty: function(color)
@@ -388,8 +419,6 @@ function (dojo, declare) {
 
        updateUnavailableMovesToShow: function()
        {
-
-        debugger;
            for (var x in this.unavailableMoves)
            {
                for (var y in this.unavailableMoves[x])
@@ -794,7 +823,7 @@ function (dojo, declare) {
 
        notif_updateStock: function(notif)
        {
-            this.updateStock();
+            this.updateStock(notif.args.colour);
        },
 
        notif_removeLastPlayedPiece: function(notif)

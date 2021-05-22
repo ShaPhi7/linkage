@@ -494,7 +494,7 @@ class Linkage extends Table
                  ) 
             );
         
-        self::notifyAllPlayers("updateStock", '', array());
+        self::notifyAllPlayers("updateStock", '', array('colour' => $color));
 
         $this->updateStatsForPiecePlayed($x, $y, $h);
 
