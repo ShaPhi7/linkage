@@ -64,7 +64,7 @@ var jstpl_ommitted_space_marker = '<div class="ommittedSpaceMarker" id="ommitted
 
 var jstpl_player_goal = '<div class="goal goal_${color}" id="goal_${color}"></div>';
 
-var jstpl_cg_text = '<div class="text" id="cgText"></div>'
+var jstpl_cg_counter = '<div class="colourGroupsCounter" id="colourGroupsCounter"><span id=number></span></div>'
 
 var jstpl_unplayed_pieces_counter = '<div class="unplayedPiecesCounter" id="unplayedPiecesCounter_${color}"><span id=number></span></div>'
 

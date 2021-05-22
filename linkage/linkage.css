@@ -89,14 +89,9 @@
 	display: inline-block;
 	vertical-align: top;
 	border-radius: 10px;
-}
-
-.text {
-	vertical-align: middle;
 	text-align: center;
 	line-height: 50px;
 	font-size: xx-large;
-	background-color: rgba(255,255,255,0);
 }
 
 .space {

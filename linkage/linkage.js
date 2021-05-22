@@ -34,6 +34,7 @@ function (dojo, declare) {
             this.colourToPlay  = ""; 
             this.horizontalToPlay = "false"; 
 
+            this.colourGroupsCounter = new ebg.counter();
             this.unplayedPiecesCounters = {};
 
             //if you change these, you must also update constants in game.php, .css and .tpl
@@ -277,10 +278,9 @@ function (dojo, declare) {
         setupColourGroupsCounter: function(numberOfColourGroups)
         {
             this.addTooltip( 'colourGroupsCounter', '', _('This indicates the number of colour groups currently on the board.') );
-            dojo.place(this.format_block('jstpl_cg_text', {}) , 'colourGroupsCounter');
-    
-            var element = document.getElementById("cgText");
-            element.innerHTML = numberOfColourGroups;
+
+            this.colourGroupsCounter.create('colourGroupsCounter');
+            this.colourGroupsCounter.setValue(numberOfColourGroups);
 
             this.setCgCounterColouring(numberOfColourGroups);
         },
@@ -290,12 +290,12 @@ function (dojo, declare) {
             if (numberOfColourGroups > 11)
             {
                 dojo.style('colourGroupsCounter', "background-color", "black");
-                dojo.style('cgText', "color", "white");
+                dojo.style('colourGroupsCounter', "color", "white");
             }
             else
             {
                 dojo.style('colourGroupsCounter', 'background-color', 'white');
-                dojo.style('cgText', 'color', 'black');
+                dojo.style('colourGroupsCounter', 'color', 'black');
             }
         },
 
@@ -473,8 +473,7 @@ function (dojo, declare) {
 
        updateColourGroupsCounter: function(numberOfColourGroups)
        {
-            var element = document.getElementById("cgText");
-            element.innerHTML = numberOfColourGroups;
+            this.colourGroupsCounter.toValue(numberOfColourGroups);
             this.setCgCounterColouring(numberOfColourGroups);
        },
 
