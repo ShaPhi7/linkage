@@ -48,7 +48,7 @@
 
 // Javascript HTML templates
 
-var jstpl_piece = '<div class="piece piece_${color}" id="piece_${x_y}" style="left: 0px; top: 0px;"></div>';
+var jstpl_piece = '<div class="piece" id="piece_${x_y}"></div>';
 
 var jstpl_potential_piece = '<div class="piece piece_${color} potentialPiece" id="potential_piece_${x_y}" x="${x}" y="${y}" color="${color}" h="${h}" style="left: 0px; top: 0px;"></div>';
 

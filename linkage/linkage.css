@@ -57,10 +57,11 @@
 #board {
     width: 576px;
     height: 407px;
-    background-image: url('img/board.png');
+    background-color: rgba(255,255,255,0.4);
     position: relative;
     margin: auto;
     display: inline-block;
+	border-radius: 10px;
 }
 
 #stock {
@@ -95,19 +96,19 @@
 }
 
 .space {
-    /*background-color: red;*/
-    width: 41.5px;
-    height: 41.5px;
+    width: 42px;
+    height: 42px;
+	background-color: grey;
     position: absolute;
-	text-align: center;
-	vertical-align: middle;
-	line-height: 50px;
+	border-color: black;
+	border-style: solid;
+	border-width: 2px;
 }
 
 .possibleMove {
 	/*background-color: green;*/
-	width: 41.5px;
-    height: 41.5px;
+	width: 42px;
+    height: 42px;
     opacity: 0.4;
     filter: alpha(opacity=20); /* For IE8 and earlier */  
 	z-index: 0; 
@@ -116,8 +117,8 @@
 
 .unavailableMove {
 	background-color: red;
-	width: 41.5px;
-    height: 41.5px;
+	width: 42px;
+    height: 42px;
     opacity: 0.2;
     filter: alpha(opacity=20); /* For IE8 and earlier */   
 	z-index: 0;
@@ -125,11 +126,11 @@
 }
 
 .piece {
-	width: 41.5px;
-	height: 83px;
+	width: 46px;
+	height: 92px;
 	position: absolute;
-	top: 0px;
-	left: 0px;
+	top: -2px;
+	left: -2px;
 	transform-origin: 100% 50%;
 }
 
@@ -140,8 +141,8 @@
 }
 
 .unplayedPiece {
-	width: 41.5px;
-	height: 83px;
+	width: 42px;
+	height: 84px;
 	position: relative;
 	top: 25%;
 	left: 25%;

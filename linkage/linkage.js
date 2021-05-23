@@ -78,7 +78,94 @@ function (dojo, declare) {
             }
 
             this.addToPlayedPieces(x1=x, y1=y, x2=x2.toString(), y2=y2.toString(), color=colour);
-            
+
+            debugger;
+            this.colourInSpace(x, y, colour);
+            this.colourInSpace(x2, y2, colour);
+            this.setBorderColoursForAllSpaces();
+        },
+
+        colourInSpace: function(x, y, colour)
+        {
+            dojo.style('space_' + x + '_' + y, "background-color", colour);
+            //this.setBorderColoursForSpace(x, y);
+        },
+
+        setBorderColoursForAllSpaces: function()
+        {
+            for (x = 0; x < 7; x++)
+            {
+                for (y = 0; y < 7; y++)
+                {
+                    this.setBorderColoursForSpace(x, y);
+                }
+            }
+        },
+
+        setBorderColoursForSpace: function(x, y)
+        {
+            this.setBorderColourForSpace(x, y, "border-top-color");
+            this.setBorderColourForSpace(x, y, "border-left-color");
+            this.setBorderColourForSpace(x, y, "border-right-color");
+            this.setBorderColourForSpace(x, y, "border-bottom-color");
+        },
+
+        setBorderColourForSpace(x, y, border)
+        {
+            var pp = this.getPlayedPieceOnSpace(x, y);
+
+            if (this.shouldColourBorder(pp, border))
+            {
+                dojo.style('space_' + x + '_' + y, border, pp.color); 
+            }
+            else
+            {
+                dojo.style('space_' + x + '_' + y, border, 'black'); 
+            }
+        },
+
+        shouldColourBorder: function(pp, border)
+        {
+            if (pp == null)
+            {
+                return false;
+            }
+
+            var borderingPiece = this.getBorderingPiece(x, y, border);
+
+            if (borderingPiece == null)
+            {
+                return false;
+            }
+
+            if (borderingPiece.color == pp.color)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        },
+
+        getBorderingPiece(x, y, border)
+        {
+            if (border == "border-top-color")
+            {
+                return this.getPlayedPieceOnSpace(Number(x), Number(y)-1);
+            }
+            else if (border == "border-left-color")
+            {
+                return this.getPlayedPieceOnSpace(Number(x)-1, Number(y));
+            }
+            else if (border == "border-right-color")
+            {
+                return this.getPlayedPieceOnSpace(Number(x)+1, Number(y));
+            }
+            else if (border == "border-bottom-color")
+            {
+                return this.getPlayedPieceOnSpace(Number(x), Number(y)+1);
+            }
         },
 
         addToPlayedPieces: function(x, y, x2, y2, colour)
@@ -164,6 +251,8 @@ function (dojo, declare) {
                     this.addLastPlayedMarkerOnPiece(piece);
                 }
             }
+
+            this.setBorderColoursForAllSpaces();
 
             //either put it on the last played piece, or put it at the side of the board.
             this.addLastPlayedMarkerToStockIfNeeded();
@@ -406,7 +495,7 @@ function (dojo, declare) {
            {
                for (var y in this.possibleMoves[x])
                {
-                    if (!this.isPlayedPieceOnSpace(x, y)
+                    if (this.getPlayedPieceOnSpace(x, y) == null
                       && this.possibleMoves[x][y])
                     {
                         dojo.place(this.format_block('jstpl_possible_move', {x_y: x + '_' + y, x: x, y: y}), 'space_' + x + '_' + y);
@@ -423,7 +512,7 @@ function (dojo, declare) {
            {
                for (var y in this.unavailableMoves[x])
                {
-                    if (!this.isPlayedPieceOnSpace(x, y)
+                    if (this.getPlayedPieceOnSpace(x, y) == null
                         && !this.unavailableMoves[x][y])
                     {
                         dojo.place(this.format_block('jstpl_unavailable_move', {x_y: x + '_' + y, x: x, y: y}), 'space_' + x + '_' + y);
@@ -450,25 +539,25 @@ function (dojo, declare) {
             }
        },
 
-       isPlayedPieceOnSpace: function(x, y)
+       getPlayedPieceOnSpace: function(x, y)
        {
             for (var pp in this.playedPieces)
             {
                 playedPiece = this.playedPieces[pp];
+                
                 if (x == playedPiece.x1
-                 && y == playedPiece.y1)
+                    && y == playedPiece.y1)
                 {
-                    return true;
+                    return playedPiece;
                 }
                 
                 if (x == playedPiece.x2
-                 && y == playedPiece.y2)
+                    && y == playedPiece.y2)
                 {
-                    return true;
+                    return playedPiece;
                 }
             }
-
-            return false;
+            return null;
        },
 
        updateColourGroupsCounter: function(numberOfColourGroups)
