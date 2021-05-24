@@ -552,8 +552,10 @@ class Linkage extends Table
         }
     }
 
-    function logStateOfPlay($colourGroups)
+    function logStateOfPlay()
     {
+        $colourGroups = $this->calculateNumberOfColourGroups();
+
         self::notifyAllPlayers("updateColourGroups", "", array('cg' => $colourGroups));
 
         $message = clienttranslate("There are now %s colour group(s)");
@@ -564,10 +566,8 @@ class Linkage extends Table
         );
     }
 
-    function prepareNextTurn($colourGroups)
+    function prepareNextTurn()
     {
-        $this->logStateOfPlay($colourGroups);
-
         $this->activeNextPlayer();
        
         $newActivePlayerId = $this->getActivePlayerId();
@@ -662,11 +662,11 @@ class Linkage extends Table
     */
     function stNextTurnOrEnd()
     {
-        $colourGroups = $this->calculateNumberOfColourGroups();
+        $this->logStateOfPlay();
 
         if ($this->getNumberOfPossibleMoves() > 0)
         {
-            $this->prepareNextTurn($colourGroups);
+            $this->prepareNextTurn();
         }
         else
         {
