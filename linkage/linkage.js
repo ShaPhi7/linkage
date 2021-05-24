@@ -69,7 +69,7 @@ function (dojo, declare) {
             hStr = h.toString();
             if (hStr == 'true')
             {
-                dojo.style('piece_' + x_y, "transform", "rotate(90deg)");
+                dojo.style('piece_' + x_y, "transform", "rotate(90deg) translate(-1px, -1px)");
                 x2 = Number(x) + 1;
             }
             else
@@ -778,7 +778,7 @@ function (dojo, declare) {
 
             if (this.horizontalToPlay == 'true')
             {
-                dojo.style('potential_piece_' + x_y, "transform", "rotate(90deg)");
+                dojo.style('potential_piece_' + x_y, "transform", "rotate(90deg) translate(-1px, -1px)");
             }
 
             dojo.query('.potentialPiece').connect('onclick', this, 'onPotentialPiece');
