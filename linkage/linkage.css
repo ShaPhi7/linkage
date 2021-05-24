@@ -55,8 +55,8 @@
 }
 
 #board {
-    width: 576px;
-    height: 407px;
+    width: 400px;
+    height: 400px;
     background-color: rgba(255,255,255,0.4);
     position: relative;
     margin: auto;
@@ -66,7 +66,7 @@
 
 #stock {
 	width: 150px;
-	height: 407px;
+	height: 400px;
 	background-color: rgba(255,255,255,0.4);
 	position: relative;
 	display: inline-block;

@@ -44,8 +44,8 @@
         $this->page->begin_block("linkage_linkage", "border_h");
         $this->page->begin_block("linkage_linkage", "border_corner");
         
-        $horizontal_offset = 140;
-        $vertical_offset = 55;
+        $horizontal_offset = 49;
+        $vertical_offset = 49;
         $horizontal_scale = 44;
         $vertical_scale = 44;
         for ($x=7; $x>=0; $x--)
