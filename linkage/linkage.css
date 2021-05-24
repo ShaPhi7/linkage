@@ -100,9 +100,27 @@
     height: 42px;
 	background-color: grey;
     position: absolute;
-	border-color: black;
-	border-style: solid;
-	border-width: 2px;
+}
+
+.border {
+	width: 2px;
+	height: 42px;
+	background-color: black;
+	position: absolute;
+}
+
+.border_h {
+	width: 42px;
+	height: 2px;
+	background-color: black;
+	position: absolute;
+}
+
+.border_corner {
+	width: 2px;
+	height: 2px;
+	background-color: black;
+	position: absolute;
 }
 
 .possibleMove {
@@ -126,8 +144,8 @@
 }
 
 .piece {
-	width: 46px;
-	height: 92px;
+	width: 42px;
+	height: 86px;
 	position: absolute;
 	top: -2px;
 	left: -2px;

@@ -79,23 +79,21 @@ function (dojo, declare) {
 
             this.addToPlayedPieces(x1=x, y1=y, x2=x2.toString(), y2=y2.toString(), color=colour);
 
-            debugger;
-            this.colourInSpace(x, y, colour);
-            this.colourInSpace(x2, y2, colour);
+            this.colourSpace(x, y, colour);
+            this.colourSpace(x2, y2, colour);
             this.setBorderColoursForAllSpaces();
         },
 
-        colourInSpace: function(x, y, colour)
+        colourSpace: function(x, y, colour)
         {
             dojo.style('space_' + x + '_' + y, "background-color", colour);
-            //this.setBorderColoursForSpace(x, y);
         },
 
         setBorderColoursForAllSpaces: function()
         {
-            for (x = 0; x < 7; x++)
+            for (x = 0; x <= 7; x++)
             {
-                for (y = 0; y < 7; y++)
+                for (y = 0; y <= 7; y++)
                 {
                     this.setBorderColoursForSpace(x, y);
                 }
@@ -104,67 +102,79 @@ function (dojo, declare) {
 
         setBorderColoursForSpace: function(x, y)
         {
-            this.setBorderColourForSpace(x, y, "border-top-color");
-            this.setBorderColourForSpace(x, y, "border-left-color");
-            this.setBorderColourForSpace(x, y, "border-right-color");
-            this.setBorderColourForSpace(x, y, "border-bottom-color");
+            this.setVerticalBorderForSpace(x, y);
+            this.setHorizontalBorderForSpace(x, y);
+            this.setCornerBorderForSpace(x, y);
         },
 
-        setBorderColourForSpace(x, y, border)
+        setVerticalBorderForSpace: function(x, y)
         {
+            if (x > 6
+                || x < 1
+                || y > 6)
+            {
+                return;
+            }
+
             var pp = this.getPlayedPieceOnSpace(x, y);
-
-            if (this.shouldColourBorder(pp, border))
+            if (pp != null)
             {
-                dojo.style('space_' + x + '_' + y, border, pp.color); 
-            }
-            else
-            {
-                dojo.style('space_' + x + '_' + y, border, 'black'); 
-            }
-        },
-
-        shouldColourBorder: function(pp, border)
-        {
-            if (pp == null)
-            {
-                return false;
-            }
-
-            var borderingPiece = this.getBorderingPiece(x, y, border);
-
-            if (borderingPiece == null)
-            {
-                return false;
-            }
-
-            if (borderingPiece.color == pp.color)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
+                var borderingPiece = this.getPlayedPieceOnSpace(x-1, y);
+                if (borderingPiece != null
+                    && pp.color == borderingPiece.color)
+                {
+                    dojo.style('border_' + x + '_' + y, "background-color", pp.color); 
+                }
             }
         },
 
-        getBorderingPiece(x, y, border)
+        setHorizontalBorderForSpace: function(x, y)
         {
-            if (border == "border-top-color")
+            if (y > 6
+                || y < 1
+                || x > 6)
             {
-                return this.getPlayedPieceOnSpace(Number(x), Number(y)-1);
+                return;
             }
-            else if (border == "border-left-color")
+
+            var pp = this.getPlayedPieceOnSpace(x, y);
+            if (pp != null)
             {
-                return this.getPlayedPieceOnSpace(Number(x)-1, Number(y));
+                var borderingPiece = this.getPlayedPieceOnSpace(x, y-1);
+                if (borderingPiece != null
+                    && pp.color == borderingPiece.color)
+                {
+                    dojo.style('border_h_' + x + '_' + y, "background-color", pp.color); 
+                }
             }
-            else if (border == "border-right-color")
+        },
+
+        setCornerBorderForSpace: function(x, y)
+        {
+            if (y > 6
+                || y < 1
+                || x > 6
+                || x < 1)
             {
-                return this.getPlayedPieceOnSpace(Number(x)+1, Number(y));
+                return;
             }
-            else if (border == "border-bottom-color")
+
+            var pp = this.getPlayedPieceOnSpace(x, y);
+            if (pp != null)
             {
-                return this.getPlayedPieceOnSpace(Number(x), Number(y)+1);
+                var borderingPiece = this.getPlayedPieceOnSpace(x-1, y);
+                var borderingPiece2 = this.getPlayedPieceOnSpace(x, y-1);
+                var borderingPiece3 = this.getPlayedPieceOnSpace(x-1, y-1);
+                
+                if (borderingPiece != null
+                    && pp.color == borderingPiece.color
+                    && borderingPiece2 != null
+                    && pp.color == borderingPiece2.color
+                    && borderingPiece3 != null
+                    && pp.color == borderingPiece3.color)
+                {
+                    dojo.style('border_corner_' + x + '_' + y, "background-color", pp.color); 
+                }
             }
         },
 
