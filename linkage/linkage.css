@@ -134,11 +134,13 @@
 }
 
 .unavailableMove {
-	background-color: red;
+	background-image: url('img/unavailable.png');
+	background-repeat: no-repeat;
+	background-position-x: center;
+	background-position-y: center;
+	background-size: 12px;
 	width: 42px;
     height: 42px;
-    opacity: 0.2;
-    filter: alpha(opacity=20); /* For IE8 and earlier */   
 	z-index: 0;
 	position: absolute;
 }
