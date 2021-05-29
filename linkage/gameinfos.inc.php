@@ -19,19 +19,19 @@ $gameinfos = array(
     'designer' => 'Ethan Larson',
     
     // Game artist (or game artists, separated by commas)
-    'artist' => 'Néstor Romeral Andrés',
+    //'artist' => 'Néstor Romeral Andrés',
     
     // Year of FIRST publication of this game. Can be negative.
     'year' => 2009,
     
     // Game publisher
-    'publisher' => 'nestorgames',
+    'publisher' => 'Ethan Larson',
     
     // Url of game publisher website
-    'publisher_website' => 'https://nestorgames.com/',
+    'publisher_website' => 'https://boardgamegeek.com/boardgamedesigner/11881/ethan-larson',
     
     // Board Game Geek ID of the publisher
-    'publisher_bgg_id' => 10094,
+    'publisher_bgg_id' => 11881,
     
     // Board game geek ID of the game
     'bgg_id' => 41149,
