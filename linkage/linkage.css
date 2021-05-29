@@ -55,17 +55,18 @@
 }
 
 #board {
-    width: 576px;
-    height: 407px;
-    background-image: url('img/board.png');
+    width: 400px;
+    height: 400px;
+    background-color: rgba(255,255,255,0.4);
     position: relative;
     margin: auto;
     display: inline-block;
+	border-radius: 10px;
 }
 
 #stock {
-	width: 120px;
-	height: 407px;
+	width: 150px;
+	height: 400px;
 	background-color: rgba(255,255,255,0.4);
 	position: relative;
 	display: inline-block;
@@ -82,20 +83,50 @@
 	vertical-align: top;
 }
 
-.space {
-    /*background-color: red;*/
-    width: 41.5px;
-    height: 41.5px;
-    position: absolute;
+#colourGroupsCounter {
+	width: 50px;
+	height: 50px;
+	background-color: rgba(255,255,255);
+	display: inline-block;
+	vertical-align: top;
+	border-radius: 10px;
 	text-align: center;
-	vertical-align: middle;
 	line-height: 50px;
+	font-size: xx-large;
+}
+
+.space {
+    width: 42px;
+    height: 42px;
+	background-color: grey;
+    position: absolute;
+}
+
+.border {
+	width: 2px;
+	height: 42px;
+	background-color: black;
+	position: absolute;
+}
+
+.border_h {
+	width: 42px;
+	height: 2px;
+	background-color: black;
+	position: absolute;
+}
+
+.border_corner {
+	width: 2px;
+	height: 2px;
+	background-color: black;
+	position: absolute;
 }
 
 .possibleMove {
 	/*background-color: green;*/
-	width: 41.5px;
-    height: 41.5px;
+	width: 42px;
+    height: 42px;
     opacity: 0.4;
     filter: alpha(opacity=20); /* For IE8 and earlier */  
 	z-index: 0; 
@@ -103,21 +134,21 @@
 }
 
 .unavailableMove {
-	background-color: red;
-	width: 41.5px;
-    height: 41.5px;
-    opacity: 0.2;
-    filter: alpha(opacity=20); /* For IE8 and earlier */   
+	background-image: url('img/unavailable.png');
+	background-repeat: no-repeat;
+	background-position-x: center;
+	background-position-y: center;
+	background-size: 12px;
+	width: 42px;
+    height: 42px;
 	z-index: 0;
 	position: absolute;
 }
 
 .piece {
-	width: 41.5px;
-	height: 83px;
+	width: 42px;
+	height: 86px;
 	position: absolute;
-	top: 0px;
-	left: 0px;
 	transform-origin: 100% 50%;
 }
 
@@ -128,8 +159,8 @@
 }
 
 .unplayedPiece {
-	width: 41.5px;
-	height: 83px;
+	width: 42px;
+	height: 84px;
 	position: relative;
 	top: 25%;
 	left: 25%;
@@ -139,6 +170,13 @@
 	border-style: solid;
 	border-width: thin; 
 	border-radius: 10px;
+}
+
+.unplayedPiecesCounter {
+	top: 50%;
+	position: relative;
+	line-height: 150%;
+	font-size: x-large;
 }
 
 .lastPlayedMarker {
@@ -162,19 +200,19 @@
 }
 
 .piece_blue {
-	background-color: #00359f;
+	background-color: blue;
 }
 
 .piece_white {
-	background-color: #ffffff;
+	background-color: white;
 }
 
 .piece_red {
-	background-color: #860000;
+	background-color: red;
 }
 
 .piece_yellow {
-	background-color: #e48a01;
+	background-color: yellow;
 }
 
 #stockHolder_blue {
@@ -226,9 +264,9 @@
 }
 
 #goal_000000:after {
-	content: 'Goal: 11 or less colour groups';
+	content: "Goal: 12 or more colour groups";
   }
 
 #goal_ffffff:after{
-	content: "Goal: 12 or more colour groups";
+	content: 'Goal: 11 or fewer colour groups';
 }

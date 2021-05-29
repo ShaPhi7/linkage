@@ -18,9 +18,22 @@
 		    <div id = "space_{X}_{Y}" class = "space" style = "left: {LEFT}px; top: {TOP}px;">
 		    </div>
 	    <!-- END space -->
+		<!-- BEGIN border -->
+			<div id = "border_{X}_{Y}" class = "border" style= "left: {LEFT}px; top: {TOP}px;">
+			</div>
+		<!-- END border -->
+		<!-- BEGIN border_h -->
+			<div id = "border_h_{X}_{Y}" class = "border_h" style= "left: {LEFT}px; top: {TOP}px;">
+			</div>
+		<!-- END border_h -->
+		<!-- BEGIN border_corner -->
+			<div id = "border_corner_{X}_{Y}" class = "border_corner" style= "left: {LEFT}px; top: {TOP}px;">
+			</div>
+		<!-- END border_corner -->
 	        <div id="pieces">
 	    	</div>
 	</div>
+
 	<div id="stock">
 		<div id="stockHolder_blue">
 	    </div>
@@ -31,11 +44,15 @@
 	    <div id="stockHolder_yellow">
 	    </div>
 	</div>
+
 	<div id ="markerStock">
 		<div id="stockHolder_lastPlayed">
 		</div>
 		<div id="stockHolder_ommittedSpace">
 		</div>
+	</div>
+
+	<div id ="colourGroupsCounter">
 	</div>
 </div>
 
@@ -43,7 +60,7 @@
 
 // Javascript HTML templates
 
-var jstpl_piece = '<div class="piece piece_${color}" id="piece_${x_y}" style="left: 0px; top: 0px;"></div>';
+var jstpl_piece = '<div class="piece" id="piece_${x_y}"></div>';
 
 var jstpl_potential_piece = '<div class="piece piece_${color} potentialPiece" id="potential_piece_${x_y}" x="${x}" y="${y}" color="${color}" h="${h}" style="left: 0px; top: 0px;"></div>';
 
@@ -58,6 +75,16 @@ var jstpl_last_played_marker = '<div class="lastPlayedMarker" id="lastPlayedMark
 var jstpl_ommitted_space_marker = '<div class="ommittedSpaceMarker" id="ommittedSpaceMarker_${n}"></div>';
 
 var jstpl_player_goal = '<div class="goal goal_${color}" id="goal_${color}"></div>';
+
+var jstpl_cg_counter = '<div class="colourGroupsCounter" id="colourGroupsCounter"><span id=number></span></div>'
+
+var jstpl_unplayed_pieces_counter = '<div class="unplayedPiecesCounter" id="unplayedPiecesCounter_${color}"><span id=number></span></div>'
+
+var jstpl_border = '<div id="border_${x}_${y}" class="border"></div>';
+
+var jstpl_border_h = '<div id="border_${h}_${x}_${y}" class="border_h"></div>';
+
+var jstpl_border_corner = '<div id="border_${corner}_${x}_${y}" class="border_corner"></div>';
 
 </script>  
 

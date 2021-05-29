@@ -76,7 +76,6 @@ class Linkage extends Table
         }
         $sql .= implode( $values, ',' );
         self::DbQuery( $sql );
-        self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
 
         //mark the ommitted space token, either player choice or center space.
@@ -135,6 +134,8 @@ class Linkage extends Table
                                                                    last_played lastPlayed
                                                             FROM playedpiece");
 
+        $result['colourGroups'] = self::calculateNumberOfColourGroups();
+
         return $result;
     }
 
@@ -168,7 +169,7 @@ class Linkage extends Table
     {
         $color = '"'.$color.'"'; //extra formatting to deal with this being non-numeric (a . is an append symbol)
         $sql = "INSERT INTO `playedpiece`(`x1`, `y1`, `x2`, `y2`, `color`, `last_played`) VALUES ($x1, $x2, $y1, $y2, $color, $last_played)";
-        
+
         return self::DbQuery($sql);
     }
 
@@ -493,7 +494,7 @@ class Linkage extends Table
                  ) 
             );
         
-        self::notifyAllPlayers("updateStock", '', array());
+        self::notifyAllPlayers("updateStock", '', array('colour' => $color));
 
         $this->updateStatsForPiecePlayed($x, $y, $h);
 
@@ -551,24 +552,27 @@ class Linkage extends Table
         }
     }
 
-    function logStateOfPlay($colourGroups)
+    function logStateOfPlay()
     {
+        $colourGroups = $this->calculateNumberOfColourGroups();
+
+        self::notifyAllPlayers("updateColourGroups", "", array('cg' => $colourGroups));
+
         $message = clienttranslate("There are now %s colour group(s)");
+        
         self::notifyAllPlayers("log",
         sprintf($message, $colourGroups),
         array()
         );
     }
 
-    function prepareNextTurn($colourGroups)
+    function prepareNextTurn()
     {
-        $this->logStateOfPlay($colourGroups);
-
         $this->activeNextPlayer();
        
         $newActivePlayerId = $this->getActivePlayerId();
         $this->giveExtraTime($newActivePlayerId);
-        
+
         $this->gamestate->nextState('nextPlayer');
     }
 
@@ -584,13 +588,13 @@ class Linkage extends Table
     {
         if ($this->calculateNumberOfColourGroups() >= 12)
         {
-            //more wins - white
-            $winner = 'ffffff';
+            //more wins - black
+            $winner = '000000';
         }
         else
         {
-            //less wins - black
-            $winner = '000000';
+            //fewer wins - white
+            $winner = 'ffffff';
         }
         self::DbQuery("UPDATE player SET player_score = 1 WHERE player_color = '${winner}'");
     }
@@ -625,8 +629,11 @@ class Linkage extends Table
     */
     function argPlayerTurn()
     {
+        $arrayOfSpaces = $this->getArrayOfSpaces();
+
         return array('possibleMoves' => $this->getBooleanArrayOfPossibleMoves(),
-                     'lastPlayedPiece' => $this->getLastPlayedPiece());
+                     'lastPlayedPiece' => $this->getLastPlayedPiece(),
+                     'unavailableMoves' => $this->markAdjacentSpacesToLastPlayedPieceAsNotPossibleMovesIfPresent($arrayOfSpaces));
     }
     /*
     
@@ -655,11 +662,11 @@ class Linkage extends Table
     */
     function stNextTurnOrEnd()
     {
-        $colourGroups = $this->calculateNumberOfColourGroups();
+        $this->logStateOfPlay();
 
         if ($this->getNumberOfPossibleMoves() > 0)
         {
-            $this->prepareNextTurn($colourGroups);
+            $this->prepareNextTurn();
         }
         else
         {

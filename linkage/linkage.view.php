@@ -39,24 +39,60 @@
 
         /*********** Place your code below:  ************/
 
-        $this->page->begin_block( "linkage_linkage", "space" );
+        $this->page->begin_block("linkage_linkage", "space");
+        $this->page->begin_block("linkage_linkage", "border");
+        $this->page->begin_block("linkage_linkage", "border_h");
+        $this->page->begin_block("linkage_linkage", "border_corner");
         
-        $horizontal_offset = 140.49;
-        $vertical_offset = 55;
-        $horizontal_scale = 42.5;
-        $vertical_scale = 42.5;
-        for ($x=6; $x>=0; $x--)
+        $horizontal_offset = 49;
+        $vertical_offset = 49;
+        $horizontal_scale = 44;
+        $vertical_scale = 44;
+        for ($x=7; $x>=0; $x--)
         {
-            for ($y=6; $y>=0; $y--)
+            for ($y=7; $y>=0; $y--)
             {
-                $this->page->insert_block("space",
+                if ($x < 7
+                  && $y < 7)
+                {
+                    $this->page->insert_block("space",
+                        array (
+                            'X' => $x,
+                            'Y' => $y,
+                            'LEFT' => $x * $horizontal_scale + $horizontal_offset,
+                            'TOP' => $y * $vertical_scale + $vertical_offset));
+                }
+
+                if ($y < 7)
+                {
+                    $this->page->insert_block("border",
+                    array (
+                        'X' => $x,
+                        'Y' => $y,
+                        'LEFT' => $x * $horizontal_scale + $horizontal_offset - 2,
+                        'TOP' => $y * $vertical_scale + $vertical_offset));
+                }
+
+                if ($x < 7)
+                {
+                    $this->page->insert_block("border_h",
                     array (
                         'X' => $x,
                         'Y' => $y,
                         'LEFT' => $x * $horizontal_scale + $horizontal_offset,
-                        'TOP' => $y * $vertical_scale + $vertical_offset));
+                        'TOP' => $y * $vertical_scale + $vertical_offset - 2));
+                }
+
+                $this->page->insert_block("border_corner",
+                array (
+                    'X' => $x,
+                    'Y' => $y,
+                    'LEFT' => $x * $horizontal_scale + $horizontal_offset - 2,
+                    'TOP' => $y * $vertical_scale + $vertical_offset - 2));
+                
             }
         }
+        //also insert borders at each sensible place
         
         /*
         
