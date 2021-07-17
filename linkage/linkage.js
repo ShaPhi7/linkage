@@ -25,7 +25,7 @@ function (dojo, declare) {
         constructor: function(){
             console.log('linkage constructor');
             
-            this.debugMode = "true"; //used to turn console logging on and off
+            this.debugMode = "false"; //used to turn console logging on and off
 
             this.possibleMoves = []; //from game.php, shows where pieces could be played each turn
             this.playedPieces  = []; //useful to track this in js mainly just as a helper
@@ -254,6 +254,14 @@ function (dojo, declare) {
 
                 var player_board_div = $('player_board_'+player_id);
                 dojo.place(this.format_block('jstpl_player_goal', player), player_board_div);
+
+                debugger;
+                //if player has turned off move confirmations
+                if (player_id == this.player_id
+                  && player.confirmation == 0)
+                {
+                    this.shouldAskForConfirmation = "false";
+                }
             }
 
             for (var i in gamedatas.playedpiece)
@@ -933,6 +941,12 @@ function (dojo, declare) {
         onOff: function()
         {
             this.shouldAskForConfirmation = "false";
+
+            this.ajaxcall( "/linkage/linkage/turnOffConfirmationsForPlayer.html", {
+                lock: true,
+                id: this.player_id
+            }, this, function(result){});
+            
             this.onConfirm();
         },
 

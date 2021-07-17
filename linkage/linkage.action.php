@@ -51,6 +51,16 @@
         $result = $this->game->placePiece($x, $y, $color, $h);
         self::ajaxResponse( );
     }
+
+    public function turnOffConfirmationsForPlayer()
+    {
+        self::setAjaxMode();
+
+        $id = self::getArg("id", AT_int, true);
+
+        $result = $this->game->turnOffConfirmationsForPlayer($id);
+        self::ajaxResponse( );
+    }
   }
   
 

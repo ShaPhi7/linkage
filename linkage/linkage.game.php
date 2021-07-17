@@ -59,9 +59,6 @@ class Linkage extends Table
     */
     protected function setupNewGame( $players, $options = array() )
     {    
-        // Set the colors of the players with HTML color code
-        // The default below is red/green/blue/orange/brown
-        // The number of colors defined here must correspond to the maximum number of players allowed for the gams
         $gameinfos = self::getGameinfos();
         $default_colors = $gameinfos['player_colors'];
  
@@ -122,7 +119,7 @@ class Linkage extends Table
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_confirmation confirmation FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
   
         //get details of every piece played. Spaces that are empty are not included here. Only one piece is last played.
@@ -164,6 +161,24 @@ class Linkage extends Table
     /*
         In this space, you can put any utility methods useful for your game logic
     */
+
+    function getPlayerConfirmationSetting()
+    {
+        $id = self::getCurrentPlayerId();
+
+        $sql = "SELECT `player_confirmation`
+        FROM `player`
+        WHERE `player_id`='$id'";
+
+        return self::getObjectListFromDB($sql);
+    }
+
+    function turnOffConfirmationsForPlayer($id)
+    {
+        $sql = "UPDATE player SET player_confirmation = 0 WHERE player_id = '${id}'";
+
+        return self::DbQuery($sql);
+    }
 
     function insertPlayedPiece($x1, $x2, $y1, $y2, $color, $last_played)
     {
