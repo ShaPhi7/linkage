@@ -45,6 +45,7 @@ function (dojo, declare) {
 
             this.awaitingConfirmation = "false";
             this.confirmationTarget = {};
+            this.shouldAskForConfirmation = "true";
             
             this.takenTurn = "false"; //only used to stop players placing more than one piece
         },
@@ -888,25 +889,31 @@ function (dojo, declare) {
                 return;
             }
 
-            this.confirmPiece(event);
-
-
+            this.confirmationTarget = event.currentTarget;
+            if (this.shouldAskForConfirmation == 'true')
+            {
+                this.confirmPiece(event);
+            }
+            else
+            {
+                this.onConfirm();
+            }
         },
 
         confirmPiece: function(event)
         {
             this.awaitingConfirmation = 'true';
-            this.confirmationTarget = event.currentTarget;
+            
             dojo.addClass(event.currentTarget.id, "blinking");
             //pop up buttons
             this.addActionButton( 'button_confirm', _('Confirm'), 'onConfirm', null, false, 'blue' );
+            this.addActionButton( 'button_off', _('Confirm and do not ask again'), 'onOff', null, false, 'blue' );
             this.addActionButton( 'button_undo', _('Undo'), 'onUndo', null, false, 'red' );
         },
 
         onConfirm: function()
         {
             var confirmationTarget = this.confirmationTarget;
-            debugger;
             this.ajaxcall( "/linkage/linkage/placePiece.html", {
                 lock: true,
                 x: dojo.getAttr(confirmationTarget.id, "x"),
@@ -923,6 +930,12 @@ function (dojo, declare) {
             this.awaitingConfirmation = 'false';
         },
 
+        onOff: function()
+        {
+            this.shouldAskForConfirmation = "false";
+            this.onConfirm();
+        },
+
         onUndo: function()
         {
             this.takenTurn = 'false';
@@ -937,6 +950,7 @@ function (dojo, declare) {
 
             dojo.destroy("button_confirm");
             dojo.destroy("button_undo");
+            dojo.destroy("button_off")
         },
         
         ///////////////////////////////////////////////////
