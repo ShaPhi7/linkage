@@ -900,6 +900,7 @@ function (dojo, declare) {
             dojo.addClass(event.currentTarget.id, "blinking");
             //pop up buttons
             this.addActionButton( 'button_confirm', _('Confirm'), 'onConfirm', null, false, 'blue' );
+            this.addActionButton( 'button_undo', _('Undo'), 'onUndo', null, false, 'red' );
         },
 
         onConfirm: function()
@@ -922,11 +923,20 @@ function (dojo, declare) {
             this.awaitingConfirmation = 'false';
         },
 
+        onUndo: function()
+        {
+            this.takenTurn = 'false';
+            this.destroyPotentialPieceIfPresent();
+            this.colourToPlay = "";
+            this.removeConfirmationButtons();
+        },
+
         removeConfirmationButtons: function()
         {
             this.awaitingConfirmation = 'false';
 
             dojo.destroy("button_confirm");
+            dojo.destroy("button_undo");
         },
         
         ///////////////////////////////////////////////////
