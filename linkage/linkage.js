@@ -37,15 +37,15 @@ function (dojo, declare) {
             this.colourGroupsCounter = new ebg.counter();
             this.unplayedPiecesCounters = {};
 
-            this.awaitingConfirmation = "false";
-            this.confirmationTarget = {};
-
             //if you change these, you must also update constants in game.php, .css and .tpl
             this.BLUE = "blue";
             this.WHITE = "white";
             this.RED = "red";
             this.YELLOW = "yellow";
 
+            this.awaitingConfirmation = "false";
+            this.confirmationTarget = {};
+            
             this.takenTurn = "false"; //only used to stop players placing more than one piece
         },
         
@@ -415,6 +415,7 @@ function (dojo, declare) {
             {
                 case 'playerTurn':
                     this.takenTurn = 'false';
+                    this.awaitingConfirmation = 'false';
                     this.possibleMoves = args.args.possibleMoves;
                     this.unavailableMoves = args.args.unavailableMoves;
                     this.updateMovesToShow();
@@ -806,8 +807,10 @@ function (dojo, declare) {
 
             this.logIfDebugMode('id: ' + id);
 
+            this.removeConfirmationButtons();
+
             this.colourToPlay = dojo.attr(id, 'color');
-            this.horizontalToPlay = dojo.attr(id, 'h');            
+            this.horizontalToPlay = dojo.attr(id, 'h');                        
 
             this.logIfDebugMode('colourToPlay: ' + this.colourToPlay);
             this.logIfDebugMode('horizontalToPlay: ' + this.horizontalToPlay);
@@ -894,7 +897,7 @@ function (dojo, declare) {
         {
             this.awaitingConfirmation = 'true';
             this.confirmationTarget = event.currentTarget;
-            //make piece flash,
+            dojo.addClass(event.currentTarget.id, "blinking");
             //pop up buttons
             this.addActionButton( 'button_confirm', _('Confirm'), 'onConfirm', null, false, 'blue' );
         },
@@ -917,6 +920,13 @@ function (dojo, declare) {
             //horizontalToPlay is just a boolean so is not reset here
 
             this.awaitingConfirmation = 'false';
+        },
+
+        removeConfirmationButtons: function()
+        {
+            this.awaitingConfirmation = 'false';
+
+            dojo.destroy("button_confirm");
         },
         
         ///////////////////////////////////////////////////
