@@ -37,6 +37,9 @@ function (dojo, declare) {
             this.colourGroupsCounter = new ebg.counter();
             this.unplayedPiecesCounters = {};
 
+            this.awaitingConfirmation = "false";
+            this.confirmationTarget = {};
+
             //if you change these, you must also update constants in game.php, .css and .tpl
             this.BLUE = "blue";
             this.WHITE = "white";
@@ -663,6 +666,11 @@ function (dojo, declare) {
                 return true;
             }
 
+            if (this.awaitingConfirmation == 'true')
+            {
+                return true;
+            }
+
             if (this.getNumberOfPiecesOnBoardForColor(this.colourToPlay) > 5)
             {
                 return true;
@@ -848,6 +856,11 @@ function (dojo, declare) {
         {
             dojo.stopEvent(event);
 
+            if (this.awaitingConfirmation == 'true')
+            {
+                return;
+            }
+
             if(!this.checkAction('placePiece'))    // Check that this action is possible at this moment
             {
                 this.showMessage(_("It is not your turn"), "error");
@@ -872,10 +885,28 @@ function (dojo, declare) {
                 return;
             }
 
+            this.confirmPiece(event);
+
+
+        },
+
+        confirmPiece: function(event)
+        {
+            this.awaitingConfirmation = 'true';
+            this.confirmationTarget = event.currentTarget;
+            //make piece flash,
+            //pop up buttons
+            this.addActionButton( 'button_confirm', _('Confirm'), 'onConfirm', null, false, 'blue' );
+        },
+
+        onConfirm: function()
+        {
+            var confirmationTarget = this.confirmationTarget;
+            debugger;
             this.ajaxcall( "/linkage/linkage/placePiece.html", {
                 lock: true,
-                x: dojo.getAttr(event.currentTarget.id, "x"),
-                y: dojo.getAttr(event.currentTarget.id, "y"),
+                x: dojo.getAttr(confirmationTarget.id, "x"),
+                y: dojo.getAttr(confirmationTarget.id, "y"),
                 color: this.colourToPlay,
                 h: this.horizontalToPlay, //sometimes debugger appears to show h as unset, even though it is.
             }, this, function(result){});
@@ -884,6 +915,8 @@ function (dojo, declare) {
             this.destroyPotentialPieceIfPresent();
             this.colourToPlay = "";
             //horizontalToPlay is just a boolean so is not reset here
+
+            this.awaitingConfirmation = 'false';
         },
         
         ///////////////////////////////////////////////////
