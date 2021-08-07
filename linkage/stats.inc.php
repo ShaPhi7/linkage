@@ -55,6 +55,10 @@ $stats_type = array(
         "pieces_played" => array("id"=> 10,
                     "name" => totranslate("Number of pieces played"),
                     "type" => "int" ),
+
+        "final_colour_groups" => array("id"=> 11,
+                    "name" => totranslate("Final number of colour groups"),
+                    "type" => "int" ),
     ),
     
     // Statistics existing for each player

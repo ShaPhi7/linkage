@@ -92,6 +92,7 @@ class Linkage extends Table
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
         self::initStat('table', 'pieces_played', 0);
+        self::initStat('table', 'final_colour_groups', 0);
         self::initStat('player', 'pieces_played_player', 0);
         self::initStat('player', 'pieces_played_corner', 0);
         self::initStat('player', 'pieces_played_corner_percentage', 0);
@@ -616,6 +617,8 @@ class Linkage extends Table
     
     function calculateStats()
     {
+        self::setStat($this->calculateNumberOfColourGroups(), 'final_colour_groups');
+
         $players = self::loadPlayersBasicInfos();
         foreach($players as $player_id => $player )
         {
