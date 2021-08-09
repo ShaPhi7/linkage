@@ -344,15 +344,21 @@ class Linkage extends Table
 
     function markAsNotPossibleMoveIfStandaloneSpace($possibleMoves, $x, $y)
     {
-        if (!$this->isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
-        && !$this->isThereAPlayableSpaceLeft($possibleMoves, $x, $y)
-        && !$this->isThereAPlayableSpaceBelow($possibleMoves, $x, $y)
-        && !$this->isThereAPlayableSpaceRight($possibleMoves, $x, $y))
+        if ($this->isStandaloneSpace($possibleMoves, $x, $y))
         {
             $possibleMoves = $this->markAsNotPossibleMoveIfSpace($possibleMoves, $x, $y);
         }
 
         return $possibleMoves;
+    }
+
+    function isStandaloneSpace($possibleMoves, $x, $y)
+    {
+        return $this->isSpace($x, $y)
+            && !$this->isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
+            && !$this->isThereAPlayableSpaceLeft($possibleMoves, $x, $y)
+            && !$this->isThereAPlayableSpaceBelow($possibleMoves, $x, $y)
+            && !$this->isThereAPlayableSpaceRight($possibleMoves, $x, $y);
     }
 
     function markAsNotPossibleMoveIfSpace($possibleMoves, $x, $y)
@@ -579,15 +585,14 @@ class Linkage extends Table
     {
         $colourGroups = $this->calculateNumberOfColourGroups();
 
-        $maxColourGroups = self::getStat('maximum_colour_groups', null);
-
-        if ($colourGroups > $maxColourGroups)
+        $players = self::loadPlayersBasicInfos();
+        foreach($players as $player_id => $player)
         {
-            self::setStat($maxColourGroups, 'maximum_colour_groups');
-            $players = self::loadPlayersBasicInfos();
-            foreach($players as $player_id => $player )
+            $maxColourGroups = self::getStat('maximum_colour_groups_player', $player['player_id']);
+            if ($colourGroups >= $maxColourGroups)
             {
-                self::setStat($maxColourGroups,'maximum_colour_groups_player', $player['player_id']);
+                self::setStat($colourGroups, 'maximum_colour_groups');
+                self::setStat($colourGroups, 'maximum_colour_groups_player', $player['player_id']);
             }
         }
 

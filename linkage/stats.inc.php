@@ -79,7 +79,6 @@ $stats_type = array(
         "win_as_more" => array("id"=> 20,
         "name" => totranslate("Won as More player"),
         "type" => "int" ),
-
         
         "lose_as_more" => array("id"=> 21,
         "name" => totranslate("Lost as More player"),
