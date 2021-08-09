@@ -93,6 +93,13 @@ class Linkage extends Table
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
         self::initStat('table', 'pieces_played', 0);
         self::initStat('table', 'final_colour_groups', 0);
+        self::initStat('table', 'maximum_colour_groups', 0);
+        self::initStat('player', 'final_colour_groups_player', 0);
+        self::initStat('player', 'maximum_colour_groups_player', 0);
+        self::initStat('player', 'win_as_more', 0);
+        self::initStat('player', 'lose_as_more', 0);
+        self::initStat('player', 'win_as_fewer', 0);
+        self::initStat('player', 'lose_as_fewer', 0);
         self::initStat('player', 'pieces_played_player', 0);
         self::initStat('player', 'pieces_played_corner', 0);
         self::initStat('player', 'pieces_played_corner_percentage', 0);
@@ -572,6 +579,18 @@ class Linkage extends Table
     {
         $colourGroups = $this->calculateNumberOfColourGroups();
 
+        $maxColourGroups = self::getStat('maximum_colour_groups', null);
+
+        if ($colourGroups > $maxColourGroups)
+        {
+            self::setStat($maxColourGroups, 'maximum_colour_groups');
+            $players = self::loadPlayersBasicInfos();
+            foreach($players as $player_id => $player )
+            {
+                self::setStat($maxColourGroups,'maximum_colour_groups_player', $player['player_id']);
+            }
+        }
+
         self::notifyAllPlayers("updateColourGroups", "", array('cg' => $colourGroups));
 
         $message = clienttranslate("There are now %s colour group(s)");
@@ -615,9 +634,11 @@ class Linkage extends Table
         self::DbQuery("UPDATE player SET player_score = 1 WHERE player_color = '${winner}'");
     }
     
-    function calculateStats()
+    function calculateStatsAtEndOfGame()
     {
-        self::setStat($this->calculateNumberOfColourGroups(), 'final_colour_groups');
+        $numberOfColourGroups = $this->calculateNumberOfColourGroups();
+
+        self::setStat($numberOfColourGroups, 'final_colour_groups');
 
         $players = self::loadPlayersBasicInfos();
         foreach($players as $player_id => $player )
@@ -633,6 +654,31 @@ class Linkage extends Table
             }
             
             self::setStat($piecesPlayedCornerPercentage, 'pieces_played_corner_percentage', $player['player_id']);
+
+            self::setStat($numberOfColourGroups, 'final_colour_groups_player', $player['player_id']);
+
+            if ($player['player_color'] == '000000')
+            {
+                if ($numberOfColourGroups >= 12)
+                {
+                    self::incStat(1, 'win_as_more', $player['player_id']);
+                } 
+                else
+                {
+                    self::incStat(1, 'lose_as_more', $player['player_id']);
+                }
+            }
+            else
+            {
+                if ($numberOfColourGroups >= 12)
+                {
+                    self::incStat(1, 'lose_as_fewer', $player['player_id']);
+                } 
+                else
+                {
+                    self::incStat(1, 'win_as_fewer', $player['player_id']);
+                }
+            }
         }
     }
 
@@ -700,7 +746,7 @@ class Linkage extends Table
             else
             {
                 $this->setWinner();
-                $this->calculateStats();
+                $this->calculateStatsAtEndOfGame();
                 $this->gamestate->nextState('endGame');    
             }
         }

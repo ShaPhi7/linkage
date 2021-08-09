@@ -59,10 +59,41 @@ $stats_type = array(
         "final_colour_groups" => array("id"=> 11,
                     "name" => totranslate("Final number of colour groups"),
                     "type" => "int" ),
+
+        "maximum_colour_groups" => array("id"=> 13,
+                    "name" => totranslate("Maximum number of colour groups"),
+                    "type" => "int" ),
     ),
     
     // Statistics existing for each player
     "player" => array(
+
+        "final_colour_groups_player" => array("id"=> 11,
+        "name" => totranslate("Final number of colour groups"),
+        "type" => "int" ),
+
+        "maximum_colour_groups_player" => array("id"=> 13,
+        "name" => totranslate("Maximum number of colour groups"),
+        "type" => "int" ),
+
+        "win_as_more" => array("id"=> 20,
+        "name" => totranslate("Won as More player"),
+        "type" => "int" ),
+
+        
+        "lose_as_more" => array("id"=> 21,
+        "name" => totranslate("Lost as More player"),
+        "type" => "int" ),
+
+        
+        "win_as_fewer" => array("id"=> 22,
+        "name" => totranslate("Won as Fewer player"),
+        "type" => "int" ),
+
+        
+        "lose_as_fewer" => array("id"=> 23,
+        "name" => totranslate("Lost as Fewer player"),
+        "type" => "int" ),
 
         "pieces_played_player" => array("id"=> 50,
                     "name" => totranslate("Number of pieces played"),
