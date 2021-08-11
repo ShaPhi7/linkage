@@ -255,7 +255,6 @@ function (dojo, declare) {
                 var player_board_div = $('player_board_'+player_id);
                 dojo.place(this.format_block('jstpl_player_goal', player), player_board_div);
 
-                debugger;
                 //if player has turned off move confirmations
                 if (player_id == this.player_id
                   && player.confirmation == 0)
