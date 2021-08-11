@@ -252,8 +252,7 @@ function (dojo, declare) {
             {
                 var player = gamedatas.players[player_id];
 
-                var player_board_div = $('player_board_'+player_id);
-                dojo.place(this.format_block('jstpl_player_goal', player), player_board_div);
+                this.setupPlayerBoard(player);
 
                 //if player has turned off move confirmations
                 if (player_id == this.player_id
@@ -289,6 +288,33 @@ function (dojo, declare) {
             this.setupNotifications();
 
             this.logIfDebugMode("Ending game setup");
+        },
+
+        setupPlayerBoard: function(player)
+        {
+            goalDetail = this.getPlayerGoalDetail(player);
+
+            var player_board_div = $('player_board_'+ player.id);
+
+            dojo.place(this.format_block('jstpl_player_goal', {color: player.color, text: goalDetail.short}), player_board_div);
+            this.addTooltip('goal_' + player.color, '', goalDetail.tooltip);
+        },
+
+        getPlayerGoalDetail: function(player)
+        {
+            if (this.isPlayerMore(player))
+            {
+                return {short: "12+", tooltip: _('Goal: 12 or more colour groups')}
+            }
+            else
+            {
+                return {short: "11-", tooltip: _('Goal: 11 or fewer colour groups')}
+            }
+        },
+
+        isPlayerMore: function(player)
+        {
+            return player.color == "000000"
         },
 
         setupStock: function()

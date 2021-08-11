@@ -352,15 +352,6 @@ class Linkage extends Table
         return $possibleMoves;
     }
 
-    function isStandaloneSpace($possibleMoves, $x, $y)
-    {
-        return $this->isSpace($x, $y)
-            && !$this->isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
-            && !$this->isThereAPlayableSpaceLeft($possibleMoves, $x, $y)
-            && !$this->isThereAPlayableSpaceBelow($possibleMoves, $x, $y)
-            && !$this->isThereAPlayableSpaceRight($possibleMoves, $x, $y);
-    }
-
     function markAsNotPossibleMoveIfSpace($possibleMoves, $x, $y)
     {
         if ($this->isSpace($x, $y))
@@ -376,6 +367,15 @@ class Linkage extends Table
             && $y >= 0
             && $x < 7
             && $y < 7;
+    }
+
+    function isStandaloneSpace($possibleMoves, $x, $y)
+    {
+        return $this->isSpace($x, $y)
+            && !$this->isThereAPlayableSpaceAbove($possibleMoves, $x, $y)
+            && !$this->isThereAPlayableSpaceLeft($possibleMoves, $x, $y)
+            && !$this->isThereAPlayableSpaceBelow($possibleMoves, $x, $y)
+            && !$this->isThereAPlayableSpaceRight($possibleMoves, $x, $y);
     }
 
     function isCornerSpace($x, $y)
@@ -420,6 +420,11 @@ class Linkage extends Table
     function isThereAPlayableSpaceRight($possibleMoves, $x, $y)
     {   
         return $this->isPlayableSpace($possibleMoves, $x+1, $y);
+    }
+
+    function isPlayerMore($player)
+    {
+        return $player['player_color'] == '000000';
     }
 
     function calculateNumberOfColourGroups()
@@ -598,7 +603,7 @@ class Linkage extends Table
 
         self::notifyAllPlayers("updateColourGroups", "", array('cg' => $colourGroups));
 
-        $message = clienttranslate("There are now %s colour group(s)");
+        $message = clienttranslate('There are now %s colour group(s)');
         
         self::notifyAllPlayers("log",
         sprintf($message, $colourGroups),
@@ -662,7 +667,7 @@ class Linkage extends Table
 
             self::setStat($numberOfColourGroups, 'final_colour_groups_player', $player['player_id']);
 
-            if ($player['player_color'] == '000000')
+            if ($this->isPlayerMore($player))
             {
                 if ($numberOfColourGroups >= 12)
                 {

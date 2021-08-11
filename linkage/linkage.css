@@ -267,10 +267,21 @@
 	margin-left: 10%;
 }
 
-#goal_000000:after {
-	content: "Goal: 12 or more colour groups";
-  }
+.goal {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	border-radius: 50%;
+	font-size: 15px;
+	text-align: center;
+}
 
-#goal_ffffff:after{
-	content: 'Goal: 11 or fewer colour groups';
+#goal_000000 {
+	color: #ffffff;
+	background: #000000;
+}
+
+#goal_ffffff {
+	color: #000000;
+	background: #ffffff;
 }
