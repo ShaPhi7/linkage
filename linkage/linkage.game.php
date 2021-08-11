@@ -602,13 +602,6 @@ class Linkage extends Table
         }
 
         self::notifyAllPlayers("updateColourGroups", "", array('cg' => $colourGroups));
-
-        $message = clienttranslate('There are now %s colour group(s)');
-        
-        self::notifyAllPlayers("log",
-        sprintf($message, $colourGroups),
-        array()
-        );
     }
 
     function prepareNextTurn()
