@@ -46,13 +46,12 @@
 	</div>
 
 	<div id ="markerStock">
+		<div id ="colourGroupsCounter">
+		</div>
 		<div id="stockHolder_lastPlayed">
 		</div>
 		<div id="stockHolder_ommittedSpace">
 		</div>
-	</div>
-
-	<div id ="colourGroupsCounter">
 	</div>
 </div>
 

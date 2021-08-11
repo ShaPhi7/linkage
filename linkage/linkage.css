@@ -253,6 +253,8 @@
 	height: 50%;
 	display: inline-block;
 	position: relative;
+	margin-top: 10%;
+	margin-left: 10%;
 }
 
 #stockHolder_lastPlayed {
@@ -261,6 +263,8 @@
 	height: 50%;
 	display: inline-block;
 	position: relative;
+	margin-top: 10%;
+	margin-left: 10%;
 }
 
 #goal_000000:after {
