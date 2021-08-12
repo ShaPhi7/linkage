@@ -378,16 +378,18 @@ class Linkage extends Table
             && !$this->isThereAPlayableSpaceRight($possibleMoves, $x, $y);
     }
 
-    function isCornerSpace($x, $y)
+    function isCornerSpace($x, $y, $h)
     {
-        //as pieces can span 2 spaces, the x and y correspond to the top left of the piece.
-        return ($x == 0 & $y == 0)
-            || ($x == 0 & $y == 5)
-            || ($x == 0 & $y == 6)
-            || ($x == 6 & $y == 0)
-            || ($x == 5 & $y == 0)
-            || ($x == 5 & $y == 6)
-            || ($x == 6 & $y == 5);
+        //There are 8 ways to be a corner piece as pieces can span 2 spaces,
+        //the x and y correspond to the top left of the piece, and h is horizontal.
+        return ($x == 0 & $y == 0 & $h == 'true')
+            || ($x == 0 & $y == 0 & $h <> 'true')
+            || ($x == 0 & $y == 5 & $h <> 'true')
+            || ($x == 0 & $y == 6 & $h == 'true')
+            || ($x == 6 & $y == 0 & $h <> 'true')
+            || ($x == 5 & $y == 0 & $h == 'true')
+            || ($x == 5 & $y == 6 & $h == 'true')
+            || ($x == 6 & $y == 5 & $h <> 'true');
     }
 
     function isPlayableSpace($possibleMoves, $x, $y)
